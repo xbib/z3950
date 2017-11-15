@@ -1,0 +1,24 @@
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd" xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <localRepository>~/.m2/repository</localRepository>
+    <activeProfiles>
+        <activeProfile>xbib</activeProfile>
+    </activeProfiles>
+    <profiles>
+        <profile>
+            <id>xbib</id>
+            <repositories>
+                <repository>
+                    <id>xbib</id>
+                    <url>http://xbib.org/repository</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+</settings>

@@ -1,0 +1,80 @@
+plugins {
+    id "org.sonarqube" version '2.5'
+    id "io.codearte.nexus-staging" version "0.7.0"
+}
+
+printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
+        "Build: group: ${project.group} name: ${project.name} version: ${project.version}\n",
+        InetAddress.getLocalHost(),
+        System.getProperty("os.name"),
+        System.getProperty("os.arch"),
+        System.getProperty("os.version"),
+        System.getProperty("java.version"),
+        System.getProperty("java.vm.version"),
+        System.getProperty("java.vm.vendor"),
+        System.getProperty("java.vm.name"),
+        GroovySystem.getVersion(),
+        gradle.gradleVersion
+
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'signing'
+    apply plugin: 'findbugs'
+    apply plugin: 'pmd'
+    apply plugin: 'checkstyle'
+    apply plugin: 'jacoco'
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations {
+        wagon
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.12'
+        wagon 'org.apache.maven.wagon:wagon-ssh:2.12'
+    }
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-Xlint:all,-fallthrough" << "-profile" << "compact1"
+    }
+
+    clean {
+        delete 'out'
+    }
+
+    test {
+        testLogging {
+            showStandardStreams = false
+            exceptionFormat = 'full'
+        }
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier 'sources'
+        from sourceSets.main.allSource
+    }
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier 'javadoc'
+    }
+    artifacts {
+        archives sourcesJar, javadocJar
+    }
+    if (project.hasProperty('signing.keyId')) {
+        signing {
+            sign configurations.archives
+        }
+    }
+
+    apply from: "${rootProject.projectDir}/gradle/ext.gradle"
+    apply from: "${rootProject.projectDir}/gradle/publish.gradle"
+    apply from: "${rootProject.projectDir}/gradle/sonarqube.gradle"
+}

@@ -1,0 +1,14 @@
+This software is based on the work of
+
+Zebulun https://github.com/jafer-org/zebulun
+
+a low level Java implementation of the NISO Z39.50 protocol,
+
+and
+
+Java Access For Electronic Resources (Jafer) https://github.com/jafer-org/jafer
+
+The JAFER Project (Java Access For Electronic Resources) was a Jisc funded project (2000 - 2003)
+based at Oxford University to produce an easy to use toolkit for building portals
+and information sources without having to deal with the technical intricacies of the Z39.50 protocol.
+
