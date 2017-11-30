@@ -23,10 +23,9 @@ public class ZClientTest {
             try (ZClient client = ZClient.newZClient(serviceName)) {
                 logger.log(Level.INFO, "executing CQL " + serviceName);
                 int count = client.executeCQL(query, from, size,
-                        (status, recordCount, elapsedMillis) ->
-                                logger.log(Level.INFO, serviceName + " results = " + recordCount),
-                        record ->
-                                logger.log(Level.INFO, "record = " + record));
+                        (status, total, returned, elapsedMillis) ->
+                                logger.log(Level.INFO, serviceName + " total results = " + total),
+                        record -> logger.log(Level.INFO, "record = " + record));
                 logger.log(Level.INFO, "returned records = " + count);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
@@ -43,10 +42,9 @@ public class ZClientTest {
             try (ZClient client = ZClient.newZClient(serviceName)) {
                 logger.log(Level.INFO, "executing PQF " + serviceName);
                 int count = client.executePQF(query, from, size,
-                        (status, recordCount, elapsedMillis) ->
-                                logger.log(Level.INFO, serviceName + " status = " + status + " results = " + recordCount),
-                        record ->
-                                logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))));
+                        (status, total, returned, elapsedMillis) ->
+                                logger.log(Level.INFO, serviceName + " status = " + status + " total results = " + total),
+                        record -> logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))));
                 logger.log(Level.INFO, "returned records = " + count);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);

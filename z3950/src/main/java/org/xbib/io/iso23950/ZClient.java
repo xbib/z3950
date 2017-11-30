@@ -251,9 +251,9 @@ public class ZClient implements AutoCloseable {
             logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
         } else {
             if (responseListener == null) {
-                responseListener = (status, recordCount, elapsedMillis) -> {
-                    logger.log(Level.INFO, MessageFormat.format("[{0}ms] [{1}] [{2}]",
-                            elapsedMillis, recordCount, query));
+                responseListener = (status, total, returned, elapsedMillis) -> {
+                    logger.log(Level.INFO, MessageFormat.format("[{0}ms] [{1}] [{2}] [{3}]",
+                            elapsedMillis, total, returned, query));
                 };
             }
             if (search.getCount() > 0) {
@@ -266,7 +266,7 @@ public class ZClient implements AutoCloseable {
                     // avoid condition 13 "Present request out-of-range"
                     length = search.getCount();
                 }
-                present.execute(this, offset, length, responseListener, recordListener);
+                present.execute(this, offset, length, search.getCount(), responseListener, recordListener);
             }
         }
         return search.getCount();
@@ -284,9 +284,9 @@ public class ZClient implements AutoCloseable {
             logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
         } else {
             if (responseListener == null) {
-                responseListener = (status, recordCount, elapsedMillis) -> {
-                    logger.log(Level.INFO, MessageFormat.format("[{0}ms] [{1}] [{2}]",
-                            elapsedMillis, recordCount, query));
+                responseListener = (status, total, returned, elapsedMillis) -> {
+                    logger.log(Level.INFO, MessageFormat.format("[{0}ms] [{1}] [{2}] [{3}]",
+                            elapsedMillis, total, returned, query));
                 };
             }
             if (search.getCount() > 0) {
@@ -300,7 +300,7 @@ public class ZClient implements AutoCloseable {
                     // avoid condition 13 "Present request out-of-range"
                     length = search.getCount();
                 }
-                present.execute(this, offset, length, responseListener, recordListener);
+                present.execute(this, offset, length, search.getCount(), responseListener, recordListener);
             }
         }
         return search.getCount();

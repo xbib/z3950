@@ -32,7 +32,7 @@ public class SearchTest {
                     .setPreferredRecordSyntax(preferredRecordSyntax)
                     .build();
             client.executePQF(query, from, length,
-                    (status, recordCount, elapsedMillis) -> logger.log(Level.INFO, "records = " + recordCount),
+                    (status, total, returned, elapsedMillis) -> logger.log(Level.INFO, "total records = " + total),
                     record -> logger.log(Level.INFO, "found record " + record));
             client.close();
         } catch (NoRecordsReturnedException | MessageSizeTooSmallException e) {

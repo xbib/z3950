@@ -8,5 +8,5 @@ import java.io.IOException;
 @FunctionalInterface
 public interface ResponseListener {
 
-    void onResponse(int status, int recordCount, long elapsedMillis) throws IOException;
+    void onResponse(int status, int total, int returned, long elapsedMillis) throws IOException;
 }

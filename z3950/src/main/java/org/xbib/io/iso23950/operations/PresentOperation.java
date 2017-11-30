@@ -32,7 +32,7 @@ import java.io.IOException;
  */
 public class PresentOperation {
 
-    public void execute(ZClient client, int offset, int length,
+    public void execute(ZClient client, int offset, int length, int total,
                         ResponseListener responseListener, RecordListener recordListener) throws IOException {
         String resultSetName = client.getResultSetName();
         String elementSetName = client.getElementSetName();
@@ -57,7 +57,7 @@ public class PresentOperation {
         int nReturned = response.s_numberOfRecordsReturned != null ? response.s_numberOfRecordsReturned.get() : 0;
         int status = response.s_presentStatus.value != null ? response.s_presentStatus.value.get() : 0;
         if (responseListener != null) {
-            responseListener.onResponse(status, nReturned,  System.currentTimeMillis() - millis);
+            responseListener.onResponse(status, total, nReturned,  System.currentTimeMillis() - millis);
         }
         if (status == PresentStatus.E_success) {
             for (int n = 0; n < nReturned; n++) {
