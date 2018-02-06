@@ -18,7 +18,6 @@ import org.xbib.io.iso23950.v3.RPNQuery;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
@@ -26,7 +25,6 @@ import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -103,89 +101,38 @@ public class ZClient implements AutoCloseable {
         }
     }
 
-    public static ZClient newZClient(String name) throws IOException {
-        return newZClient(getProperties(name));
-    }
-
-    public static Properties getProperties(String name) throws IOException {
-        Properties properties = new Properties();
-        try (InputStream inputStream =
-                     ZClient.class.getResourceAsStream("/org/xbib/io/iso23950/service/" + name + ".properties")) {
-            properties.load(inputStream);
-        }
-        return properties;
-    }
-
-    public static ZClient newZClient(Properties properties) throws IOException {
-        Builder builder = builder();
-        if (properties.containsKey("host")) {
-            builder.setHost(properties.getProperty("host"));
-        }
-        if (properties.containsKey("port")) {
-            builder.setPort(Integer.parseInt(properties.getProperty("port")));
-        }
-        if (properties.containsKey("user")) {
-            builder.setUser(properties.getProperty("user"));
-        }
-        if (properties.containsKey("pass")) {
-            builder.setPass(properties.getProperty("pass"));
-        }
-        if (properties.containsKey("database")) {
-            builder.setDatabases(Collections.singletonList(properties.getProperty("database")));
-        }
-        if (properties.containsKey("elementsetname")) {
-            builder.setElementSetName(properties.getProperty("elementsetname"));
-        }
-        if (properties.containsKey("preferredrecordsyntax")) {
-            builder.setPreferredRecordSyntax(properties.getProperty("preferredrecordsyntax"));
-        }
-        if (properties.containsKey("resultsetname")) {
-            builder.setResultSetName(properties.getProperty("resultsetname"));
-        }
-        if (properties.containsKey("encoding")) {
-            builder.setEncoding(properties.getProperty("encoding"));
-        }
-        if (properties.containsKey("format")) {
-            builder.setFormat(properties.getProperty("format"));
-        }
-        if (properties.containsKey("type")) {
-            builder.setType(properties.getProperty("type"));
-        }
-        return builder.build();
-    }
-
     public boolean isConnected() {
         return socket != null && socket.isConnected();
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (isConnected()) {
             try {
                 sendClose(0);
             } catch (IOException e) {
-                logger.log(Level.WARNING, "while attempting to close connection: {}", e.getMessage());
+                logger.log(Level.WARNING, "while attempting to send close for close connection: " + e.getMessage(), e);
             }
             try {
                 if (src != null) {
                     src.close();
                 }
             } catch (IOException e) {
-                logger.log(Level.WARNING, "error attempting to close connection: {}", e.getMessage());
+                logger.log(Level.WARNING, "error attempting to close src: " + e.getMessage(), e);
             }
             try {
                 if (dest != null) {
                     dest.close();
                 }
             } catch (IOException e) {
-                logger.log(Level.WARNING, "error attempting to close connection: {}", e.getMessage());
+                logger.log(Level.WARNING, "error attempting to close dest: " + e.getMessage(), e);
             }
             try {
                 if (socket != null) {
                     socket.close();
                 }
             } catch (IOException e) {
-                logger.log(Level.WARNING, "error attempting to close connection: {}", e.getMessage());
+                logger.log(Level.WARNING, "error attempting to close socket: " + e.getMessage(), e);
             }
         }
     }
