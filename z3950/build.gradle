@@ -5,5 +5,5 @@ plugins {
 
 dependencies {
     compile project(':asn1')
-    compile "org.xbib:cql:${project.property('xbib-cql.version')}"
+    compile "org.xbib:cql-common:${project.property('xbib-cql.version')}"
 }
