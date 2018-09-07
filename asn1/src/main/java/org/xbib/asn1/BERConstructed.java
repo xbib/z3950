@@ -1,8 +1,5 @@
 package org.xbib.asn1;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * BERConstructed.
  * This class represents a BER encoded ASN.1 object which is
@@ -38,21 +35,8 @@ public class BERConstructed extends BEREncoding {
         contentElements = elements;
     }
 
-    /**
-     * This method outputs the encoded octets for this object
-     * to the output stream.
-     * Note: the output is not flushed, so you <strong>must</strong>  explicitly
-     * flush the output stream after calling this method to ensure that
-     * the data has been written out.
-     *
-     * @param dest OutputStream to write encoding to.
-     */
-    @Override
-    public void output(OutputStream dest) throws IOException {
-        outputHead(dest);
-        for (BEREncoding contentElement : contentElements) {
-            contentElement.output(dest);
-        }
+    public BEREncoding[] getContentElements() {
+        return contentElements;
     }
 
     /**

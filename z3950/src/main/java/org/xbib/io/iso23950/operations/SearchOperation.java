@@ -6,7 +6,8 @@ import org.xbib.asn1.ASN1Exception;
 import org.xbib.asn1.ASN1GeneralString;
 import org.xbib.asn1.ASN1Integer;
 import org.xbib.asn1.ASN1Sequence;
-import org.xbib.io.iso23950.ZClient;
+import org.xbib.asn1.io.BERReader;
+import org.xbib.asn1.io.BERWriter;
 import org.xbib.io.iso23950.v3.DatabaseName;
 import org.xbib.io.iso23950.v3.InternationalString;
 import org.xbib.io.iso23950.v3.OtherInformation1;
@@ -26,15 +27,32 @@ import java.util.Map;
 /**
  * Base class for Z39.50 Search operation.
  */
-public class SearchOperation {
+public class SearchOperation extends AbstractOperation {
 
     private int count = -1;
 
     private boolean status = false;
 
-    private Map<ASN1Any, Integer> results = new HashMap<>();
+    private final Map<ASN1Any, Integer> results;
 
-    public boolean execute(ZClient client, RPNQuery rpn) throws IOException {
+    private final String resultSetName;
+
+    private final List<String> databases;
+
+    private final String host;
+
+    public SearchOperation(BERReader reader, BERWriter writer,
+                           String resultSetName,
+                           List<String> databases,
+                           String host) {
+        super(reader, writer);
+        this.resultSetName = resultSetName;
+        this.databases = databases;
+        this.host = host;
+        this.results = new HashMap<>();
+    }
+
+    public boolean execute(RPNQuery rpn) throws IOException {
         try {
             SearchRequest search = new SearchRequest();
             search.s_query = new Query();
@@ -44,8 +62,7 @@ public class SearchOperation {
             search.s_mediumSetPresentNumber = new ASN1Integer(0);
             search.s_replaceIndicator = new ASN1Boolean(true);
             search.s_resultSetName = new InternationalString();
-            search.s_resultSetName.value = new ASN1GeneralString(client.getResultSetName());
-            List<String> databases = client.getDatabases();
+            search.s_resultSetName.value = new ASN1GeneralString(resultSetName);
             DatabaseName dbs[] = new DatabaseName[databases.size()];
             for (int n = 0; n < databases.size(); n++) {
                 dbs[n] = new DatabaseName();
@@ -55,8 +72,8 @@ public class SearchOperation {
             search.s_databaseNames = dbs;
             PDU pduRequest = new PDU();
             pduRequest.c_searchRequest = search;
-            client.writePDU(pduRequest);
-            PDU pduResponse = client.readPDU();
+            writePDU(pduRequest);
+            PDU pduResponse = readPDU();
             SearchResponse response = pduResponse.c_searchResponse;
             count = response.s_resultCount.get();
             ASN1Boolean b = response.s_searchStatus;
@@ -71,7 +88,7 @@ public class SearchOperation {
                         //
                     }
                 }
-                throw new IOException(client.getHost() + ": " + message);
+                throw new IOException(host + ": " + message);
             }
             PresentStatus presentStatus = response.s_presentStatus;
             if (presentStatus != null && presentStatus.value != null && presentStatus.value.get() == 5) {
@@ -90,7 +107,7 @@ public class SearchOperation {
                         if (!dbName.value.value.get().equalsIgnoreCase(databases.get(i))) {
                             String message = "database name listed in additional search info " +
                                     "doesn't match database name in names set.";
-                            throw new IOException(client.getHost() + ": " + message);
+                            throw new IOException(host + ": " + message);
                         }
                         ASN1Integer res = (ASN1Integer) details[1];
                         results.put(target, res.get());
@@ -101,7 +118,7 @@ public class SearchOperation {
                 }
             }
         } catch (SocketTimeoutException e) {
-            throw new IOException(client.getHost() + ": timeout", e);
+            throw new IOException(host + ": timeout", e);
         }
         return status;
     }

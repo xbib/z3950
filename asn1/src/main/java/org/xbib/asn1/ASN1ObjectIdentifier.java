@@ -58,7 +58,7 @@ public final class ASN1ObjectIdentifier extends ASN1Any {
             throw new ASN1EncodingException("bad form, constructed");
         }
         BERPrimitive ber = (BERPrimitive) berEncoding;
-        int[] encoding = ber.peek();
+        int[] encoding = ber.getContentOctets();
         if (encoding.length < 2) {
             throw new ASN1EncodingException("invalid encoding, length = " +
                             encoding.length);

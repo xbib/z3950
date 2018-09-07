@@ -75,7 +75,7 @@ public class ASN1OctetString extends ASN1Any {
         }
         if (berEncoding instanceof BERPrimitive) {
             BERPrimitive ber = (BERPrimitive) berEncoding;
-            int[] encoding = ber.peek();
+            int[] encoding = ber.getContentOctets();
             StringBuilder buf = new StringBuilder(encoding.length);
             for (int anEncoding : encoding) {
                 buf.append((char) (anEncoding & 0x00ff));

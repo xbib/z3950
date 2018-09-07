@@ -56,7 +56,6 @@ public class ZClientTest {
         }
     }
 
-
     private static ZClient newZClient(String name) throws IOException {
         return newZClient(getProperties(name));
     }
@@ -69,6 +68,7 @@ public class ZClientTest {
         }
         return properties;
     }
+
     private static ZClient newZClient(Properties properties) {
         ZClient.Builder builder = ZClient.builder();
         if (properties.containsKey("host")) {

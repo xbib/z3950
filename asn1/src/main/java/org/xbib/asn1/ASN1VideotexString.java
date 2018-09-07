@@ -28,8 +28,7 @@ public class ASN1VideotexString extends ASN1OctetString {
      * @param checkTag If true, it checks the tag. Use false if is implicitly tagged.
      * @throws ASN1Exception If the BER encoding is incorrect.
      */
-    public ASN1VideotexString(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ASN1VideotexString(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, false);
         if (checkTag && (ber.tagGet() != VIDEOTEX_STRING_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
             throw new ASN1EncodingException("bad BER: tag=" + ber.tagGet() +

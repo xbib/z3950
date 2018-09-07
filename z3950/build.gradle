@@ -6,4 +6,6 @@ plugins {
 dependencies {
     compile project(':asn1')
     compile "org.xbib:cql-common:${project.property('xbib-cql.version')}"
+    compile "io.netty:netty-handler:${project.property('netty.version')}"
+    compile "io.netty:netty-transport:${project.property('netty.version')}"
 }

@@ -5,11 +5,12 @@ import org.xbib.asn1.ASN1External;
 import org.xbib.asn1.ASN1GeneralString;
 import org.xbib.asn1.ASN1Integer;
 import org.xbib.asn1.ASN1ObjectIdentifier;
+import org.xbib.asn1.io.BERReader;
+import org.xbib.asn1.io.BERWriter;
 import org.xbib.io.iso23950.ErrorRecord;
 import org.xbib.io.iso23950.Record;
 import org.xbib.io.iso23950.RecordListener;
 import org.xbib.io.iso23950.ResponseListener;
-import org.xbib.io.iso23950.ZClient;
 import org.xbib.io.iso23950.exceptions.MessageSizeTooSmallException;
 import org.xbib.io.iso23950.exceptions.NoRecordsReturnedException;
 import org.xbib.io.iso23950.exceptions.RequestTerminatedByAccessControlException;
@@ -30,13 +31,26 @@ import java.io.IOException;
 /**
  * Present operation for Z39.50.
  */
-public class PresentOperation {
+public class PresentOperation extends AbstractOperation {
 
-    public void execute(ZClient client, int offset, int length, int total,
+    private final String resultSetName;
+
+    private final String elementSetName;
+
+    private final String preferredRecordSyntax;
+
+    public PresentOperation(BERReader reader, BERWriter writer,
+                            String resultSetName,
+                            String elementSetName,
+                            String preferredRecordSyntax) {
+        super(reader, writer);
+        this.resultSetName = resultSetName;
+        this.elementSetName = elementSetName;
+        this.preferredRecordSyntax = preferredRecordSyntax;
+    }
+
+    public void execute(int offset, int length, int total,
                         ResponseListener responseListener, RecordListener recordListener) throws IOException {
-        String resultSetName = client.getResultSetName();
-        String elementSetName = client.getElementSetName();
-        String preferredRecordSyntax = client.getPreferredRecordSyntax();
         PresentRequest pr = new PresentRequest();
         pr.s_resultSetId = new ResultSetId();
         pr.s_resultSetId.value = new InternationalString();
@@ -51,8 +65,8 @@ public class PresentOperation {
         PDU pdu = new PDU();
         pdu.c_presentRequest = pr;
         long millis = System.currentTimeMillis();
-        client.writePDU(pdu);
-        pdu = client.readPDU();
+        writePDU(pdu);
+        pdu = readPDU();
         PresentResponse response = pdu.c_presentResponse;
         int nReturned = response.s_numberOfRecordsReturned != null ? response.s_numberOfRecordsReturned.get() : 0;
         int status = response.s_presentStatus.value != null ? response.s_presentStatus.value.get() : 0;

@@ -3,8 +3,9 @@ package org.xbib.io.iso23950.operations;
 import org.xbib.asn1.ASN1BitString;
 import org.xbib.asn1.ASN1GeneralString;
 import org.xbib.asn1.ASN1Integer;
+import org.xbib.asn1.io.BERReader;
+import org.xbib.asn1.io.BERWriter;
 import org.xbib.io.iso23950.InitListener;
-import org.xbib.io.iso23950.ZClient;
 import org.xbib.io.iso23950.v3.IdAuthentication;
 import org.xbib.io.iso23950.v3.IdAuthenticationIdPass;
 import org.xbib.io.iso23950.v3.InitializeRequest;
@@ -19,9 +20,19 @@ import java.io.IOException;
 /**
  * A Z39.50 Init operation.
  */
-public class InitOperation {
+public class InitOperation extends AbstractOperation {
 
-    public boolean execute(ZClient client, Integer preferredMessageSize,
+    private final String user;
+
+    private final String pass;
+
+    public InitOperation(BERReader reader, BERWriter writer, String user, String pass) {
+        super(reader, writer);
+        this.user = user;
+        this.pass = pass;
+    }
+
+    public boolean execute(Integer preferredMessageSize,
                            InitListener initListener) throws IOException {
         InitializeRequest init = new InitializeRequest();
         boolean[] version = new boolean[3];
@@ -56,14 +67,14 @@ public class InitOperation {
         init.s_implementationName.value = new ASN1GeneralString("Java ZClient");
         init.s_implementationVersion = new InternationalString();
         init.s_implementationVersion.value = new ASN1GeneralString("1.00");
-        if (client.getUser() != null) {
+        if (user != null) {
             init.s_idAuthentication = new IdAuthentication();
             init.s_idAuthentication.c_idPass = new IdAuthenticationIdPass();
             init.s_idAuthentication.c_idPass.s_userId = new InternationalString();
-            init.s_idAuthentication.c_idPass.s_userId.value = new ASN1GeneralString(client.getUser());
-            if (client.getPass() != null) {
+            init.s_idAuthentication.c_idPass.s_userId.value = new ASN1GeneralString(user);
+            if (pass != null) {
                 init.s_idAuthentication.c_idPass.s_password = new InternationalString();
-                init.s_idAuthentication.c_idPass.s_password.value = new ASN1GeneralString(client.getPass());
+                init.s_idAuthentication.c_idPass.s_password.value = new ASN1GeneralString(pass);
             }
             /*if (group != null) {
                 init.s_idAuthentication.c_idPass.s_groupId = new InternationalString();
@@ -72,8 +83,8 @@ public class InitOperation {
         }
         PDU pduOut = new PDU();
         pduOut.c_initRequest = init;
-        client.writePDU(pduOut);
-        PDU pduIn = client.readPDU();
+        writePDU(pduOut);
+        PDU pduIn = readPDU();
         InitializeResponse initResp = pduIn.c_initResponse;
         String targetInfo;
         if (initResp.s_implementationName != null) {

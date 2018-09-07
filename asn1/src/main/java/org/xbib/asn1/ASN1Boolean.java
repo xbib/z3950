@@ -55,7 +55,7 @@ public final class ASN1Boolean extends ASN1Any {
         }
         if (berEncoding instanceof BERPrimitive) {
             BERPrimitive ber = (BERPrimitive) berEncoding;
-            int[] encoding = ber.peek();
+            int[] encoding = ber.getContentOctets();
             if (encoding.length != 1) {
                 throw new ASN1EncodingException("ASN.1 BOOLEAN: invalid encoding, length = " + encoding.length);
             }

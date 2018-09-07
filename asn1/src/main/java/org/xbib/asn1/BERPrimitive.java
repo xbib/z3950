@@ -1,8 +1,5 @@
 package org.xbib.asn1;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * This class represents a primitive ASN.1 object encoded
  * according to the Basic Encoding Rules.
@@ -39,8 +36,7 @@ public class BERPrimitive extends BEREncoding {
      * @see org.xbib.asn1.BEREncoding#CONTEXT_SPECIFIC_TAG
      * @see org.xbib.asn1.BEREncoding#PRIVATE_TAG
      */
-    BERPrimitive(int asn1Class, int tag, int[] contents)
-            throws ASN1Exception {
+    public BERPrimitive(int asn1Class, int tag, int[] contents) throws ASN1Exception {
         init(asn1Class, false, tag, contents.length);
         contentsOctets = contents;
     }
@@ -49,22 +45,8 @@ public class BERPrimitive extends BEREncoding {
      * This method allows the content octets to be examined.
      * Once again, only the ASN.1 standard objects should be using this.
      */
-    int[] peek() {
+    public int[] getContentOctets() {
         return contentsOctets;
-    }
-
-    /**
-     * This method outputs the encoded octets to the destination OutputStream.
-     * Note: the output is not flushed, so you <strong>must</strong>  explicitly
-     * flush the output stream after calling this method to ensure that
-     * the data has been written out.
-     *
-     * @param dest - OutputStream to write encoding to.
-     */
-    @Override
-    public void output(OutputStream dest) throws IOException {
-        outputHead(dest);
-        outputBytes(contentsOctets, dest);
     }
 
     /**

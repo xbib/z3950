@@ -1,11 +1,5 @@
 package org.xbib.asn1;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class represents a BER (Basic Encoding Rules) encoded ASN.1 object.
  * This is an abstract base class from which there are two specific
@@ -23,8 +17,6 @@ import java.util.List;
  * @see org.xbib.asn1.BERConstructed
  */
 public abstract class BEREncoding {
-
-    private static final String ERROR = "Unexpected end in BER encoding";
 
     /**
      * Constant for indicating UNIVERSAL tag type. The value matches
@@ -53,7 +45,6 @@ public abstract class BEREncoding {
      */
     public static final int PRIVATE_TAG = 0xC0;
 
-    private static final int MAX_BER_SIZE = 65536 * 4;
     /**
      * The tag type of this BER encoded object. This value must be
      * the same as that encoded in the identiferEncoding.
@@ -86,153 +77,25 @@ public abstract class BEREncoding {
      */
     private int[] lengthEncoding;
 
-    /**
-     * The public wrapping for doInput() method.
-     *
-     * @param inputStream the InputStream to read the raw BER from.
-     * @return Returns the next complete BEREncoding object read
-     * in from the input stream. Returns null if the
-     * end has been reached.
-     * @throws ASN1Exception If data does not represent a BER encoding
-     * @throws IOException   On input I/O error
-     */
-    public static BEREncoding input(InputStream inputStream) throws IOException {
-        int[] numBytesRead = new int[1];
-        numBytesRead[0] = 0;
-        return doInput(inputStream, numBytesRead);
+    public int[] getIdentifierEncoding() {
+        return identifierEncoding;
     }
 
-    /**
-     * Constructs a complete BER encoding object from octets read in from
-     * an InputStream.
-     * This routine handles all forms of encoding, including the
-     * indefite-length method. The length is always known with this
-     * class. With indefinite-length encodings,
-     * the end-of-contents octets are not included in the returned
-     * object (i.e. the returned the raw BER is converted to an object
-     * which is in the definite-length form).
-     *
-     * @param numBytesRead a counter for all read bytes.
-     * @param inputStream          the InputStream to read the raw BER from.
-     * @return the next complete BEREncoding object read
-     * in from the input stream. Returns null if the
-     * end has been reached.
-     * @throws IOException   If data does not represent a BER encoding or input I/O error
-     */
-    protected static BEREncoding doInput(InputStream inputStream, int[] numBytesRead) throws IOException {
-        int octet = inputStream.read();
-        if (octet < 0) {
-            return null;
-        }
-        numBytesRead[0]++;
-        int tagType = octet & 0xC0;
-        boolean isCons = false;
-        if ((octet & 0x20) != 0) {
-            isCons = true;
-        }
-        int tag = octet & 0x1F;
-        if (tag == 0x1F) {
-            tag = 0;
-            do {
-                octet = inputStream.read();
-                if (octet < 0) {
-                    throw new ASN1EncodingException(ERROR);
-                }
-                numBytesRead[0]++;
-                tag <<= 7;
-                tag |= (octet & 0x7F);
-            } while ((octet & 0x80) != 0);
-        }
-        int length;
-        octet = inputStream.read();
-        if (octet < 0) {
-            throw new ASN1EncodingException(ERROR);
-        }
-        numBytesRead[0]++;
-        if ((octet & 0x80) != 0) {
-            if ((octet & 0x7f) == 0) {
-                length = -1;
-                if (!isCons) {
-                    throw new ASN1EncodingException("BER encoding corrupted primitive");
-                }
-            } else {
-                if (4 < (octet & 0x7f)) {
-                    throw new ASN1EncodingException("BER encoding too long");
-                }
-                length = 0;
-                for (int numBytes = octet & 0x7f; 0 < numBytes; numBytes--) {
-                    octet = inputStream.read();
-                    if (octet < 0) {
-                        throw new ASN1EncodingException(ERROR);
-                    }
-                    numBytesRead[0]++;
-                    length <<= 8;
-                    length |= (octet & 0xff);
-                }
-                if (length < 0 || MAX_BER_SIZE < length) {
-                    throw new ASN1EncodingException("BER encoding too long");
-                }
-            }
-        } else {
-            length = octet & 0x7F;
-        }
-        if (!isCons) {
-            int[] contents = new int[length];
-            for (int x = 0; x < length; x++) {
-                octet = inputStream.read();
-                if (octet < 0) {
-                    throw new ASN1EncodingException(ERROR);
-                }
-                numBytesRead[0]++;
-                contents[x] = octet;
-            }
-            return new BERPrimitive(tagType, tag, contents);
-        } else {
-            List<BEREncoding> chunks = new ArrayList<>();
-            int totalRead = 0;
-            if (0 <= length) {
-                while (totalRead < length) {
-                    int currentRead = numBytesRead[0];
-                    BEREncoding chunk = BEREncoding.doInput(inputStream, numBytesRead);
-                    if (chunk == null) {
-                        throw new ASN1EncodingException(ERROR);
-                    }
-                    chunks.add(chunk);
-                    totalRead += numBytesRead[0] - currentRead;
-                }
-            } else {
-                while (true) {
-                    BEREncoding chunk = BEREncoding.doInput(inputStream, numBytesRead);
-                    if (chunk == null) {
-                        throw new ASN1EncodingException(ERROR);
-                    }
-                    if (chunk.iTag == 0 && chunk.iTagType == BEREncoding.UNIVERSAL_TAG && chunk.iTotalLength == 2) {
-                        break;
-                    } else {
-                        chunks.add(chunk);
-                    }
-                }
-            }
-            int numElements = chunks.size();
-            BEREncoding[] parts = new BEREncoding[numElements];
-            for (int x = 0; x < numElements; x++) {
-                parts[x] = chunks.get(x);
-            }
-            return new BERConstructed(tagType, tag, parts);
-        }
+    public int[] getLengthEncoding() {
+        return lengthEncoding;
     }
 
-    /**
-     * Outputs the BER object to an OutputStream. This method should work
-     * with any OutputStream, whether it is from a socket, file, etc.
-     * Note: the output is not flushed, so you <strong>must</strong>  explicitly
-     * flush the output stream after calling this method to ensure that
-     * the data has been written out.
-     *
-     * @param dest - the OutputStream to write the encoding to.
-     * @throws IOException On output I/O error
-     */
-    public abstract void output(OutputStream dest) throws IOException;
+    public int getITag() {
+        return iTag;
+    }
+
+    public int getITagType() {
+        return iTagType;
+    }
+
+    public int getITotalLength() {
+        return iTotalLength;
+    }
 
     /**
      * Returns the BER encoded object as an array of bytes. This routine
@@ -287,27 +150,6 @@ public abstract class BEREncoding {
         makeIdentifier(tagType, isConstructed, tag);
         makeLength(length);
         iTotalLength = identifierEncoding.length + lengthEncoding.length + length;
-    }
-
-    /*
-     * This is a protected routine used for outputting an array of
-     * integers, interpreted as bytes, to an OutputStream. It is used
-     * by the superclasses to implement the "output" method.
-     */
-    protected void outputBytes(int[] data, OutputStream dest) throws IOException {
-        for (int aData : data) {
-            dest.write(aData);
-        }
-    }
-
-    /*
-     * This is a protected method used to output the encoded identifier
-     * and length octets to an OutputStream. It is used by the superclasses
-     * to implement the "output" method.
-     */
-    protected void outputHead(OutputStream dest) throws IOException {
-        outputBytes(identifierEncoding, dest);
-        outputBytes(lengthEncoding, dest);
     }
 
     /*
