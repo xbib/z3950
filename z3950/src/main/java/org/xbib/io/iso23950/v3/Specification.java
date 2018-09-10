@@ -24,7 +24,6 @@ public final class Specification extends ASN1Any {
     public ASN1ObjectIdentifier s_schema; // optional
     public SpecificationElementSpec s_elementSpec; // optional
 
-
     /**
      * Constructor for a Specification from a BER encoding.
      *
@@ -34,9 +33,7 @@ public final class Specification extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public Specification(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public Specification(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -49,18 +46,15 @@ public final class Specification extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Specification should be encoded by a constructed BER
 
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException
-                    ("Specification: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
 
         // Prepare to decode the components
@@ -83,8 +77,8 @@ public final class Specification extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 1 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 1 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             s_schema = new ASN1ObjectIdentifier(p, false);
             part++;
         }
@@ -96,15 +90,15 @@ public final class Specification extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 2 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 2 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("Specification: bad BER encoding: s_elementSpec tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: elementSpec tag bad");
             }
             if (tagged.numberComponents() != 1) {
-                throw new ASN1EncodingException("Specification: bad BER encoding: s_elementSpec tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: elementSpec tag bad");
             }
 
             s_elementSpec = new SpecificationElementSpec(tagged.elementAt(0), true);
@@ -114,7 +108,7 @@ public final class Specification extends ASN1Any {
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("Specification: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -124,10 +118,8 @@ public final class Specification extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -139,10 +131,8 @@ public final class Specification extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
         int numFields = 0; // number of mandatories
@@ -179,6 +169,7 @@ public final class Specification extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the Specification.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
@@ -200,5 +191,4 @@ public final class Specification extends ASN1Any {
 
         return str.toString();
     }
-
 }

@@ -31,7 +31,7 @@ public class SearchTest {
                     .setDatabases(Collections.singletonList(database))
                     .setPreferredRecordSyntax(preferredRecordSyntax)
                     .build();
-            client.executePQF(query, from, length,
+            client.searchPQF(query, from, length,
                     (status, total, returned, elapsedMillis) -> logger.log(Level.INFO, "total records = " + total),
                     record -> logger.log(Level.INFO, "found record " + record));
             client.close();

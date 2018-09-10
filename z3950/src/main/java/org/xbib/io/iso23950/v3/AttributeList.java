@@ -46,11 +46,12 @@ public final class AttributeList extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         if (checkTag) {
-            if (ber.tagGet() != 44 ||
-                    ber.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-                throw new ASN1EncodingException("AttributeList: bad BER: tag=" + ber.tagGet() + " expected 44\n");
+            if (ber.getTag() != 44 ||
+                    ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                throw new ASN1EncodingException("AttributeList: bad BER: tag=" + ber.getTag() + " expected 44\n");
             }
         }
         BERConstructed berConstructed;
@@ -73,6 +74,7 @@ public final class AttributeList extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 44);
     }
@@ -85,6 +87,7 @@ public final class AttributeList extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         BEREncoding fields[] = new BERConstructed[value.length];
         int p;
@@ -98,6 +101,7 @@ public final class AttributeList extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the AttributeList.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int p;

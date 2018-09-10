@@ -6,7 +6,6 @@ import org.xbib.asn1.ASN1Exception;
 import org.xbib.asn1.BERConstructed;
 import org.xbib.asn1.BEREncoding;
 
-
 /**
  * Class for representing a <code>OtherInformation</code> from <code>Z39-50-APDU-1995</code>.
  * <pre>
@@ -15,8 +14,8 @@ import org.xbib.asn1.BEREncoding;
  * </pre>
  */
 public final class OtherInformation extends ASN1Any {
-    public OtherInformation1 value[];
 
+    public OtherInformation1[] value;
 
     /**
      * Default constructor for a OtherInformation.
@@ -24,7 +23,6 @@ public final class OtherInformation extends ASN1Any {
 
     public OtherInformation() {
     }
-
 
     /**
      * Constructor for a OtherInformation from a BER encoding.
@@ -35,9 +33,7 @@ public final class OtherInformation extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public OtherInformation(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public OtherInformation(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -50,16 +46,14 @@ public final class OtherInformation extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Check tag matches
 
         if (checkTag) {
-            if (ber.tagGet() != 201 ||
-                    ber.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-                throw new ASN1EncodingException("OtherInformation: bad BER: tag=" + ber.tagGet() + " expected 201\n");
+            if (ber.getTag() != 201 ||
+                    ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected 201");
             }
         }
 
@@ -69,7 +63,7 @@ public final class OtherInformation extends ASN1Any {
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("OtherInformation: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
 
         // Prepare to decode the components
@@ -88,10 +82,8 @@ public final class OtherInformation extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 201);
     }
 
@@ -103,10 +95,8 @@ public final class OtherInformation extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         BEREncoding fields[] = new BERConstructed[value.length];
         int p;
 
@@ -121,9 +111,8 @@ public final class OtherInformation extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the OtherInformation.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         int p;
 
@@ -135,5 +124,4 @@ public final class OtherInformation extends ASN1Any {
 
         return str.toString();
     }
-
 }

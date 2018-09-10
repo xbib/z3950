@@ -43,36 +43,37 @@ public final class ResultSetPlusAttributes extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         if (checkTag) {
-            if (ber.tagGet() != 214 ||
-                    ber.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-                throw new ASN1EncodingException("ResultSetPlusAttributes: bad BER: tag=" + ber.tagGet() + " expected 214\n");
+            if (ber.getTag() != 214 ||
+                    ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected 214");
             }
         }
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("ResultSetPlusAttributes: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
-            throw new ASN1Exception("ResultSetPlusAttributes: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         s_resultSet = new ResultSetId(p, true);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("ResultSetPlusAttributes: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         s_attributes = new AttributeList(p, true);
         part++;
         if (part < numParts) {
-            throw new ASN1Exception("ResultSetPlusAttributes: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -82,6 +83,7 @@ public final class ResultSetPlusAttributes extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 214);
     }
@@ -94,6 +96,7 @@ public final class ResultSetPlusAttributes extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2;
         BEREncoding fields[] = new BEREncoding[numFields];
@@ -107,6 +110,7 @@ public final class ResultSetPlusAttributes extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ResultSetPlusAttributes.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;

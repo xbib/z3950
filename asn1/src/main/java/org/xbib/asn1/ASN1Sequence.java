@@ -54,9 +54,9 @@ public final class ASN1Sequence extends ASN1Any {
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag)
             throws ASN1Exception {
-        if (checkTag && (berEncoding.tagGet() != SEQUENCE_TAG || berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
+        if (checkTag && (berEncoding.getTag() != SEQUENCE_TAG || berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
             throw new ASN1EncodingException
-                    ("ASN.1 SEQUENCE: bad BER: tag=" + berEncoding.tagGet() +
+                    ("ASN.1 SEQUENCE: bad BER: tag=" + berEncoding.getTag() +
                             " expected " + SEQUENCE_TAG + "\n");
         }
         if (berEncoding instanceof BERPrimitive) {

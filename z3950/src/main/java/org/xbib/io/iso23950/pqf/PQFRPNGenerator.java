@@ -39,11 +39,11 @@ public class PQFRPNGenerator implements Visitor {
     public void visit(PQF pqf) {
         if (!result.isEmpty()) {
             this.rpnQuery = new RPNQuery();
-            rpnQuery.s_rpn = (RPNStructure) result.pop();
+            rpnQuery.rpn = (RPNStructure) result.pop();
             if (pqf.getAttrSet() == null) {
                 // Z39.50 BIB-1: urn:oid:1.2.840.10003.3.1
-                rpnQuery.s_attributeSet = new AttributeSetId();
-                rpnQuery.s_attributeSet.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
+                rpnQuery.attributeSet = new AttributeSetId();
+                rpnQuery.attributeSet.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
             }
         } else {
             throw new SyntaxException("no valid PQF found");
@@ -53,17 +53,17 @@ public class PQFRPNGenerator implements Visitor {
     @Override
     public void visit(Query query) {
         Operand operand = new Operand();
-        operand.c_attrTerm = new AttributesPlusTerm();
-        operand.c_attrTerm.sTerm = new org.xbib.io.iso23950.v3.Term();
-        operand.c_attrTerm.sTerm.c_general = new ASN1OctetString(query.getTerm().getValue());
+        operand.attrTerm = new AttributesPlusTerm();
+        operand.attrTerm.term = new org.xbib.io.iso23950.v3.Term();
+        operand.attrTerm.term.c_general = new ASN1OctetString(query.getTerm().getValue());
         Stack<AttributeElement> attrs = new Stack<>();
         ASN1Any any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
         while (any != null) {
             attrs.push((AttributeElement) any);
             any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
         }
-        operand.c_attrTerm.sAttributes = new AttributeList();
-        operand.c_attrTerm.sAttributes.value = attrs.toArray(new AttributeElement[attrs.size()]);
+        operand.attrTerm.attributes = new AttributeList();
+        operand.attrTerm.attributes.value = attrs.toArray(new AttributeElement[attrs.size()]);
         RPNStructure rpn = new RPNStructure();
         rpn.c_op = operand;
         if (attrs.size() > 0) {
@@ -78,13 +78,13 @@ public class PQFRPNGenerator implements Visitor {
         rpn.c_rpnRpnOp = new RPNStructureRpnRpnOp();
         rpn.c_rpnRpnOp.s_op = new Operator();
         if ("@and".equals(op)) {
-            rpn.c_rpnRpnOp.s_op.c_and = new ASN1Null();
+            rpn.c_rpnRpnOp.s_op.andOp = new ASN1Null();
         }
         if ("@or".equals(op)) {
-            rpn.c_rpnRpnOp.s_op.c_or = new ASN1Null();
+            rpn.c_rpnRpnOp.s_op.orOp = new ASN1Null();
         }
         if ("@not".equals(op)) {
-            rpn.c_rpnRpnOp.s_op.c_and_not = new ASN1Null();
+            rpn.c_rpnRpnOp.s_op.andNotOp = new ASN1Null();
         }
         rpn.c_rpnRpnOp.s_rpn1 = (RPNStructure) result.pop();
         rpn.c_rpnRpnOp.s_rpn2 = (RPNStructure) result.pop();
@@ -94,9 +94,9 @@ public class PQFRPNGenerator implements Visitor {
     @Override
     public void visit(AttrStr attrspec) {
         AttributeElement ae = new AttributeElement();
-        ae.sAttributeType = (ASN1Integer) result.pop();
+        ae.attributeType = (ASN1Integer) result.pop();
         ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.cNumeric = (ASN1Integer) result.pop();
+        ae.attributeValue.numeric = (ASN1Integer) result.pop();
         result.push(ae);
     }
 

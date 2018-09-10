@@ -48,9 +48,7 @@ public final class Term extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public Term(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public Term(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -63,10 +61,8 @@ public final class Term extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Null out all choices
 
         c_general = null;
@@ -79,55 +75,55 @@ public final class Term extends ASN1Any {
         c_null = null;
 
         // Try choice general
-        if (ber.tagGet() == 45 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 45 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_general = new ASN1OctetString(ber, false);
             return;
         }
 
         // Try choice numeric
-        if (ber.tagGet() == 215 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 215 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_numeric = new ASN1Integer(ber, false);
             return;
         }
 
         // Try choice characterString
-        if (ber.tagGet() == 216 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 216 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_characterString = new InternationalString(ber, false);
             return;
         }
 
         // Try choice oid
-        if (ber.tagGet() == 217 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 217 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_oid = new ASN1ObjectIdentifier(ber, false);
             return;
         }
 
         // Try choice dateTime
-        if (ber.tagGet() == 218 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 218 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_dateTime = new ASN1GeneralizedTime(ber, false);
             return;
         }
 
         // Try choice external
-        if (ber.tagGet() == 219 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 219 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_external = new ASN1External(ber, false);
             return;
         }
 
         // Try choice integerAndUnit
-        if (ber.tagGet() == 220 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 220 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_integerAndUnit = new IntUnit(ber, false);
             return;
         }
-        if (ber.tagGet() == 221 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 221 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_null = new ASN1Null(ber, false);
             return;
         }
@@ -140,6 +136,7 @@ public final class Term extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
@@ -226,10 +223,8 @@ public final class Term extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
         // Method is not available because this is a basic CHOICE
@@ -245,9 +240,8 @@ public final class Term extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the Term.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
 
         boolean found = false;
@@ -320,10 +314,7 @@ public final class Term extends ASN1Any {
             str.append("null ");
             str.append(c_null);
         }
-
         str.append("}");
-
         return str.toString();
     }
-
 }

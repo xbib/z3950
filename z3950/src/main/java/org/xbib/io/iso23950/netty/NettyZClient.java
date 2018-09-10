@@ -1,6 +1,7 @@
 package org.xbib.io.iso23950.netty;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,17 +12,18 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.CharsetUtil;
-import org.xbib.io.iso23950.v3.PDU;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 
-public class Client {
+/**
+ *
+ */
+public class NettyZClient {
 
     private final EventLoopGroup group;
     private final Bootstrap clientBootstrap;
 
-    public Client() {
+    public NettyZClient() {
         this.group = new NioEventLoopGroup();
         clientBootstrap = new Bootstrap();
         clientBootstrap.group(group);
@@ -40,15 +42,12 @@ public class Client {
 
     }
 
-    public void writePDU(PDU pdu) throws IOException {
-
-    }
 
     public void shutdown() throws InterruptedException {
         group.shutdownGracefully().sync();
     }
 
-    class Handler extends SimpleChannelInboundHandler {
+    class Handler extends SimpleChannelInboundHandler<ByteBuf> {
 
         @Override
         public void channelActive(ChannelHandlerContext channelHandlerContext){
@@ -62,7 +61,7 @@ public class Client {
         }
 
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, Object msg) throws Exception {
+        protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) throws Exception {
 
         }
     }

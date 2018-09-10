@@ -49,8 +49,8 @@ public final class ASN1PrintableString extends ASN1OctetString {
     public ASN1PrintableString(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != PRINTABLE_STRING_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("ASN.1 PrintableString: bad BER: tag=" + ber.tagGet() +
+        if (checkTag && (ber.getTag() != PRINTABLE_STRING_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("ASN.1 PrintableString: bad BER: tag=" + ber.getTag() +
                             " expected " + PRINTABLE_STRING_TAG + "\n");
         }
     }

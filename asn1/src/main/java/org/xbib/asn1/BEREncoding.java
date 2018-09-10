@@ -50,20 +50,20 @@ public abstract class BEREncoding {
      * the same as that encoded in the identiferEncoding.
      * This is an internal member. You should not use this.
      */
-    protected int iTagType;
+    protected int tagType;
     /**
      * The tag number of this BER encoded object. This value must be
      * the same as that encoded in the identiferEncoding.
      * This is an internal member. You should not use this.
      */
-    protected int iTag;
+    protected int tag;
     /**
      * The total length of this BER object (the identifier octets, plus
      * length octets, plus content octects). This variable must be
      * set up before this object is used (using the init method).
      * This is an internal member. You should not use this.
      */
-    protected int iTotalLength;
+    protected int totalLength;
     /**
      * Storage for the identifier octets. This variable is set up by
      * calling the make_identifer method.
@@ -85,53 +85,28 @@ public abstract class BEREncoding {
         return lengthEncoding;
     }
 
-    public int getITag() {
-        return iTag;
-    }
-
-    public int getITagType() {
-        return iTagType;
-    }
-
-    public int getITotalLength() {
-        return iTotalLength;
-    }
-
-    /**
-     * Returns the BER encoded object as an array of bytes. This routine
-     * may be of use if you want to use the encoding rather than sending
-     * it off. If you want to just output it, it is more efficient to
-     * use the output method.
-     * @return byte array
-     */
-    public byte[] encodingGet() {
-        byte[] result = new byte[iTotalLength];
-        iEncodingGet(0, result);
-        return result;
-    }
-
     /**
      * Method to examine the tag type of the BER encoded ASN.1 object.
      * @return integer
      */
-    public int tagTypeGet() {
-        return iTagType;
+    public int getTagType() {
+        return tagType;
     }
 
     /**
      * Method to examine the tag number of the BER encoded ASN.1 object.
      * @return integer
      */
-    public int tagGet() {
-        return iTag;
+    public int getTag() {
+        return tag;
     }
 
     /**
      * Returns the total number of bytes the encoding occupies.
      * @return integer
      */
-    public int totalLength() {
-        return iTotalLength;
+    public int getTotalLength() {
+        return totalLength;
     }
 
     /**
@@ -149,7 +124,7 @@ public abstract class BEREncoding {
             throws ASN1Exception {
         makeIdentifier(tagType, isConstructed, tag);
         makeLength(length);
-        iTotalLength = identifierEncoding.length + lengthEncoding.length + length;
+        totalLength = identifierEncoding.length + lengthEncoding.length + length;
     }
 
     /*
@@ -158,7 +133,7 @@ public abstract class BEREncoding {
      * This is used by the superclasses to implement the "encodingGet"
      * method.
      */
-    protected int iGetHead(int offset, byte[] data) {
+    protected int getHead(int offset, byte[] data) {
         for (int anIdentifierEncoding : identifierEncoding) {
             data[offset++] = (byte) anIdentifierEncoding;
         }
@@ -174,7 +149,7 @@ public abstract class BEREncoding {
      * array (as bytes), starting at offset into the array. The
      * offset of the last element used plus one is returned.
      */
-    protected abstract int iEncodingGet(int offset, byte[] data);
+    protected abstract int getEncoding(int offset, byte[] data);
 
     /**
      * This private method encodes the identifier octets. When a BER
@@ -201,12 +176,12 @@ public abstract class BEREncoding {
         if (tag < 0) {
             throw new ASN1Exception("ASN.1 tag value is negative");
         }
-        iTagType = tagType & 0xC0;
-        b = iTagType;
+        this.tagType = tagType & 0xC0;
+        b = this.tagType;
         if (isConstructed) {
             b |= 0x20;
         }
-        iTag = tag;
+        this.tag = tag;
         if (tag <= 30) {
             b |= (tag & 0x1F);
             identifierEncoding = new int[1];

@@ -22,11 +22,11 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class NamePlusRecordRecord extends ASN1Any {
 
-    public ASN1External c_retrievalRecord;
-    public DiagRec c_surrogateDiagnostic;
-    public FragmentSyntax c_startingFragment;
-    public FragmentSyntax c_intermediateFragment;
-    public FragmentSyntax c_finalFragment;
+    public ASN1External retrievalRecord;
+    public DiagRec surrogateDiagnostic;
+    public FragmentSyntax startingFragment;
+    public FragmentSyntax intermediateFragment;
+    public FragmentSyntax finalFragment;
 
     /**
      * Constructor for a NamePlusRecord_record from a BER encoding.
@@ -37,9 +37,7 @@ public final class NamePlusRecordRecord extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public NamePlusRecordRecord(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public NamePlusRecordRecord(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -52,106 +50,93 @@ public final class NamePlusRecordRecord extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed tagwrapper;
 
         // Null out all choices
 
-        c_retrievalRecord = null;
-        c_surrogateDiagnostic = null;
-        c_startingFragment = null;
-        c_intermediateFragment = null;
-        c_finalFragment = null;
+        retrievalRecord = null;
+        surrogateDiagnostic = null;
+        startingFragment = null;
+        intermediateFragment = null;
+        finalFragment = null;
 
         // Try choice retrievalRecord
-        if (ber.tagGet() == 1 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 1 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
-            c_retrievalRecord = new ASN1External(tagwrapper.elementAt(0), true);
+            retrievalRecord = new ASN1External(tagwrapper.elementAt(0), true);
             return;
         }
 
         // Try choice surrogateDiagnostic
-        if (ber.tagGet() == 2 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 2 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
-            c_surrogateDiagnostic = new DiagRec(tagwrapper.elementAt(0), true);
+            surrogateDiagnostic = new DiagRec(tagwrapper.elementAt(0), true);
             return;
         }
 
         // Try choice startingFragment
-        if (ber.tagGet() == 3 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 3 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
-            c_startingFragment = new FragmentSyntax(tagwrapper.elementAt(0), true);
+            startingFragment = new FragmentSyntax(tagwrapper.elementAt(0), true);
             return;
         }
 
         // Try choice intermediateFragment
-        if (ber.tagGet() == 4 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 4 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
-            c_intermediateFragment = new FragmentSyntax(tagwrapper.elementAt(0), true);
+            intermediateFragment = new FragmentSyntax(tagwrapper.elementAt(0), true);
             return;
         }
 
         // Try choice finalFragment
-        if (ber.tagGet() == 5 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 5 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("NamePlusRecord_record: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
-            c_finalFragment = new FragmentSyntax(tagwrapper.elementAt(0), true);
+            finalFragment = new FragmentSyntax(tagwrapper.elementAt(0), true);
             return;
         }
-
-        throw new ASN1Exception("NamePlusRecord_record: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -160,58 +145,56 @@ public final class NamePlusRecordRecord extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
         BEREncoding enc[];
 
         // Encoding choice: c_retrievalRecord
-        if (c_retrievalRecord != null) {
+        if (retrievalRecord != null) {
             enc = new BEREncoding[1];
-            enc[0] = c_retrievalRecord.berEncode();
+            enc[0] = retrievalRecord.berEncode();
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 1, enc);
         }
 
         // Encoding choice: c_surrogateDiagnostic
-        if (c_surrogateDiagnostic != null) {
+        if (surrogateDiagnostic != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
             enc = new BEREncoding[1];
-            enc[0] = c_surrogateDiagnostic.berEncode();
+            enc[0] = surrogateDiagnostic.berEncode();
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 2, enc);
         }
 
         // Encoding choice: c_startingFragment
-        if (c_startingFragment != null) {
+        if (startingFragment != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
             enc = new BEREncoding[1];
-            enc[0] = c_startingFragment.berEncode();
+            enc[0] = startingFragment.berEncode();
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 3, enc);
         }
 
         // Encoding choice: c_intermediateFragment
-        if (c_intermediateFragment != null) {
+        if (intermediateFragment != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
             enc = new BEREncoding[1];
-            enc[0] = c_intermediateFragment.berEncode();
+            enc[0] = intermediateFragment.berEncode();
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 4, enc);
         }
 
         // Encoding choice: c_finalFragment
-        if (c_finalFragment != null) {
+        if (finalFragment != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
             enc = new BEREncoding[1];
-            enc[0] = c_finalFragment.berEncode();
+            enc[0] = finalFragment.berEncode();
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 5, enc);
         }
 
@@ -237,10 +220,8 @@ public final class NamePlusRecordRecord extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
         // Method is not available because this is a basic CHOICE
@@ -249,64 +230,62 @@ public final class NamePlusRecordRecord extends ASN1Any {
         // tag on it, otherwise the tag identifying which CHOICE
         // it is will be overwritten and lost.
 
-        throw new ASN1EncodingException("NamePlusRecord_record: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the NamePlusRecord_record.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
 
         boolean found = false;
 
-        if (c_retrievalRecord != null) {
+        if (retrievalRecord != null) {
             found = true;
             str.append("retrievalRecord ");
-            str.append(c_retrievalRecord);
+            str.append(retrievalRecord);
         }
 
-        if (c_surrogateDiagnostic != null) {
+        if (surrogateDiagnostic != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: surrogateDiagnostic> ");
             }
             found = true;
             str.append("surrogateDiagnostic ");
-            str.append(c_surrogateDiagnostic);
+            str.append(surrogateDiagnostic);
         }
 
-        if (c_startingFragment != null) {
+        if (startingFragment != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: startingFragment> ");
             }
             found = true;
             str.append("startingFragment ");
-            str.append(c_startingFragment);
+            str.append(startingFragment);
         }
 
-        if (c_intermediateFragment != null) {
+        if (intermediateFragment != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: intermediateFragment> ");
             }
             found = true;
             str.append("intermediateFragment ");
-            str.append(c_intermediateFragment);
+            str.append(intermediateFragment);
         }
 
-        if (c_finalFragment != null) {
+        if (finalFragment != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: finalFragment> ");
             }
             str.append("finalFragment ");
-            str.append(c_finalFragment);
+            str.append(finalFragment);
         }
 
         str.append("}");
 
         return str.toString();
     }
-
 }

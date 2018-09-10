@@ -54,13 +54,13 @@ public final class AccessControlResponseSecurityChallengeResponse extends ASN1An
         BERConstructed tagwrapper;
         cSimpleForm = null;
         cExternallyDefined = null;
-        if (ber.tagGet() == 38 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 38 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             cSimpleForm = new ASN1OctetString(ber, false);
             return;
         }
-        if (ber.tagGet() == 0 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 0 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {

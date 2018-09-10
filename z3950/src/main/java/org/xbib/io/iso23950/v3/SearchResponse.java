@@ -33,16 +33,17 @@ public final class SearchResponse extends ASN1Any {
     public static final int E_subset = 1;
     public static final int E_interim = 2;
     public static final int E_none = 3;
-    public ReferenceId s_referenceId; // optional
-    public ASN1Integer s_resultCount;
-    public ASN1Integer s_numberOfRecordsReturned;
-    public ASN1Integer s_nextResultSetPosition;
+    public ReferenceId referenceId; // optional
+    public ASN1Integer resultCount;
+    public ASN1Integer numberOfRecordsReturned;
+    public ASN1Integer nextResultSetPosition;
     public ASN1Boolean s_searchStatus;
     public ASN1Integer s_resultSetStatus; // optional
     public PresentStatus s_presentStatus; // optional
     public Records s_records; // optional
     public OtherInformation s_additionalSearchInfo; // optional
     public OtherInformation s_otherInfo; // optional
+
     /**
      * Constructor for a SearchResponse from a BER encoding.
      *
@@ -52,9 +53,7 @@ public final class SearchResponse extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public SearchResponse(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public SearchResponse(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -67,65 +66,64 @@ public final class SearchResponse extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("SearchResponse: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         try {
-            s_referenceId = new ReferenceId(p, true);
+            referenceId = new ReferenceId(p, true);
             part++; // yes, consumed
         } catch (ASN1Exception e) {
-            s_referenceId = null; // no, not present
+            referenceId = null; // no, not present
         }
         if (numParts <= part) {
-            throw new ASN1Exception("SearchResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 23 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchResponse: bad tag in s_resultCount\n");
+        if (p.getTag() != 23 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_resultCount");
         }
-        s_resultCount = new ASN1Integer(p, false);
+        resultCount = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 24 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchResponse: bad tag in s_numberOfRecordsReturned\n");
+        if (p.getTag() != 24 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_numberOfRecordsReturned");
         }
-        s_numberOfRecordsReturned = new ASN1Integer(p, false);
+        numberOfRecordsReturned = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 25 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchResponse: bad tag in s_nextResultSetPosition\n");
+        if (p.getTag() != 25 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_nextResultSetPosition");
         }
-        s_nextResultSetPosition = new ASN1Integer(p, false);
+        nextResultSetPosition = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 22 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchResponse: bad tag in s_searchStatus\n");
+        if (p.getTag() != 22 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_searchStatus");
         }
         s_searchStatus = new ASN1Boolean(p, false);
         part++;
@@ -139,8 +137,8 @@ public final class SearchResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 26 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 26 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             s_resultSetStatus = new ASN1Integer(p, false);
             part++;
         }
@@ -180,8 +178,8 @@ public final class SearchResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 203 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 203 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             s_additionalSearchInfo = new OtherInformation(p, false);
             part++;
         }
@@ -203,7 +201,7 @@ public final class SearchResponse extends ASN1Any {
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("SearchResponse: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -213,10 +211,8 @@ public final class SearchResponse extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -228,10 +224,11 @@ public final class SearchResponse extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
         int numFields = 4; // number of mandatories
-        if (s_referenceId != null) {
+        if (referenceId != null) {
             numFields++;
         }
         if (s_resultSetStatus != null) {
@@ -257,21 +254,21 @@ public final class SearchResponse extends ASN1Any {
 
         // Encoding s_referenceId: ReferenceId OPTIONAL
 
-        if (s_referenceId != null) {
-            fields[x++] = s_referenceId.berEncode();
+        if (referenceId != null) {
+            fields[x++] = referenceId.berEncode();
         }
 
         // Encoding s_resultCount: INTEGER
 
-        fields[x++] = s_resultCount.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 23);
+        fields[x++] = resultCount.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 23);
 
         // Encoding s_numberOfRecordsReturned: INTEGER
 
-        fields[x++] = s_numberOfRecordsReturned.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 24);
+        fields[x++] = numberOfRecordsReturned.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 24);
 
         // Encoding s_nextResultSetPosition: INTEGER
 
-        fields[x++] = s_nextResultSetPosition.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 25);
+        fields[x++] = nextResultSetPosition.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 25);
 
         // Encoding s_searchStatus: BOOLEAN
 
@@ -314,12 +311,13 @@ public final class SearchResponse extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the SearchResponse.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
-        if (s_referenceId != null) {
+        if (referenceId != null) {
             str.append("referenceId ");
-            str.append(s_referenceId);
+            str.append(referenceId);
             outputted++;
         }
 
@@ -327,21 +325,21 @@ public final class SearchResponse extends ASN1Any {
             str.append(", ");
         }
         str.append("resultCount ");
-        str.append(s_resultCount);
+        str.append(resultCount);
         outputted++;
 
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("numberOfRecordsReturned ");
-        str.append(s_numberOfRecordsReturned);
+        str.append(numberOfRecordsReturned);
         outputted++;
 
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("nextResultSetPosition ");
-        str.append(s_nextResultSetPosition);
+        str.append(nextResultSetPosition);
         outputted++;
 
         if (0 < outputted) {
@@ -397,5 +395,4 @@ public final class SearchResponse extends ASN1Any {
         str.append("}");
         return str.toString();
     }
-
 }

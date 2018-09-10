@@ -7,7 +7,6 @@ import org.xbib.asn1.ASN1Integer;
 import org.xbib.asn1.BERConstructed;
 import org.xbib.asn1.BEREncoding;
 
-
 /**
  * Class for representing a <code>OccurrenceByAttributes_occurrences</code> from <code>Z39-50-APDU-1995</code>.
  * <pre>
@@ -33,7 +32,6 @@ public final class OccurrenceByAttributesOccurrences extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public OccurrenceByAttributesOccurrences(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, checkTag);
@@ -48,39 +46,35 @@ public final class OccurrenceByAttributesOccurrences extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed tagwrapper;
         c_global = null;
         c_byDatabase = null;
-        if (ber.tagGet() == 2 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 2 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("OccurrenceByAttributes_occurrences: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("OccurrenceByAttributes_occurrences: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             c_global = new ASN1Integer(tagwrapper.elementAt(0), true);
             return;
         }
 
         // Try choice byDatabase
-        if (ber.tagGet() == 3 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 3 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             BEREncoding ber_data;
             ber_data = ber;
             BERConstructed berConstructed;
             try {
                 berConstructed = (BERConstructed) ber_data;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("OccurrenceByAttributes_occurrences: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
 
             int numParts = berConstructed.numberComponents();
@@ -94,7 +88,7 @@ public final class OccurrenceByAttributesOccurrences extends ASN1Any {
             return;
         }
 
-        throw new ASN1Exception("OccurrenceByAttributes_occurrences: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -103,10 +97,8 @@ public final class OccurrenceByAttributesOccurrences extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
         BEREncoding f2[];
@@ -156,7 +148,7 @@ public final class OccurrenceByAttributesOccurrences extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
-
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
@@ -166,16 +158,15 @@ public final class OccurrenceByAttributesOccurrences extends ASN1Any {
         // tag on it, otherwise the tag identifying which CHOICE
         // it is will be overwritten and lost.
 
-        throw new ASN1EncodingException("OccurrenceByAttributes_occurrences: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the OccurrenceByAttributes_occurrences.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");
 
@@ -203,5 +194,4 @@ public final class OccurrenceByAttributesOccurrences extends ASN1Any {
 
         return str.toString();
     }
-
 }

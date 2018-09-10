@@ -53,18 +53,19 @@ public final class DeleteResultSetRequest extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("DeleteResultSetRequest: bad BER form");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
-            throw new ASN1Exception("DeleteResultSetRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         try {
@@ -74,12 +75,12 @@ public final class DeleteResultSetRequest extends ASN1Any {
             referenceId = null;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("DeleteResultSetRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 32 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("DeleteResultSetRequest: bad tag in s_deleteFunction");
+        if (p.getTag() != 32 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_deleteFunction");
         }
         sDeleteFunction = new ASN1Integer(p, false);
         part++;
@@ -99,7 +100,7 @@ public final class DeleteResultSetRequest extends ASN1Any {
                     sResultSetList[n] = new ResultSetId(cons.elementAt(n), true);
                 }
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("Bad BER");
+                throw new ASN1EncodingException("bad BER");
             }
             part++;
         } catch (ASN1Exception e) {
@@ -116,7 +117,7 @@ public final class DeleteResultSetRequest extends ASN1Any {
             sOtherInfo = null; // no, not present
         }
         if (part < numParts) {
-            throw new ASN1Exception("DeleteResultSetRequest: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -126,6 +127,7 @@ public final class DeleteResultSetRequest extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -138,6 +140,7 @@ public final class DeleteResultSetRequest extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 1;
         if (referenceId != null) {
@@ -174,6 +177,7 @@ public final class DeleteResultSetRequest extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the DeleteResultSetRequest.
      */
+    @Override
     public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");
@@ -214,5 +218,4 @@ public final class DeleteResultSetRequest extends ASN1Any {
         str.append("}");
         return str.toString();
     }
-
 }

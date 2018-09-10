@@ -20,8 +20,8 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class AttributeElementAttributeValueComplex extends ASN1Any {
 
-    public StringOrNumeric[] sList;
-    public ASN1Integer[] sSemanticAction; // optional
+    public StringOrNumeric[] list;
+    public ASN1Integer[] semanticAction; // optional
 
     /**
      * Constructor for a AttributeElement_attributeValue_complex from a BER encoding.
@@ -32,8 +32,7 @@ public final class AttributeElementAttributeValueComplex extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-    public AttributeElementAttributeValueComplex(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public AttributeElementAttributeValueComplex(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -46,6 +45,7 @@ public final class AttributeElementAttributeValueComplex extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
@@ -60,36 +60,36 @@ public final class AttributeElementAttributeValueComplex extends ASN1Any {
             throw new ASN1Exception("AttributeElement_attributeValue_complex: incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 1 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 1 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException("AttributeElement_attributeValue_complex: bad tag in s_list\n");
         }
         try {
             BERConstructed cons = (BERConstructed) p;
             int parts = cons.numberComponents();
-            sList = new StringOrNumeric[parts];
+            list = new StringOrNumeric[parts];
             int n;
             for (n = 0; n < parts; n++) {
-                sList[n] = new StringOrNumeric(cons.elementAt(n), true);
+                list[n] = new StringOrNumeric(cons.elementAt(n), true);
             }
         } catch (ClassCastException e) {
             throw new ASN1EncodingException("Bad BER");
         }
         part++;
-        sSemanticAction = null;
+        semanticAction = null;
         if (numParts <= part) {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 2 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 2 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 BERConstructed cons = (BERConstructed) p;
                 int parts = cons.numberComponents();
-                sSemanticAction = new ASN1Integer[parts];
+                semanticAction = new ASN1Integer[parts];
                 int n;
                 for (n = 0; n < parts; n++) {
-                    sSemanticAction[n] = new ASN1Integer(cons.elementAt(n), true);
+                    semanticAction[n] = new ASN1Integer(cons.elementAt(n), true);
                 }
             } catch (ClassCastException e) {
                 throw new ASN1EncodingException("Bad BER");
@@ -108,6 +108,7 @@ public final class AttributeElementAttributeValueComplex extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -120,24 +121,25 @@ public final class AttributeElementAttributeValueComplex extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 1;
-        if (sSemanticAction != null) {
+        if (semanticAction != null) {
             numFields++;
         }
         BEREncoding fields[] = new BEREncoding[numFields];
         int x = 0;
         BEREncoding f2[];
         int p;
-        f2 = new BEREncoding[sList.length];
-        for (p = 0; p < sList.length; p++) {
-            f2[p] = sList[p].berEncode();
+        f2 = new BEREncoding[list.length];
+        for (p = 0; p < list.length; p++) {
+            f2[p] = list[p].berEncode();
         }
         fields[x++] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 1, f2);
-        if (sSemanticAction != null) {
-            f2 = new BEREncoding[sSemanticAction.length];
-            for (p = 0; p < sSemanticAction.length; p++) {
-                f2[p] = sSemanticAction[p].berEncode();
+        if (semanticAction != null) {
+            f2 = new BEREncoding[semanticAction.length];
+            for (p = 0; p < semanticAction.length; p++) {
+                f2[p] = semanticAction[p].berEncode();
             }
             fields[x] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 2, f2);
         }
@@ -148,31 +150,32 @@ public final class AttributeElementAttributeValueComplex extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the AttributeElement_attributeValue_complex.
      */
+    @Override
     public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
         str.append("list ");
         str.append("{");
-        for (p = 0; p < sList.length; p++) {
+        for (p = 0; p < list.length; p++) {
             if (p != 0) {
                 str.append(", ");
             }
-            str.append(sList[p]);
+            str.append(list[p]);
         }
         str.append("}");
         outputted++;
-        if (sSemanticAction != null) {
+        if (semanticAction != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("semanticAction ");
             str.append("{");
-            for (p = 0; p < sSemanticAction.length; p++) {
+            for (p = 0; p < semanticAction.length; p++) {
                 if (p != 0) {
                     str.append(", ");
                 }
-                str.append(sSemanticAction[p]);
+                str.append(semanticAction[p]);
             }
             str.append("}");
         }

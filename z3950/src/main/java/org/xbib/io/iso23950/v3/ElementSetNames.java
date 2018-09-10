@@ -19,12 +19,12 @@ import org.xbib.asn1.BEREncoding;
 public final class ElementSetNames extends ASN1Any {
 
     public InternationalString cGenericElementSetName;
+
     public ElementSetNamesDatabaseSpecific[] cDatabaseSpecific;
 
     /**
      * Default constructor for a ElementSetNames.
      */
-
     public ElementSetNames() {
     }
 
@@ -37,7 +37,6 @@ public final class ElementSetNames extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public ElementSetNames(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
@@ -51,23 +50,24 @@ public final class ElementSetNames extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         cGenericElementSetName = null;
         cDatabaseSpecific = null;
-        if (ber.tagGet() == 0 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 0 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             cGenericElementSetName = new InternationalString(ber, false);
             return;
         }
-        if (ber.tagGet() == 1 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 1 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             BEREncoding berData;
             berData = ber;
             BERConstructed berConstructed;
             try {
                 berConstructed = (BERConstructed) berData;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("ElementSetNames: bad BER form");
+                throw new ASN1EncodingException("bad BER form");
             }
             int numParts = berConstructed.numberComponents();
             int p;
@@ -77,7 +77,7 @@ public final class ElementSetNames extends ASN1Any {
             }
             return;
         }
-        throw new ASN1Exception("ElementSetNames: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -86,6 +86,7 @@ public final class ElementSetNames extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
         BEREncoding[] f2;
@@ -109,14 +110,16 @@ public final class ElementSetNames extends ASN1Any {
         return chosen;
     }
 
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
-        throw new ASN1EncodingException("ElementSetNames: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the ElementSetNames.
      */
+    @Override
     public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");

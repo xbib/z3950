@@ -42,7 +42,6 @@ public final class ExtendedServicesResponse extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public ExtendedServicesResponse(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, checkTag);
@@ -57,19 +56,20 @@ public final class ExtendedServicesResponse extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("ExtendedServicesResponse: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ExtendedServicesResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         try {
@@ -79,12 +79,12 @@ public final class ExtendedServicesResponse extends ASN1Any {
             sReferenceId = null; // no, not present
         }
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 3 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("ExtendedServicesResponse: bad tag in s_operationStatus\n");
+        if (p.getTag() != 3 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in operationStatus");
         }
         sOperationStatus = new ASN1Integer(p, false);
         part++;
@@ -95,8 +95,8 @@ public final class ExtendedServicesResponse extends ASN1Any {
             return; // no more data, but ok (rest is optional)
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 4 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 4 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 BERConstructed cons = (BERConstructed) p;
                 int parts = cons.numberComponents();
@@ -114,8 +114,8 @@ public final class ExtendedServicesResponse extends ASN1Any {
             return; // no more data, but ok (rest is optional)
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 5 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 5 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sTaskPackage = new ASN1External(p, false);
             part++;
         }
@@ -130,7 +130,7 @@ public final class ExtendedServicesResponse extends ASN1Any {
             sOtherInfo = null; // no, not present
         }
         if (part < numParts) {
-            throw new ASN1Exception("ExtendedServicesResponse: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -140,6 +140,7 @@ public final class ExtendedServicesResponse extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -152,6 +153,7 @@ public final class ExtendedServicesResponse extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 1;
         if (sReferenceId != null) {
@@ -194,7 +196,7 @@ public final class ExtendedServicesResponse extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ExtendedServicesResponse.
      */
-
+    @Override
     public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");

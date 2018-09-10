@@ -33,9 +33,8 @@ public class ASN1VisibleString extends ASN1OctetString {
     public ASN1VisibleString(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + ber.tagGet() +
-                            " expected " + TAG + "\n");
+        if (checkTag && (ber.getTag() != TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected " + TAG);
         }
     }
 

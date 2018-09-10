@@ -40,9 +40,9 @@ public final class ASN1Null extends ASN1Any {
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag)
             throws ASN1EncodingException {
-        if (checkTag && (berEncoding.tagGet() != NULL_TAG ||
-                berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.tagGet() +
+        if (checkTag && (berEncoding.getTag() != NULL_TAG ||
+                berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.getTag() +
                             " expected " + NULL_TAG + "\n");
         }
         if (!(berEncoding instanceof BERPrimitive)) {

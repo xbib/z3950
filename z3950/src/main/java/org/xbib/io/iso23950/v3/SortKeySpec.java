@@ -22,7 +22,6 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class SortKeySpec extends ASN1Any {
 
-
     public static final int E_ascending = 0;
     public static final int E_descending = 1;
     public static final int E_ascendingByFrequency = 3;
@@ -33,6 +32,7 @@ public final class SortKeySpec extends ASN1Any {
     public ASN1Integer s_sortRelation;
     public ASN1Integer s_caseSensitivity;
     public SortKeySpecMissingValueAction s_missingValueAction; // optional
+
     /**
      * Constructor for a SortKeySpec from a BER encoding.
      *
@@ -42,9 +42,7 @@ public final class SortKeySpec extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public SortKeySpec(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public SortKeySpec(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -57,6 +55,7 @@ public final class SortKeySpec extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // SortKeySpec should be encoded by a constructed BER
 
@@ -64,8 +63,7 @@ public final class SortKeySpec extends ASN1Any {
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException
-                    ("SortKeySpec: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form\n");
         }
 
         // Prepare to decode the components
@@ -79,7 +77,7 @@ public final class SortKeySpec extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("SortKeySpec: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
@@ -90,13 +88,13 @@ public final class SortKeySpec extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("SortKeySpec: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 1 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SortKeySpec: bad tag in s_sortRelation\n");
+        if (p.getTag() != 1 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_sortRelation");
         }
 
         s_sortRelation = new ASN1Integer(p, false);
@@ -106,13 +104,13 @@ public final class SortKeySpec extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("SortKeySpec: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 2 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SortKeySpec: bad tag in s_caseSensitivity\n");
+        if (p.getTag() != 2 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_caseSensitivity");
         }
 
         s_caseSensitivity = new ASN1Integer(p, false);
@@ -130,15 +128,15 @@ public final class SortKeySpec extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 3 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 3 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("SortKeySpec: bad BER encoding: s_missingValueAction tag bad");
+                throw new ASN1EncodingException("bad BER encoding: s_missingValueAction tag bad");
             }
             if (tagged.numberComponents() != 1) {
-                throw new ASN1EncodingException("SortKeySpec: bad BER encoding: s_missingValueAction tag bad");
+                throw new ASN1EncodingException("bad BER encoding: s_missingValueAction tag bad");
             }
 
             s_missingValueAction = new SortKeySpecMissingValueAction(tagged.elementAt(0), true);
@@ -148,7 +146,7 @@ public final class SortKeySpec extends ASN1Any {
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("SortKeySpec: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -158,6 +156,7 @@ public final class SortKeySpec extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -170,14 +169,15 @@ public final class SortKeySpec extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 3; // number of mandatories
         if (s_missingValueAction != null) {
             numFields++;
         }
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
-        BEREncoding enc[];
+        BEREncoding[] enc;
         fields[x++] = s_sortElement.berEncode();
         fields[x++] = s_sortRelation.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 1);
         fields[x++] = s_caseSensitivity.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 2);
@@ -193,9 +193,8 @@ public final class SortKeySpec extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the SortKeySpec.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
         str.append("sortElement ");
@@ -226,5 +225,4 @@ public final class SortKeySpec extends ASN1Any {
         str.append("}");
         return str.toString();
     }
-
 }

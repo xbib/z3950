@@ -52,13 +52,13 @@ public final class AccessControlRequestSecurityChallenge extends ASN1Any {
         BERConstructed tagwrapper;
         cSimpleForm = null;
         cExternallyDefined = null;
-        if (ber.tagGet() == 37 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 37 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             cSimpleForm = new ASN1OctetString(ber, false);
             return;
         }
-        if (ber.tagGet() == 0 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 0 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {

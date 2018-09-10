@@ -35,10 +35,8 @@ public final class ASN1T61String extends ASN1OctetString {
     public ASN1T61String(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != T61_STRING_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException
-                    ("ASN.1 T61String: bad BER: tag=" + ber.tagGet() +
-                            " expected " + T61_STRING_TAG + "\n");
+        if (checkTag && (ber.getTag() != T61_STRING_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("ASN.1 T61String: bad BER: tag=" + ber.getTag() + " expected " + T61_STRING_TAG);
         }
     }
 }

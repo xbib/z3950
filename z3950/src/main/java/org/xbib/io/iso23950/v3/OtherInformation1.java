@@ -19,8 +19,8 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class OtherInformation1 extends ASN1Any {
 
-    public InfoCategory s_category; // optional
-    public OtherInformationInformation s_information;
+    public InfoCategory category; // optional
+    public OtherInformationInformation information;
 
     /**
      * Constructor for a OtherInformation1 from a BER encoding.
@@ -31,9 +31,7 @@ public final class OtherInformation1 extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public OtherInformation1(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public OtherInformation1(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -46,10 +44,8 @@ public final class OtherInformation1 extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // OtherInformation1 should be encoded by a constructed BER
 
         BERConstructed berConstructed;
@@ -73,9 +69,9 @@ public final class OtherInformation1 extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 1 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_category = new InfoCategory(p, false);
+        if (p.getTag() == 1 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            category = new InfoCategory(p, false);
             part++;
         }
 
@@ -87,7 +83,7 @@ public final class OtherInformation1 extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        s_information = new OtherInformationInformation(p, true);
+        information = new OtherInformationInformation(p, true);
         part++;
 
         // Should not be any more parts
@@ -103,10 +99,8 @@ public final class OtherInformation1 extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -118,14 +112,12 @@ public final class OtherInformation1 extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
         int numFields = 1; // number of mandatories
-        if (s_category != null) {
+        if (category != null) {
             numFields++;
         }
 
@@ -136,13 +128,13 @@ public final class OtherInformation1 extends ASN1Any {
 
         // Encoding s_category: InfoCategory OPTIONAL
 
-        if (s_category != null) {
-            fields[x++] = s_category.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 1);
+        if (category != null) {
+            fields[x++] = category.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 1);
         }
 
         // Encoding s_information: OtherInformation_information
 
-        fields[x] = s_information.berEncode();
+        fields[x] = information.berEncode();
 
         return new BERConstructed(tagType, tag, fields);
     }
@@ -151,29 +143,22 @@ public final class OtherInformation1 extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the OtherInformation1.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
 
-        if (s_category != null) {
+        if (category != null) {
             str.append("category ");
-            str.append(s_category);
+            str.append(category);
             outputted++;
         }
-
         if (0 < outputted) {
             str.append(", ");
         }
-
-
         str.append("information ");
-        str.append(s_information);
-
+        str.append(information);
         str.append("}");
-
         return str.toString();
     }
-
 }

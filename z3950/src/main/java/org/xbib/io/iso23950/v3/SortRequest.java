@@ -37,8 +37,7 @@ public final class SortRequest extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-    public SortRequest(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public SortRequest(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -51,10 +50,8 @@ public final class SortRequest extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // SortRequest should be encoded by a constructed BER
 
         BERConstructed berConstructed;
@@ -75,7 +72,7 @@ public final class SortRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("SortRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
@@ -90,14 +87,13 @@ public final class SortRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("SortRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 3 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException
-                    ("SortRequest: bad tag in s_inputResultSetNames\n");
+        if (p.getTag() != 3 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_inputResultSetNames");
         }
 
         try {
@@ -109,7 +105,7 @@ public final class SortRequest extends ASN1Any {
                 s_inputResultSetNames[n] = new InternationalString(cons.elementAt(n), true);
             }
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("Bad BER");
+            throw new ASN1EncodingException("bad BER");
         }
         part++;
 
@@ -117,14 +113,13 @@ public final class SortRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("SortRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 4 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException
-                    ("SortRequest: bad tag in s_sortedResultSetName\n");
+        if (p.getTag() != 4 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in sortedResultSetName\n");
         }
 
         s_sortedResultSetName = new InternationalString(p, false);
@@ -134,14 +129,13 @@ public final class SortRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("SortRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 5 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException
-                    ("SortRequest: bad tag in s_sortSequence\n");
+        if (p.getTag() != 5 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in sortSequence\n");
         }
 
         try {
@@ -153,7 +147,7 @@ public final class SortRequest extends ASN1Any {
                 s_sortSequence[n] = new SortKeySpec(cons.elementAt(n), true);
             }
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("Bad BER");
+            throw new ASN1EncodingException("bad BER");
         }
         part++;
 
@@ -179,7 +173,7 @@ public final class SortRequest extends ASN1Any {
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("SortRequest: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -189,10 +183,8 @@ public final class SortRequest extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -204,7 +196,7 @@ public final class SortRequest extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 3; // number of mandatories
         if (s_referenceId != null) {
@@ -241,6 +233,7 @@ public final class SortRequest extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the SortRequest.
      */
+    @Override
     public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");
@@ -296,5 +289,4 @@ public final class SortRequest extends ASN1Any {
         str.append("}");
         return str.toString();
     }
-
 }

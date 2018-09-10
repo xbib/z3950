@@ -18,8 +18,9 @@ import org.xbib.asn1.BEREncoding;
  * </pre>
  */
 public final class RPNQuery extends ASN1Any {
-    public AttributeSetId s_attributeSet;
-    public RPNStructure s_rpn;
+
+    public AttributeSetId attributeSet;
+    public RPNStructure rpn;
 
     /**
      * Default constructor for a RPNQuery.
@@ -49,31 +50,31 @@ public final class RPNQuery extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("RPNQuery: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
-            throw new ASN1Exception("RPNQuery: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        s_attributeSet = new AttributeSetId(p, true);
+        attributeSet = new AttributeSetId(p, true);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("RPNQuery: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        s_rpn = new RPNStructure(p, true);
+        rpn = new RPNStructure(p, true);
         part++;
         if (part < numParts) {
-            throw new ASN1Exception("RPNQuery: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -83,6 +84,7 @@ public final class RPNQuery extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -95,12 +97,13 @@ public final class RPNQuery extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2;
         BEREncoding fields[] = new BEREncoding[numFields];
         int x = 0;
-        fields[x++] = s_attributeSet.berEncode();
-        fields[x] = s_rpn.berEncode();
+        fields[x++] = attributeSet.berEncode();
+        fields[x] = rpn.berEncode();
         return new BERConstructed(tagType, tag, fields);
     }
 
@@ -108,18 +111,18 @@ public final class RPNQuery extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the RPNQuery.
      */
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
         str.append("attributeSet ");
-        str.append(s_attributeSet);
+        str.append(attributeSet);
         outputted++;
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("rpn ");
-        str.append(s_rpn);
+        str.append(rpn);
         str.append("}");
         return str.toString();
     }

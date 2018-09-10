@@ -20,13 +20,12 @@ import org.xbib.asn1.BEREncoding;
 
 public final class NamePlusRecord extends ASN1Any {
 
-    public DatabaseName s_name; // optional
-    public NamePlusRecordRecord s_record;
+    public DatabaseName name; // optional
+    public NamePlusRecordRecord record;
 
     /**
      * Default constructor for a NamePlusRecord.
      */
-
     public NamePlusRecord() {
     }
 
@@ -39,9 +38,7 @@ public final class NamePlusRecord extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public NamePlusRecord(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public NamePlusRecord(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -54,17 +51,15 @@ public final class NamePlusRecord extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // NamePlusRecord should be encoded by a constructed BER
 
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("NamePlusRecord: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
 
         // Prepare to decode the components
@@ -78,13 +73,13 @@ public final class NamePlusRecord extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("NamePlusRecord: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 0 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_name = new DatabaseName(p, false);
+        if (p.getTag() == 0 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            name = new DatabaseName(p, false);
             part++;
         }
 
@@ -92,31 +87,31 @@ public final class NamePlusRecord extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("NamePlusRecord: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 1 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("NamePlusRecord: bad tag in s_record\n");
+        if (p.getTag() != 1 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in record");
         }
 
         try {
             tagged = (BERConstructed) p;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("NamePlusRecord: bad BER encoding: s_record tag bad\n");
+            throw new ASN1EncodingException("bad BER encoding: record tag bad");
         }
         if (tagged.numberComponents() != 1) {
-            throw new ASN1EncodingException("NamePlusRecord: bad BER encoding: s_record tag bad\n");
+            throw new ASN1EncodingException("bad BER encoding: record tag bad");
         }
 
-        s_record = new NamePlusRecordRecord(tagged.elementAt(0), true);
+        record = new NamePlusRecordRecord(tagged.elementAt(0), true);
         part++;
 
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("NamePlusRecord: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -126,10 +121,8 @@ public final class NamePlusRecord extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -141,14 +134,12 @@ public final class NamePlusRecord extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
         int numFields = 1; // number of mandatories
-        if (s_name != null) {
+        if (name != null) {
             numFields++;
         }
 
@@ -160,14 +151,14 @@ public final class NamePlusRecord extends ASN1Any {
 
         // Encoding s_name: DatabaseName OPTIONAL
 
-        if (s_name != null) {
-            fields[x++] = s_name.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 0);
+        if (name != null) {
+            fields[x++] = name.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 0);
         }
 
         // Encoding s_record: NamePlusRecord_record
 
         enc = new BEREncoding[1];
-        enc[0] = s_record.berEncode();
+        enc[0] = record.berEncode();
         fields[x] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 1, enc);
         return new BERConstructed(tagType, tag, fields);
     }
@@ -176,15 +167,14 @@ public final class NamePlusRecord extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the NamePlusRecord.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
 
-        if (s_name != null) {
+        if (name != null) {
             str.append("name ");
-            str.append(s_name);
+            str.append(name);
             outputted++;
         }
 
@@ -192,11 +182,10 @@ public final class NamePlusRecord extends ASN1Any {
             str.append(", ");
         }
         str.append("record ");
-        str.append(s_record);
+        str.append(record);
 
         str.append("}");
 
         return str.toString();
     }
-
 }

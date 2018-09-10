@@ -6,7 +6,6 @@ import org.xbib.asn1.ASN1Exception;
 import org.xbib.asn1.ASN1External;
 import org.xbib.asn1.BEREncoding;
 
-
 /**
  * Class for representing a <code>Specification_elementSpec</code> from <code>Z39-50-APDU-1995</code>.
  * <pre>
@@ -18,9 +17,9 @@ import org.xbib.asn1.BEREncoding;
  * </pre>
  */
 public final class SpecificationElementSpec extends ASN1Any {
+
     public InternationalString c_elementSetName;
     public ASN1External c_externalEspec;
-
 
     /**
      * Constructor for a Specification_elementSpec from a BER encoding.
@@ -31,9 +30,7 @@ public final class SpecificationElementSpec extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public SpecificationElementSpec(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public SpecificationElementSpec(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -46,30 +43,28 @@ public final class SpecificationElementSpec extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Null out all choices
 
         c_elementSetName = null;
         c_externalEspec = null;
 
         // Try choice elementSetName
-        if (ber.tagGet() == 1 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 1 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_elementSetName = new InternationalString(ber, false);
             return;
         }
 
         // Try choice externalEspec
-        if (ber.tagGet() == 2 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 2 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_externalEspec = new ASN1External(ber, false);
             return;
         }
 
-        throw new ASN1Exception("Specification_elementSpec: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -78,10 +73,8 @@ public final class SpecificationElementSpec extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
         // Encoding choice: c_elementSetName
@@ -119,6 +112,7 @@ public final class SpecificationElementSpec extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
@@ -128,16 +122,15 @@ public final class SpecificationElementSpec extends ASN1Any {
         // tag on it, otherwise the tag identifying which CHOICE
         // it is will be overwritten and lost.
 
-        throw new ASN1EncodingException("Specification_elementSpec: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the Specification_elementSpec.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         boolean found = false;
         if (c_elementSetName != null) {
@@ -155,5 +148,4 @@ public final class SpecificationElementSpec extends ASN1Any {
         str.append("}");
         return str.toString();
     }
-
 }

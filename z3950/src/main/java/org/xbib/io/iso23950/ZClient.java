@@ -1,27 +1,18 @@
 package org.xbib.io.iso23950;
 
-import org.xbib.asn1.ASN1Exception;
-import org.xbib.asn1.ASN1Integer;
 import org.xbib.asn1.io.InputStreamBERReader;
 import org.xbib.asn1.io.OutputStreamBERWriter;
-import org.xbib.cql.CQLParser;
-import org.xbib.io.iso23950.cql.CQLRPNGenerator;
+import org.xbib.io.iso23950.operations.CloseOperation;
 import org.xbib.io.iso23950.operations.InitOperation;
 import org.xbib.io.iso23950.operations.PresentOperation;
+import org.xbib.io.iso23950.operations.ScanOperation;
 import org.xbib.io.iso23950.operations.SearchOperation;
-import org.xbib.io.iso23950.pqf.PQFParser;
-import org.xbib.io.iso23950.pqf.PQFRPNGenerator;
-import org.xbib.io.iso23950.v3.Close;
-import org.xbib.io.iso23950.v3.CloseReason;
-import org.xbib.io.iso23950.v3.PDU;
-import org.xbib.io.iso23950.v3.RPNQuery;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.text.MessageFormat;
@@ -136,9 +127,9 @@ public class ZClient implements AutoCloseable {
         }
     }
 
-    public int executeCQL(String query, int offset, int length,
-                           ResponseListener responseListener,
-                           RecordListener recordListener) throws IOException {
+    public int searchCQL(String query, int offset, int length,
+                         SearchListener searchListener,
+                         RecordListener recordListener) throws IOException {
         if (query == null) {
             throw new IllegalArgumentException("no query");
         }
@@ -146,12 +137,12 @@ public class ZClient implements AutoCloseable {
         try {
             lock.lock();
             SearchOperation searchOperation = new SearchOperation(berReader, berWriter, resultSetName, databases, host);
-            boolean success = searchOperation.execute(createRPNQueryFromCQL(query));
+            boolean success = searchOperation.executeCQL(query);
             if (!success) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
             } else {
-                if (responseListener == null) {
-                    responseListener = (status, total, returned, elapsedMillis) -> {
+                if (searchListener == null) {
+                    searchListener = (status, total, returned, elapsedMillis) -> {
                         logger.log(Level.INFO, MessageFormat.format("[{0}ms] [{1}] [{2}] [{3}]",
                                 elapsedMillis, total, returned, query));
                     };
@@ -167,7 +158,7 @@ public class ZClient implements AutoCloseable {
                         // avoid condition 13 "Present request out-of-range"
                         length = searchOperation.getCount();
                     }
-                    present.execute(offset, length, searchOperation.getCount(), responseListener, recordListener);
+                    present.execute(offset, length, searchOperation.getCount(), searchListener, recordListener);
                 }
             }
             return searchOperation.getCount();
@@ -176,9 +167,9 @@ public class ZClient implements AutoCloseable {
         }
     }
 
-    public int executePQF(String query, int offset, int length,
-                           ResponseListener responseListener,
-                           RecordListener recordListener) throws IOException {
+    public int searchPQF(String query, int offset, int length,
+                         SearchListener searchListener,
+                         RecordListener recordListener) throws IOException {
         if (query == null) {
             throw new IllegalArgumentException("no query");
         }
@@ -186,18 +177,18 @@ public class ZClient implements AutoCloseable {
         try {
             lock.lock();
             SearchOperation search = new SearchOperation(berReader, berWriter, resultSetName, databases, host);
-            search.execute(createRPNQueryFromPQF(query));
+            search.executePQF(query);
             if (!search.isSuccess()) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
             } else {
-                if (responseListener == null) {
-                    responseListener = (status, total, returned, elapsedMillis) -> {
+                if (searchListener == null) {
+                    searchListener = (status, total, returned, elapsedMillis) -> {
                         logger.log(Level.INFO, MessageFormat.format("[{0}ms] [{1}] [{2}] [{3}]",
                                 elapsedMillis, total, returned, query));
                     };
                 }
                 if (search.getCount() > 0) {
-                    logger.log(Level.INFO, "search returned " + search.getCount());
+                    logger.log(Level.FINE, "search returned " + search.getCount());
                     PresentOperation present = new PresentOperation(berReader, berWriter,
                             resultSetName, elementSetName, preferredRecordSyntax);
                     if (offset < 1) {
@@ -208,10 +199,22 @@ public class ZClient implements AutoCloseable {
                         // avoid condition 13 "Present request out-of-range"
                         length = search.getCount();
                     }
-                    present.execute(offset, length, search.getCount(), responseListener, recordListener);
+                    present.execute(offset, length, search.getCount(), searchListener, recordListener);
                 }
             }
             return search.getCount();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void scanPQF(String query, int nTerms, int step, int position,
+                        ScanListener scanListener) throws IOException {
+        ensureConnected();
+        try {
+            lock.lock();
+            ScanOperation scanOperation = new ScanOperation(berReader, berWriter, databases);
+            scanOperation.executePQF(nTerms, step, position, query, scanListener);
         } finally {
             lock.unlock();
         }
@@ -265,56 +268,6 @@ public class ZClient implements AutoCloseable {
         return databases;
     }
 
-    private RPNQuery createRPNQueryFromCQL(String query) {
-        CQLRPNGenerator generator = new CQLRPNGenerator();
-        CQLParser parser = new CQLParser(query);
-        parser.parse();
-        parser.getCQLQuery().accept(generator);
-        return generator.getQueryResult();
-    }
-
-
-    private RPNQuery createRPNQueryFromPQF(String query) {
-        PQFRPNGenerator generator = new PQFRPNGenerator();
-        PQFParser parser = new PQFParser(new StringReader(query));
-        parser.parse();
-        parser.getResult().accept(generator);
-        return generator.getResult();
-    }
-
-    /**
-     * Send a close request to the server.
-     *
-     * @param reason reason Reason codes are:
-     * 0=finished 1=shutdown 2=system problem 3=cost limits
-     * 4=resources 5=security violation 6=protocol error 7=lack of activity
-     * 8=peer abort 9=unspecified
-     * @throws IOException if close fails
-     */
-    private void sendClose(int reason) throws IOException {
-        if (!isConnected()) {
-            return;
-        }
-        try {
-            lock.lock();
-            PDU pdu = new PDU();
-            pdu.c_close = new Close();
-            pdu.c_close.sCloseReason = new CloseReason();
-            pdu.c_close.sCloseReason.value = new ASN1Integer(reason);
-            pdu.c_close.sReferenceId = null;
-            try {
-                berWriter.write(pdu.berEncode());
-            } catch (ASN1Exception ex) {
-                throw new IOException(ex);
-            }
-            // do not wait, it may hang
-            //waitClosePDU();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-
     private void connect() throws IOException {
         try {
             lock.lock();
@@ -330,6 +283,7 @@ public class ZClient implements AutoCloseable {
             if (initOperation.execute(preferredMessageSize, initListener)) {
                 throw new IOException("could not initiate connection");
             }
+            logger.log(Level.INFO, initOperation.getTargetInfo());
         } finally {
             lock.unlock();
         }
@@ -347,6 +301,28 @@ public class ZClient implements AutoCloseable {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * Send a close request to the server.
+     *
+     * @param reason reason Reason codes are:
+     * 0=finished 1=shutdown 2=system problem 3=cost limits
+     * 4=resources 5=security violation 6=protocol error 7=lack of activity
+     * 8=peer abort 9=unspecified
+     * @throws IOException if close fails
+     */
+    private void sendClose(int reason) throws IOException {
+        if (!isConnected()) {
+            return;
+        }
+        try {
+            lock.lock();
+            CloseOperation closeOperation = new CloseOperation(berReader, berWriter);
+            closeOperation.execute(reason);
+        } finally {
+            lock.unlock();
+        }
     }
 
     /**

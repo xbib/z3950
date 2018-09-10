@@ -8,7 +8,6 @@ import org.xbib.asn1.ASN1Sequence;
 import org.xbib.asn1.BERConstructed;
 import org.xbib.asn1.BEREncoding;
 
-
 /**
  * Class for representing a <code>Range</code> from <code>Z39-50-APDU-1995</code>.
  * <pre>
@@ -20,9 +19,9 @@ import org.xbib.asn1.BEREncoding;
  * </pre>
  */
 public final class Range extends ASN1Any {
+
     public ASN1Integer s_startingPosition;
     public ASN1Integer s_numberOfRecords;
-
 
     /**
      * Constructor for a Range from a BER encoding.
@@ -33,7 +32,6 @@ public final class Range extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public Range(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, checkTag);
@@ -48,10 +46,8 @@ public final class Range extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Range should be encoded by a constructed BER
 
         BERConstructed berConstructed;
@@ -76,8 +72,8 @@ public final class Range extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 1 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 1 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException("Range: bad tag in s_startingPosition\n");
         }
 
@@ -92,8 +88,8 @@ public final class Range extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 2 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 2 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException("Range: bad tag in s_numberOfRecords\n");
         }
 
@@ -113,10 +109,8 @@ public final class Range extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -128,10 +122,8 @@ public final class Range extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
         int numFields = 2; // number of mandatories
@@ -147,7 +139,7 @@ public final class Range extends ASN1Any {
 
         // Encoding s_numberOfRecords: INTEGER
 
-        fields[x++] = s_numberOfRecords.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 2);
+        fields[x] = s_numberOfRecords.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 2);
 
         return new BERConstructed(tagType, tag, fields);
     }
@@ -156,9 +148,8 @@ public final class Range extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the Range.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
 
@@ -173,8 +164,6 @@ public final class Range extends ASN1Any {
         str.append(s_numberOfRecords);
 
         str.append("}");
-
         return str.toString();
     }
-
 }

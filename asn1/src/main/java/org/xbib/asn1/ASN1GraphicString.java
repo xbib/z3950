@@ -32,8 +32,8 @@ public class ASN1GraphicString extends ASN1OctetString {
      */
     public ASN1GraphicString(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != GRAPHIC_STRING_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + ber.tagGet() +
+        if (checkTag && (ber.getTag() != GRAPHIC_STRING_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() +
                             " expected " + GRAPHIC_STRING_TAG + "\n");
         }
     }

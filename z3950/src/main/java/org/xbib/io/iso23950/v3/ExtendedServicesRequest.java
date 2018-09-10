@@ -62,7 +62,6 @@ public final class ExtendedServicesRequest extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public ExtendedServicesRequest(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
@@ -76,19 +75,19 @@ public final class ExtendedServicesRequest extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException
-                    ("ExtendedServicesRequest: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         try {
@@ -99,88 +98,86 @@ public final class ExtendedServicesRequest extends ASN1Any {
         }
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 3 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException
-                    ("ExtendedServicesRequest: bad tag in s_function\n");
+        if (p.getTag() != 3 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_function");
         }
         sFunction = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 4 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException
-                    ("ExtendedServicesRequest: bad tag in s_packageType\n");
+        if (p.getTag() != 4 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_packageType");
         }
         sPackageType = new ASN1ObjectIdentifier(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 5 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 5 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sPackageName = new InternationalString(p, false);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 6 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 6 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sUserId = new InternationalString(p, false);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 7 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 7 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sRetentionTime = new IntUnit(p, false);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 8 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 8 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sPermissions = new Permissions(p, false);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 9 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 9 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sDescription = new InternationalString(p, false);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 10 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 10 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sTaskSpecificParameters = new ASN1External(p, false);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("ExtendedServicesRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 11 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("ExtendedServicesRequest: bad tag in s_waitAction\n");
+        if (p.getTag() != 11 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in waitAction");
         }
         sWaitAction = new ASN1Integer(p, false);
         part++;
@@ -207,7 +204,7 @@ public final class ExtendedServicesRequest extends ASN1Any {
             sOtherInfo = null; // no, not present
         }
         if (part < numParts) {
-            throw new ASN1Exception("ExtendedServicesRequest: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -217,6 +214,7 @@ public final class ExtendedServicesRequest extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -229,6 +227,7 @@ public final class ExtendedServicesRequest extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 3;
         if (sReferenceId != null) {
@@ -297,6 +296,7 @@ public final class ExtendedServicesRequest extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ExtendedServicesRequest.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;

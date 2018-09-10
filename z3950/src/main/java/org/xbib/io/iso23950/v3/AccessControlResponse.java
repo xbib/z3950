@@ -92,8 +92,8 @@ public final class AccessControlResponse extends ASN1Any {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 223 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 223 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {

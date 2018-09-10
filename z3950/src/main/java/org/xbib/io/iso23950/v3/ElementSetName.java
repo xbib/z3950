@@ -25,9 +25,7 @@ public final class ElementSetName extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public ElementSetName(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ElementSetName(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -40,16 +38,15 @@ public final class ElementSetName extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Check tag matches
-
         if (checkTag) {
-            if (ber.tagGet() != 103 ||
-                    ber.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-                throw new ASN1EncodingException("ElementSetName: bad BER: tag=" + ber.tagGet() + " expected 103\n");
+            if (ber.getTag() != 103 ||
+                    ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected 103");
             }
         }
-
         value = new InternationalString(ber, false);
     }
 
@@ -59,6 +56,7 @@ public final class ElementSetName extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 103);
     }
@@ -71,6 +69,7 @@ public final class ElementSetName extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         return value.berEncode(tagType, tag);
     }
@@ -79,9 +78,8 @@ public final class ElementSetName extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ElementSetName.
      */
-
+    @Override
     public String toString() {
         return value.toString();
     }
-
 }

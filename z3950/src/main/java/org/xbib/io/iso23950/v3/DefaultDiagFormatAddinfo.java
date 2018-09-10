@@ -18,8 +18,8 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class DefaultDiagFormatAddinfo extends ASN1Any {
 
-    public ASN1VisibleString cV2Addinfo;
-    public InternationalString cV3Addinfo;
+    public ASN1VisibleString v2Addinfo;
+    public InternationalString v3Addinfo;
 
     /**
      * Constructor for a DefaultDiagFormat_addinfo from a BER encoding.
@@ -43,22 +43,23 @@ public final class DefaultDiagFormatAddinfo extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
-        cV2Addinfo = null;
-        cV3Addinfo = null;
+        v2Addinfo = null;
+        v3Addinfo = null;
         try {
-            cV2Addinfo = new ASN1VisibleString(ber, checkTag);
+            v2Addinfo = new ASN1VisibleString(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
         try {
-            cV3Addinfo = new InternationalString(ber, checkTag);
+            v3Addinfo = new InternationalString(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
-        throw new ASN1Exception("DefaultDiagFormat_addinfo: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -67,16 +68,17 @@ public final class DefaultDiagFormatAddinfo extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
-        if (cV2Addinfo != null) {
-            chosen = cV2Addinfo.berEncode();
+        if (v2Addinfo != null) {
+            chosen = v2Addinfo.berEncode();
         }
-        if (cV3Addinfo != null) {
+        if (v3Addinfo != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = cV3Addinfo.berEncode();
+            chosen = v3Addinfo.berEncode();
         }
         if (chosen == null) {
             throw new ASN1Exception("CHOICE not set");
@@ -84,28 +86,30 @@ public final class DefaultDiagFormatAddinfo extends ASN1Any {
         return chosen;
     }
 
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
-        throw new ASN1EncodingException("DefaultDiagFormat_addinfo: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the DefaultDiagFormat_addinfo.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         boolean found = false;
-        if (cV2Addinfo != null) {
+        if (v2Addinfo != null) {
             found = true;
             str.append("v2Addinfo ");
-            str.append(cV2Addinfo);
+            str.append(v2Addinfo);
         }
-        if (cV3Addinfo != null) {
+        if (v3Addinfo != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: v3Addinfo> ");
             }
             str.append("v3Addinfo ");
-            str.append(cV3Addinfo);
+            str.append(v3Addinfo);
         }
         str.append("}");
         return str.toString();

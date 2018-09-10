@@ -18,14 +18,13 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class AttributesPlusTerm extends ASN1Any {
 
-    public AttributeList sAttributes;
+    public AttributeList attributes;
 
-    public Term sTerm;
+    public Term term;
 
     /**
      * Default constructor for a AttributesPlusTerm.
      */
-
     public AttributesPlusTerm() {
     }
 
@@ -38,9 +37,7 @@ public final class AttributesPlusTerm extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public AttributesPlusTerm(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public AttributesPlusTerm(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -53,38 +50,37 @@ public final class AttributesPlusTerm extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         if (checkTag) {
-            if (ber.tagGet() != 102 ||
-                    ber.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-                throw new ASN1EncodingException
-                        ("AttributesPlusTerm: bad BER: tag=" + ber.tagGet() + " expected 102\n");
+            if (ber.getTag() != 102 ||
+                    ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected 102");
             }
         }
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException
-                    ("AttributesPlusTerm: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
-            throw new ASN1Exception("AttributesPlusTerm: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        sAttributes = new AttributeList(p, true);
+        attributes = new AttributeList(p, true);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("AttributesPlusTerm: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        sTerm = new Term(p, true);
+        term = new Term(p, true);
         part++;
         if (part < numParts) {
-            throw new ASN1Exception("AttributesPlusTerm: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -94,6 +90,7 @@ public final class AttributesPlusTerm extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 102);
     }
@@ -106,12 +103,13 @@ public final class AttributesPlusTerm extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2;
         BEREncoding fields[] = new BEREncoding[numFields];
         int x = 0;
-        fields[x++] = sAttributes.berEncode();
-        fields[x] = sTerm.berEncode();
+        fields[x++] = attributes.berEncode();
+        fields[x] = term.berEncode();
         return new BERConstructed(tagType, tag, fields);
     }
 
@@ -119,17 +117,18 @@ public final class AttributesPlusTerm extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the AttributesPlusTerm.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
         str.append("attributes ");
-        str.append(sAttributes);
+        str.append(attributes);
         outputted++;
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("term ");
-        str.append(sTerm);
+        str.append(term);
         str.append("}");
         return str.toString();
     }

@@ -12,19 +12,23 @@ import org.xbib.io.iso23950.v3.InitializeRequest;
 import org.xbib.io.iso23950.v3.InitializeResponse;
 import org.xbib.io.iso23950.v3.InternationalString;
 import org.xbib.io.iso23950.v3.Options;
-import org.xbib.io.iso23950.v3.PDU;
 import org.xbib.io.iso23950.v3.ProtocolVersion;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * A Z39.50 Init operation.
  */
-public class InitOperation extends AbstractOperation {
+public class InitOperation extends AbstractOperation<InitializeResponse, InitializeRequest> {
+
+    private static final Logger logger = Logger.getLogger(InitOperation.class.getName());
 
     private final String user;
 
     private final String pass;
+
+    private String targetInfo;
 
     public InitOperation(BERReader reader, BERWriter writer, String user, String pass) {
         super(reader, writer);
@@ -32,19 +36,18 @@ public class InitOperation extends AbstractOperation {
         this.pass = pass;
     }
 
-    public boolean execute(Integer preferredMessageSize,
-                           InitListener initListener) throws IOException {
+    public boolean execute(Integer preferredMessageSize, InitListener initListener) throws IOException {
         InitializeRequest init = new InitializeRequest();
         boolean[] version = new boolean[3];
         version[0] = true; // any version, should alwasy be true
         version[1] = true; // Z39.50 version 2
         version[2] = true; // Z39.50 version 3
-        init.s_protocolVersion = new ProtocolVersion();
-        init.s_protocolVersion.value = new ASN1BitString(version);
+        init.protocolVersion = new ProtocolVersion();
+        init.protocolVersion.value = new ASN1BitString(version);
         boolean[] options = new boolean[15];
         options[0] = true; // search
         options[1] = true; // present
-        options[2] = true;  // delete set
+        options[2] = false;  // delete set
         options[3] = false; // resource-report
         options[4] = false; // trigger resource control
         options[5] = false;  // resource control
@@ -57,48 +60,44 @@ public class InitOperation extends AbstractOperation {
         options[12] = false; // level 2 segmentation
         options[13] = false; // concurrent operations
         options[14] = true; // named result sets
-        init.s_options = new Options();
-        init.s_options.value = new ASN1BitString(options);
-        init.s_preferredMessageSize = new ASN1Integer(preferredMessageSize);
-        init.s_exceptionalRecordSize = new ASN1Integer(preferredMessageSize * 2);
-        init.s_implementationId = new InternationalString();
-        init.s_implementationId.value = new ASN1GeneralString("1");
-        init.s_implementationName = new InternationalString();
-        init.s_implementationName.value = new ASN1GeneralString("Java ZClient");
-        init.s_implementationVersion = new InternationalString();
-        init.s_implementationVersion.value = new ASN1GeneralString("1.00");
+        init.options = new Options();
+        init.options.value = new ASN1BitString(options);
+        init.preferredMessageSize = new ASN1Integer(preferredMessageSize);
+        init.exceptionalRecordSize = new ASN1Integer(preferredMessageSize * 2);
+        init.implementationId = new InternationalString();
+        init.implementationId.value = new ASN1GeneralString("1");
+        init.implementationName = new InternationalString();
+        init.implementationName.value = new ASN1GeneralString("Java ZClient");
+        init.implementationVersion = new InternationalString();
+        init.implementationVersion.value = new ASN1GeneralString("1.00");
         if (user != null) {
-            init.s_idAuthentication = new IdAuthentication();
-            init.s_idAuthentication.c_idPass = new IdAuthenticationIdPass();
-            init.s_idAuthentication.c_idPass.s_userId = new InternationalString();
-            init.s_idAuthentication.c_idPass.s_userId.value = new ASN1GeneralString(user);
+            init.idAuthentication = new IdAuthentication();
+            init.idAuthentication.idPass = new IdAuthenticationIdPass();
+            init.idAuthentication.idPass.s_userId = new InternationalString();
+            init.idAuthentication.idPass.s_userId.value = new ASN1GeneralString(user);
             if (pass != null) {
-                init.s_idAuthentication.c_idPass.s_password = new InternationalString();
-                init.s_idAuthentication.c_idPass.s_password.value = new ASN1GeneralString(pass);
+                init.idAuthentication.idPass.s_password = new InternationalString();
+                init.idAuthentication.idPass.s_password.value = new ASN1GeneralString(pass);
             }
             /*if (group != null) {
                 init.s_idAuthentication.c_idPass.s_groupId = new InternationalString();
                 init.s_idAuthentication.c_idPass.s_groupId.value = new ASN1GeneralString(group);
             }*/
         }
-        PDU pduOut = new PDU();
-        pduOut.c_initRequest = init;
-        writePDU(pduOut);
-        PDU pduIn = readPDU();
-        InitializeResponse initResp = pduIn.c_initResponse;
-        String targetInfo;
-        if (initResp.s_implementationName != null) {
-            targetInfo = initResp.s_implementationName.toString();
-            if (initResp.s_implementationVersion != null) {
-                targetInfo += " - " + initResp.s_implementationVersion.toString();
+        write(init);
+        InitializeResponse initResp = read();
+        if (initResp.implementationName != null) {
+            targetInfo = initResp.implementationName.toString();
+            if (initResp.implementationVersion != null) {
+                targetInfo += " - " + initResp.implementationVersion.toString();
             }
         } else {
             targetInfo = "server";
         }
         int targetVersion = 0;
-        if (initResp.s_protocolVersion != null) {
-            for (int n = 0; n < initResp.s_protocolVersion.value.get().length; n++) {
-                if (initResp.s_protocolVersion.value.get()[n]) {
+        if (initResp.protocolVersion != null) {
+            for (int n = 0; n < initResp.protocolVersion.value.get().length; n++) {
+                if (initResp.protocolVersion.value.get()[n]) {
                     targetVersion = n + 1;
                 }
             }
@@ -108,18 +107,20 @@ public class InitOperation extends AbstractOperation {
         } else {
             targetInfo += " (Version unknown)";
         }
-        if (initResp.s_userInformationField != null) {
-            if (initResp.s_userInformationField.getSingleASN1Type() != null) {
-                targetInfo += "\n" + initResp.s_userInformationField.getSingleASN1Type().toString();
-            }
+        if (initResp.userInformationField != null && initResp.userInformationField.getSingleASN1Type() != null) {
+            targetInfo += "\n" + initResp.userInformationField.getSingleASN1Type().toString();
         }
-        if (initResp.s_otherInfo != null) {
-            targetInfo += "\n" + initResp.s_otherInfo.toString();
+        if (initResp.otherInfo != null) {
+            targetInfo += "\n" + initResp.otherInfo.toString();
         }
         targetInfo = targetInfo.replaceAll("\"", "");
         if (initListener != null) {
             initListener.onInit(targetVersion, targetInfo);
         }
-        return !initResp.s_result.get();
+        return !initResp.result.get();
+    }
+
+    public String getTargetInfo() {
+        return targetInfo;
     }
 }

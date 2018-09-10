@@ -30,9 +30,7 @@ public final class Entry extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public Entry(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public Entry(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -45,31 +43,30 @@ public final class Entry extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed tagwrapper;
         cTermInfo = null;
         cSurrogateDiagnostic = null;
-        if (ber.tagGet() == 1 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 1 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             cTermInfo = new TermInfo(ber, false);
             return;
         }
-        if (ber.tagGet() == 2 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 2 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("Entry: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("Entry: bad BER form\n");
+                throw new ASN1EncodingException("bad BER form");
             }
             cSurrogateDiagnostic = new DiagRec(tagwrapper.elementAt(0), true);
             return;
         }
-        throw new ASN1Exception("Entry: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -78,6 +75,7 @@ public final class Entry extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
         BEREncoding[] enc;
@@ -98,14 +96,16 @@ public final class Entry extends ASN1Any {
         return chosen;
     }
 
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
-        throw new ASN1EncodingException("Entry: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the Entry.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         boolean found = false;

@@ -51,8 +51,8 @@ public final class ASN1BitString extends ASN1Any {
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag)
             throws ASN1EncodingException {
-        if (checkTag && (berEncoding.tagGet() != BIT_STRING_TAG || berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("ASN.1 BIT STRING: bad BER: tag=" + berEncoding.tagGet() +
+        if (checkTag && (berEncoding.getTag() != BIT_STRING_TAG || berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("ASN.1 BIT STRING: bad BER: tag=" + berEncoding.getTag() +
                             " expected " + BIT_STRING_TAG + "\n");
         }
         if (berEncoding instanceof BERPrimitive) {

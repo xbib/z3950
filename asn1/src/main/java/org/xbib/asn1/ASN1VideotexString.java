@@ -30,9 +30,8 @@ public class ASN1VideotexString extends ASN1OctetString {
      */
     public ASN1VideotexString(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != VIDEOTEX_STRING_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + ber.tagGet() +
-                            " expected " + VIDEOTEX_STRING_TAG + "\n");
+        if (checkTag && (ber.getTag() != VIDEOTEX_STRING_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected " + VIDEOTEX_STRING_TAG);
         }
     }
 

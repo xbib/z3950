@@ -19,8 +19,8 @@ import org.xbib.asn1.BEREncoding;
 
 public final class DiagRec extends ASN1Any {
 
-    public DefaultDiagFormat cDefaultFormat;
-    public ASN1External cExternallyDefined;
+    public DefaultDiagFormat defaultFormat;
+    public ASN1External externallyDefined;
 
     /**
      * Constructor for a DiagRec from a BER encoding.
@@ -44,22 +44,23 @@ public final class DiagRec extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
-        cDefaultFormat = null;
-        cExternallyDefined = null;
+        defaultFormat = null;
+        externallyDefined = null;
         try {
-            cDefaultFormat = new DefaultDiagFormat(ber, checkTag);
+            defaultFormat = new DefaultDiagFormat(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
         try {
-            cExternallyDefined = new ASN1External(ber, checkTag);
+            externallyDefined = new ASN1External(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
-        throw new ASN1Exception("DiagRec: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -68,16 +69,17 @@ public final class DiagRec extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
-        if (cDefaultFormat != null) {
-            chosen = cDefaultFormat.berEncode();
+        if (defaultFormat != null) {
+            chosen = defaultFormat.berEncode();
         }
-        if (cExternallyDefined != null) {
+        if (externallyDefined != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = cExternallyDefined.berEncode();
+            chosen = externallyDefined.berEncode();
         }
         if (chosen == null) {
             throw new ASN1Exception("CHOICE not set");
@@ -85,28 +87,30 @@ public final class DiagRec extends ASN1Any {
         return chosen;
     }
 
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
-        throw new ASN1EncodingException("DiagRec: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the DiagRec.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         boolean found = false;
-        if (cDefaultFormat != null) {
+        if (defaultFormat != null) {
             found = true;
             str.append("defaultFormat ");
-            str.append(cDefaultFormat);
+            str.append(defaultFormat);
         }
-        if (cExternallyDefined != null) {
+        if (externallyDefined != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: externallyDefined> ");
             }
             str.append("externallyDefined ");
-            str.append(cExternallyDefined);
+            str.append(externallyDefined);
         }
         str.append("}");
         return str.toString();

@@ -52,6 +52,7 @@ public final class InternationalString extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return value.berEncode();
     }
@@ -64,10 +65,8 @@ public final class InternationalString extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         return value.berEncode(tagType, tag);
     }
 
@@ -75,9 +74,8 @@ public final class InternationalString extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the InternationalString.
      */
-
+    @Override
     public String toString() {
         return value.toString();
     }
-
 }

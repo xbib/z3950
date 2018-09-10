@@ -23,15 +23,14 @@ import org.xbib.asn1.BEREncoding;
 
 public final class IdAuthentication extends ASN1Any {
 
-    public ASN1VisibleString c_open;
-    public IdAuthenticationIdPass c_idPass;
-    public ASN1Null c_anonymous;
-    public ASN1External c_other;
+    public ASN1VisibleString open;
+    public IdAuthenticationIdPass idPass;
+    public ASN1Null anonymous;
+    public ASN1External other;
 
     /**
      * Default constructor for a IdAuthentication.
      */
-
     public IdAuthentication() {
     }
 
@@ -44,7 +43,6 @@ public final class IdAuthentication extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public IdAuthentication(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, checkTag);
@@ -59,20 +57,18 @@ public final class IdAuthentication extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Null out all choices
 
-        c_open = null;
-        c_idPass = null;
-        c_anonymous = null;
-        c_other = null;
+        open = null;
+        idPass = null;
+        anonymous = null;
+        other = null;
 
         // Try choice open
         try {
-            c_open = new ASN1VisibleString(ber, checkTag);
+            open = new ASN1VisibleString(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
@@ -80,7 +76,7 @@ public final class IdAuthentication extends ASN1Any {
 
         // Try choice idPass
         try {
-            c_idPass = new IdAuthenticationIdPass(ber, checkTag);
+            idPass = new IdAuthenticationIdPass(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
@@ -88,7 +84,7 @@ public final class IdAuthentication extends ASN1Any {
 
         // Try choice anonymous
         try {
-            c_anonymous = new ASN1Null(ber, checkTag);
+            anonymous = new ASN1Null(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
@@ -96,13 +92,13 @@ public final class IdAuthentication extends ASN1Any {
 
         // Try choice other
         try {
-            c_other = new ASN1External(ber, checkTag);
+            other = new ASN1External(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
 
-        throw new ASN1Exception("IdAuthentication: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -111,46 +107,43 @@ public final class IdAuthentication extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
         // Encoding choice: c_open
-        if (c_open != null) {
-            chosen = c_open.berEncode();
+        if (open != null) {
+            chosen = open.berEncode();
         }
 
         // Encoding choice: c_idPass
-        if (c_idPass != null) {
+        if (idPass != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = c_idPass.berEncode();
+            chosen = idPass.berEncode();
         }
 
         // Encoding choice: c_anonymous
-        if (c_anonymous != null) {
+        if (anonymous != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = c_anonymous.berEncode();
+            chosen = anonymous.berEncode();
         }
 
         // Encoding choice: c_other
-        if (c_other != null) {
+        if (other != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = c_other.berEncode();
+            chosen = other.berEncode();
         }
 
         // Check for error of having none of the choices set
         if (chosen == null) {
             throw new ASN1Exception("CHOICE not set");
         }
-
         return chosen;
     }
 
@@ -168,10 +161,8 @@ public final class IdAuthentication extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
         // Method is not available because this is a basic CHOICE
@@ -179,56 +170,52 @@ public final class IdAuthentication extends ASN1Any {
         // permitted to allow something else to apply an implicit
         // tag on it, otherwise the tag identifying which CHOICE
         // it is will be overwritten and lost.
-
-        throw new ASN1EncodingException("IdAuthentication: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the IdAuthentication.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
-
         boolean found = false;
 
-        if (c_open != null) {
+        if (open != null) {
             found = true;
             str.append("open ");
-            str.append(c_open);
+            str.append(open);
         }
 
-        if (c_idPass != null) {
+        if (idPass != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: idPass> ");
             }
             found = true;
             str.append("idPass ");
-            str.append(c_idPass);
+            str.append(idPass);
         }
 
-        if (c_anonymous != null) {
+        if (anonymous != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: anonymous> ");
             }
             found = true;
             str.append("anonymous ");
-            str.append(c_anonymous);
+            str.append(anonymous);
         }
 
-        if (c_other != null) {
+        if (other != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: other> ");
             }
             str.append("other ");
-            str.append(c_other);
+            str.append(other);
         }
 
         str.append("}");
 
         return str.toString();
     }
-
 }

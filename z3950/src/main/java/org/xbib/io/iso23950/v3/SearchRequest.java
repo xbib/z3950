@@ -33,24 +33,26 @@ import org.xbib.asn1.BEREncoding;
  * </pre>
  */
 public final class SearchRequest extends ASN1Any {
-    public ReferenceId s_referenceId; // optional
-    public ASN1Integer s_smallSetUpperBound;
-    public ASN1Integer s_largeSetLowerBound;
-    public ASN1Integer s_mediumSetPresentNumber;
-    public ASN1Boolean s_replaceIndicator;
-    public InternationalString s_resultSetName;
-    public DatabaseName s_databaseNames[];
-    public ElementSetNames s_smallSetElementSetNames; // optional
-    public ElementSetNames s_mediumSetElementSetNames; // optional
-    public ASN1ObjectIdentifier s_preferredRecordSyntax; // optional
-    public Query s_query;
-    public OtherInformation s_additionalSearchInfo; // optional
-    public OtherInformation s_otherInfo; // optional
+    public ReferenceId referenceId; // optional
+    public ASN1Integer smallSetUpperBound;
+    public ASN1Integer largeSetLowerBound;
+    public ASN1Integer mediumSetPresentNumber;
+    public ASN1Boolean replaceIndicator;
+    public InternationalString resultSetName;
+    public DatabaseName[] databaseNames;
+    private ElementSetNames smallSetElementSetNames; // optional
+    private ElementSetNames mediumSetElementSetNames; // optional
+    private ASN1ObjectIdentifier preferredRecordSyntax; // optional
+    public Query query;
+    private OtherInformation additionalSearchInfo; // optional
+    public OtherInformation otherInfo; // optional
+
     /**
      * Default constructor for a SearchRequest.
      */
     public SearchRequest() {
     }
+
     /**
      * Constructor for a SearchRequest from a BER encoding.
      *
@@ -60,7 +62,6 @@ public final class SearchRequest extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public SearchRequest(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
@@ -74,171 +75,169 @@ public final class SearchRequest extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
-        // SearchRequest should be encoded by a constructed BER
-
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("SearchRequest: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         BERConstructed tagged;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         try {
-            s_referenceId = new ReferenceId(p, true);
+            referenceId = new ReferenceId(p, true);
             part++; // yes, consumed
         } catch (ASN1Exception e) {
-            s_referenceId = null; // no, not present
+            referenceId = null; // no, not present
         }
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 13 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchRequest: bad tag in s_smallSetUpperBound\n");
+        if (p.getTag() != 13 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_smallSetUpperBound");
         }
-        s_smallSetUpperBound = new ASN1Integer(p, false);
+        smallSetUpperBound = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 14 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchRequest: bad tag in s_largeSetLowerBound\n");
+        if (p.getTag() != 14 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_largeSetLowerBound");
         }
-        s_largeSetLowerBound = new ASN1Integer(p, false);
+        largeSetLowerBound = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 15 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchRequest: bad tag in s_mediumSetPresentNumber\n");
+        if (p.getTag() != 15 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_mediumSetPresentNumber");
         }
-        s_mediumSetPresentNumber = new ASN1Integer(p, false);
+        mediumSetPresentNumber = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 16 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchRequest: bad tag in s_replaceIndicator\n");
+        if (p.getTag() != 16 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_replaceIndicator");
         }
-        s_replaceIndicator = new ASN1Boolean(p, false);
+        replaceIndicator = new ASN1Boolean(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 17 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchRequest: bad tag in s_resultSetName\n");
+        if (p.getTag() != 17 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_resultSetName");
         }
-        s_resultSetName = new InternationalString(p, false);
+        resultSetName = new InternationalString(p, false);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 18 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchRequest: bad tag in s_databaseNames\n");
+        if (p.getTag() != 18 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_databaseNames");
         }
         try {
             BERConstructed cons = (BERConstructed) p;
             int parts = cons.numberComponents();
-            s_databaseNames = new DatabaseName[parts];
+            databaseNames = new DatabaseName[parts];
             int n;
             for (n = 0; n < parts; n++) {
-                s_databaseNames[n] = new DatabaseName(cons.elementAt(n), true);
+                databaseNames[n] = new DatabaseName(cons.elementAt(n), true);
             }
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("Bad BER");
+            throw new ASN1EncodingException("bad BER");
         }
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 100 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 100 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("SearchRequest: bad BER encoding: s_smallSetElementSetNames tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: s_smallSetElementSetNames tag bad");
             }
             if (tagged.numberComponents() != 1) {
-                throw new ASN1EncodingException("SearchRequest: bad BER encoding: s_smallSetElementSetNames tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: s_smallSetElementSetNames tag bad");
             }
-            s_smallSetElementSetNames = new ElementSetNames(tagged.elementAt(0), true);
+            smallSetElementSetNames = new ElementSetNames(tagged.elementAt(0), true);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 101 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 101 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("SearchRequest: bad BER encoding: s_mediumSetElementSetNames tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: mediumSetElementSetNames tag bad");
             }
             if (tagged.numberComponents() != 1) {
-                throw new ASN1EncodingException("SearchRequest: bad BER encoding: s_mediumSetElementSetNames tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: mediumSetElementSetNames tag bad");
             }
-            s_mediumSetElementSetNames = new ElementSetNames(tagged.elementAt(0), true);
+            mediumSetElementSetNames = new ElementSetNames(tagged.elementAt(0), true);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 104 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_preferredRecordSyntax = new ASN1ObjectIdentifier(p, false);
+        if (p.getTag() == 104 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            preferredRecordSyntax = new ASN1ObjectIdentifier(p, false);
             part++;
         }
         if (numParts <= part) {
-            throw new ASN1Exception("SearchRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 21 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("SearchRequest: bad tag in s_query\n");
+        if (p.getTag() != 21 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in query");
         }
         try {
             tagged = (BERConstructed) p;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("SearchRequest: bad BER encoding: s_query tag bad\n");
+            throw new ASN1EncodingException("bad BER encoding: query tag bad");
         }
         if (tagged.numberComponents() != 1) {
-            throw new ASN1EncodingException("SearchRequest: bad BER encoding: s_query tag bad\n");
+            throw new ASN1EncodingException("bad BER encoding: query tag bad");
         }
-        s_query = new Query(tagged.elementAt(0), true);
+        query = new Query(tagged.elementAt(0), true);
         part++;
-        s_additionalSearchInfo = null;
-        s_otherInfo = null;
+        additionalSearchInfo = null;
+        otherInfo = null;
         if (numParts <= part) {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 203 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_additionalSearchInfo = new OtherInformation(p, false);
+        if (p.getTag() == 203 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            additionalSearchInfo = new OtherInformation(p, false);
             part++;
         }
         if (numParts <= part) {
@@ -246,13 +245,13 @@ public final class SearchRequest extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
         try {
-            s_otherInfo = new OtherInformation(p, true);
+            otherInfo = new OtherInformation(p, true);
             part++; // yes, consumed
         } catch (ASN1Exception e) {
-            s_otherInfo = null; // no, not present
+            otherInfo = null; // no, not present
         }
         if (part < numParts) {
-            throw new ASN1Exception("SearchRequest: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -262,6 +261,7 @@ public final class SearchRequest extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -274,24 +274,25 @@ public final class SearchRequest extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 7; // number of mandatories
-        if (s_referenceId != null) {
+        if (referenceId != null) {
             numFields++;
         }
-        if (s_smallSetElementSetNames != null) {
+        if (smallSetElementSetNames != null) {
             numFields++;
         }
-        if (s_mediumSetElementSetNames != null) {
+        if (mediumSetElementSetNames != null) {
             numFields++;
         }
-        if (s_preferredRecordSyntax != null) {
+        if (preferredRecordSyntax != null) {
             numFields++;
         }
-        if (s_additionalSearchInfo != null) {
+        if (additionalSearchInfo != null) {
             numFields++;
         }
-        if (s_otherInfo != null) {
+        if (otherInfo != null) {
             numFields++;
         }
         BEREncoding fields[] = new BEREncoding[numFields];
@@ -299,40 +300,40 @@ public final class SearchRequest extends ASN1Any {
         BEREncoding f2[];
         int p;
         BEREncoding enc[];
-        if (s_referenceId != null) {
-            fields[x++] = s_referenceId.berEncode();
+        if (referenceId != null) {
+            fields[x++] = referenceId.berEncode();
         }
-        fields[x++] = s_smallSetUpperBound.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 13);
-        fields[x++] = s_largeSetLowerBound.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 14);
-        fields[x++] = s_mediumSetPresentNumber.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 15);
-        fields[x++] = s_replaceIndicator.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 16);
-        fields[x++] = s_resultSetName.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 17);
-        f2 = new BEREncoding[s_databaseNames.length];
-        for (p = 0; p < s_databaseNames.length; p++) {
-            f2[p] = s_databaseNames[p].berEncode();
+        fields[x++] = smallSetUpperBound.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 13);
+        fields[x++] = largeSetLowerBound.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 14);
+        fields[x++] = mediumSetPresentNumber.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 15);
+        fields[x++] = replaceIndicator.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 16);
+        fields[x++] = resultSetName.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 17);
+        f2 = new BEREncoding[databaseNames.length];
+        for (p = 0; p < databaseNames.length; p++) {
+            f2[p] = databaseNames[p].berEncode();
         }
         fields[x++] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 18, f2);
-        if (s_smallSetElementSetNames != null) {
+        if (smallSetElementSetNames != null) {
             enc = new BEREncoding[1];
-            enc[0] = s_smallSetElementSetNames.berEncode();
+            enc[0] = smallSetElementSetNames.berEncode();
             fields[x++] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 100, enc);
         }
-        if (s_mediumSetElementSetNames != null) {
+        if (mediumSetElementSetNames != null) {
             enc = new BEREncoding[1];
-            enc[0] = s_mediumSetElementSetNames.berEncode();
+            enc[0] = mediumSetElementSetNames.berEncode();
             fields[x++] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 101, enc);
         }
-        if (s_preferredRecordSyntax != null) {
-            fields[x++] = s_preferredRecordSyntax.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 104);
+        if (preferredRecordSyntax != null) {
+            fields[x++] = preferredRecordSyntax.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 104);
         }
         enc = new BEREncoding[1];
-        enc[0] = s_query.berEncode();
+        enc[0] = query.berEncode();
         fields[x++] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 21, enc);
-        if (s_additionalSearchInfo != null) {
-            fields[x++] = s_additionalSearchInfo.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 203);
+        if (additionalSearchInfo != null) {
+            fields[x++] = additionalSearchInfo.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 203);
         }
-        if (s_otherInfo != null) {
-            fields[x] = s_otherInfo.berEncode();
+        if (otherInfo != null) {
+            fields[x] = otherInfo.berEncode();
         }
         return new BERConstructed(tagType, tag, fields);
     }
@@ -341,51 +342,49 @@ public final class SearchRequest extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the SearchRequest.
      */
-
+    @Override
     public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
-
-        if (s_referenceId != null) {
+        if (referenceId != null) {
             str.append("referenceId ");
-            str.append(s_referenceId);
+            str.append(referenceId);
             outputted++;
         }
-
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("smallSetUpperBound ");
-        str.append(s_smallSetUpperBound);
+        str.append(smallSetUpperBound);
         outputted++;
 
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("largeSetLowerBound ");
-        str.append(s_largeSetLowerBound);
+        str.append(largeSetLowerBound);
         outputted++;
 
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("mediumSetPresentNumber ");
-        str.append(s_mediumSetPresentNumber);
+        str.append(mediumSetPresentNumber);
         outputted++;
 
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("replaceIndicator ");
-        str.append(s_replaceIndicator);
+        str.append(replaceIndicator);
         outputted++;
 
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("resultSetName ");
-        str.append(s_resultSetName);
+        str.append(resultSetName);
         outputted++;
 
         if (0 < outputted) {
@@ -393,69 +392,62 @@ public final class SearchRequest extends ASN1Any {
         }
         str.append("databaseNames ");
         str.append("{");
-        for (p = 0; p < s_databaseNames.length; p++) {
+        for (p = 0; p < databaseNames.length; p++) {
             if (p != 0) {
                 str.append(", ");
             }
-            str.append(s_databaseNames[p]);
+            str.append(databaseNames[p]);
         }
         str.append("}");
         outputted++;
 
-        if (s_smallSetElementSetNames != null) {
+        if (smallSetElementSetNames != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("smallSetElementSetNames ");
-            str.append(s_smallSetElementSetNames);
+            str.append(smallSetElementSetNames);
             outputted++;
         }
 
-        if (s_mediumSetElementSetNames != null) {
+        if (mediumSetElementSetNames != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("mediumSetElementSetNames ");
-            str.append(s_mediumSetElementSetNames);
+            str.append(mediumSetElementSetNames);
             outputted++;
         }
-
-        if (s_preferredRecordSyntax != null) {
+        if (preferredRecordSyntax != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("preferredRecordSyntax ");
-            str.append(s_preferredRecordSyntax);
+            str.append(preferredRecordSyntax);
             outputted++;
         }
-
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("query ");
-        str.append(s_query);
+        str.append(query);
         outputted++;
-
-        if (s_additionalSearchInfo != null) {
+        if (additionalSearchInfo != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("additionalSearchInfo ");
-            str.append(s_additionalSearchInfo);
+            str.append(additionalSearchInfo);
             outputted++;
         }
-
-        if (s_otherInfo != null) {
+        if (otherInfo != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("otherInfo ");
-            str.append(s_otherInfo);
+            str.append(otherInfo);
         }
-
         str.append("}");
-
         return str.toString();
     }
-
 }

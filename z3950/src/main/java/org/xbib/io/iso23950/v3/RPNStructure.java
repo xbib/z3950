@@ -49,12 +49,13 @@ public final class RPNStructure extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed tagwrapper;
         c_op = null;
         c_rpnRpnOp = null;
-        if (ber.tagGet() == 0 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 0 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
@@ -68,8 +69,8 @@ public final class RPNStructure extends ASN1Any {
             c_op = new Operand(tagwrapper.elementAt(0), true);
             return;
         }
-        if (ber.tagGet() == 1 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 1 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_rpnRpnOp = new RPNStructureRpnRpnOp(ber, false);
             return;
         }
@@ -82,6 +83,7 @@ public final class RPNStructure extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
@@ -123,6 +125,7 @@ public final class RPNStructure extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
@@ -139,6 +142,7 @@ public final class RPNStructure extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the RPNStructure.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         boolean found = false;
@@ -157,5 +161,4 @@ public final class RPNStructure extends ASN1Any {
         str.append("}");
         return str.toString();
     }
-
 }

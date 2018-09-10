@@ -33,9 +33,7 @@ public final class SortKeySortAttributes extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public SortKeySortAttributes(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public SortKeySortAttributes(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -48,30 +46,31 @@ public final class SortKeySortAttributes extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("SortKey_sortAttributes: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
         int numParts = berConstructed.numberComponents();
         int part = 0;
         BEREncoding p;
         if (numParts <= part) {
-            throw new ASN1Exception("SortKey_sortAttributes: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         s_id = new AttributeSetId(p, true);
         part++;
         if (numParts <= part) {
-            throw new ASN1Exception("SortKey_sortAttributes: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
         s_list = new AttributeList(p, true);
         part++;
         if (part < numParts) {
-            throw new ASN1Exception("SortKey_sortAttributes: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -81,6 +80,7 @@ public final class SortKeySortAttributes extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -93,6 +93,7 @@ public final class SortKeySortAttributes extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2; // number of mandatories
         BEREncoding fields[] = new BEREncoding[numFields];
@@ -106,6 +107,7 @@ public final class SortKeySortAttributes extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the SortKey_sortAttributes.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;

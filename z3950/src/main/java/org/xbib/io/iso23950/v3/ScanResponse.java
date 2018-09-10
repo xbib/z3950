@@ -35,14 +35,15 @@ public final class ScanResponse extends ASN1Any {
     public static final int E_partial_4 = 4;
     public static final int E_partial_5 = 5;
     public static final int E_failure = 6;
-    public ReferenceId s_referenceId; // optional
-    public ASN1Integer s_stepSize; // optional
-    public ASN1Integer s_scanStatus;
-    public ASN1Integer s_numberOfEntriesReturned;
-    public ASN1Integer s_positionOfTerm; // optional
-    public ListEntries s_entries; // optional
-    public AttributeSetId s_attributeSet; // optional
-    public OtherInformation s_otherInfo; // optional
+    public ReferenceId referenceId; // optional
+    public ASN1Integer stepSize; // optional
+    public ASN1Integer scanStatus;
+    public ASN1Integer numberOfEntriesReturned;
+    public ASN1Integer positionOfTerm; // optional
+    public ListEntries entries; // optional
+    public AttributeSetId attributeSet; // optional
+    public OtherInformation otherInfo; // optional
+
     /**
      * Constructor for a ScanResponse from a BER encoding.
      *
@@ -52,9 +53,7 @@ public final class ScanResponse extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public ScanResponse(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ScanResponse(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -67,6 +66,7 @@ public final class ScanResponse extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // ScanResponse should be encoded by a constructed BER
 
@@ -74,7 +74,7 @@ public final class ScanResponse extends ASN1Any {
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException("ScanResponse: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
 
         // Prepare to decode the components
@@ -87,28 +87,28 @@ public final class ScanResponse extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ScanResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
         try {
-            s_referenceId = new ReferenceId(p, true);
+            referenceId = new ReferenceId(p, true);
             part++; // yes, consumed
         } catch (ASN1Exception e) {
-            s_referenceId = null; // no, not present
+            referenceId = null; // no, not present
         }
 
         // Decoding: stepSize [3] IMPLICIT INTEGER OPTIONAL
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ScanResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 3 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_stepSize = new ASN1Integer(p, false);
+        if (p.getTag() == 3 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            stepSize = new ASN1Integer(p, false);
             part++;
         }
 
@@ -116,41 +116,41 @@ public final class ScanResponse extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ScanResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 4 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("ScanResponse: bad tag in s_scanStatus\n");
+        if (p.getTag() != 4 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in scanStatus");
         }
 
-        s_scanStatus = new ASN1Integer(p, false);
+        scanStatus = new ASN1Integer(p, false);
         part++;
 
         // Decoding: numberOfEntriesReturned [5] IMPLICIT INTEGER
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ScanResponse: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 5 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException("ScanResponse: bad tag in s_numberOfEntriesReturned\n");
+        if (p.getTag() != 5 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in numberOfEntriesReturned");
         }
 
-        s_numberOfEntriesReturned = new ASN1Integer(p, false);
+        numberOfEntriesReturned = new ASN1Integer(p, false);
         part++;
 
         // Remaining elements are optional, set variables
         // to null (not present) so can return at endStream of BER
 
-        s_positionOfTerm = null;
-        s_entries = null;
-        s_attributeSet = null;
-        s_otherInfo = null;
+        positionOfTerm = null;
+        entries = null;
+        attributeSet = null;
+        otherInfo = null;
 
         // Decoding: positionOfTerm [6] IMPLICIT INTEGER OPTIONAL
 
@@ -159,9 +159,9 @@ public final class ScanResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 6 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_positionOfTerm = new ASN1Integer(p, false);
+        if (p.getTag() == 6 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            positionOfTerm = new ASN1Integer(p, false);
             part++;
         }
 
@@ -172,9 +172,9 @@ public final class ScanResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 7 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_entries = new ListEntries(p, false);
+        if (p.getTag() == 7 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            entries = new ListEntries(p, false);
             part++;
         }
 
@@ -185,9 +185,9 @@ public final class ScanResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 8 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            s_attributeSet = new AttributeSetId(p, false);
+        if (p.getTag() == 8 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            attributeSet = new AttributeSetId(p, false);
             part++;
         }
 
@@ -199,16 +199,16 @@ public final class ScanResponse extends ASN1Any {
         p = berConstructed.elementAt(part);
 
         try {
-            s_otherInfo = new OtherInformation(p, true);
+            otherInfo = new OtherInformation(p, true);
             part++; // yes, consumed
         } catch (ASN1Exception e) {
-            s_otherInfo = null; // no, not present
+            otherInfo = null; // no, not present
         }
 
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("ScanResponse: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -218,6 +218,7 @@ public final class ScanResponse extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -230,26 +231,27 @@ public final class ScanResponse extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
         int numFields = 2; // number of mandatories
-        if (s_referenceId != null) {
+        if (referenceId != null) {
             numFields++;
         }
-        if (s_stepSize != null) {
+        if (stepSize != null) {
             numFields++;
         }
-        if (s_positionOfTerm != null) {
+        if (positionOfTerm != null) {
             numFields++;
         }
-        if (s_entries != null) {
+        if (entries != null) {
             numFields++;
         }
-        if (s_attributeSet != null) {
+        if (attributeSet != null) {
             numFields++;
         }
-        if (s_otherInfo != null) {
+        if (otherInfo != null) {
             numFields++;
         }
 
@@ -260,46 +262,46 @@ public final class ScanResponse extends ASN1Any {
 
         // Encoding s_referenceId: ReferenceId OPTIONAL
 
-        if (s_referenceId != null) {
-            fields[x++] = s_referenceId.berEncode();
+        if (referenceId != null) {
+            fields[x++] = referenceId.berEncode();
         }
 
         // Encoding s_stepSize: INTEGER OPTIONAL
 
-        if (s_stepSize != null) {
-            fields[x++] = s_stepSize.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 3);
+        if (stepSize != null) {
+            fields[x++] = stepSize.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 3);
         }
 
         // Encoding s_scanStatus: INTEGER
 
-        fields[x++] = s_scanStatus.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 4);
+        fields[x++] = scanStatus.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 4);
 
         // Encoding s_numberOfEntriesReturned: INTEGER
 
-        fields[x++] = s_numberOfEntriesReturned.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 5);
+        fields[x++] = numberOfEntriesReturned.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 5);
 
         // Encoding s_positionOfTerm: INTEGER OPTIONAL
 
-        if (s_positionOfTerm != null) {
-            fields[x++] = s_positionOfTerm.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 6);
+        if (positionOfTerm != null) {
+            fields[x++] = positionOfTerm.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 6);
         }
 
         // Encoding s_entries: ListEntries OPTIONAL
 
-        if (s_entries != null) {
-            fields[x++] = s_entries.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 7);
+        if (entries != null) {
+            fields[x++] = entries.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 7);
         }
 
         // Encoding s_attributeSet: AttributeSetId OPTIONAL
 
-        if (s_attributeSet != null) {
-            fields[x++] = s_attributeSet.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 8);
+        if (attributeSet != null) {
+            fields[x++] = attributeSet.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 8);
         }
 
         // Encoding s_otherInfo: OtherInformation OPTIONAL
 
-        if (s_otherInfo != null) {
-            fields[x] = s_otherInfo.berEncode();
+        if (otherInfo != null) {
+            fields[x] = otherInfo.berEncode();
         }
 
         return new BERConstructed(tagType, tag, fields);
@@ -309,23 +311,23 @@ public final class ScanResponse extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ScanResponse.
      */
-
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
 
-        if (s_referenceId != null) {
+        if (referenceId != null) {
             str.append("referenceId ");
-            str.append(s_referenceId);
+            str.append(referenceId);
             outputted++;
         }
 
-        if (s_stepSize != null) {
+        if (stepSize != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("stepSize ");
-            str.append(s_stepSize);
+            str.append(stepSize);
             outputted++;
         }
 
@@ -333,54 +335,53 @@ public final class ScanResponse extends ASN1Any {
             str.append(", ");
         }
         str.append("scanStatus ");
-        str.append(s_scanStatus);
+        str.append(scanStatus);
         outputted++;
 
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("numberOfEntriesReturned ");
-        str.append(s_numberOfEntriesReturned);
+        str.append(numberOfEntriesReturned);
         outputted++;
 
-        if (s_positionOfTerm != null) {
+        if (positionOfTerm != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("positionOfTerm ");
-            str.append(s_positionOfTerm);
+            str.append(positionOfTerm);
             outputted++;
         }
 
-        if (s_entries != null) {
+        if (entries != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("entries ");
-            str.append(s_entries);
+            str.append(entries);
             outputted++;
         }
 
-        if (s_attributeSet != null) {
+        if (attributeSet != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("attributeSet ");
-            str.append(s_attributeSet);
+            str.append(attributeSet);
             outputted++;
         }
 
-        if (s_otherInfo != null) {
+        if (otherInfo != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("otherInfo ");
-            str.append(s_otherInfo);
+            str.append(otherInfo);
         }
 
         str.append("}");
 
         return str.toString();
     }
-
 }

@@ -22,7 +22,6 @@ public final class ResultSetId extends ASN1Any {
     public ResultSetId() {
     }
 
-
     /**
      * Constructor for a ResultSetId from a BER encoding.
      *
@@ -32,9 +31,7 @@ public final class ResultSetId extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public ResultSetId(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ResultSetId(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -47,17 +44,15 @@ public final class ResultSetId extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Check tag matches
 
         if (checkTag) {
-            if (ber.tagGet() != 31 ||
-                    ber.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            if (ber.getTag() != 31 ||
+                    ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
                 throw new ASN1EncodingException
-                        ("ResultSetId: bad BER: tag=" + ber.tagGet() + " expected 31\n");
+                        ("ResultSetId: bad BER: tag=" + ber.getTag() + " expected 31\n");
             }
         }
 
@@ -70,10 +65,8 @@ public final class ResultSetId extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 31);
     }
 
@@ -85,6 +78,7 @@ public final class ResultSetId extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         return value.berEncode(tagType, tag);
     }
@@ -93,8 +87,8 @@ public final class ResultSetId extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ResultSetId.
      */
+    @Override
     public String toString() {
         return value.toString();
     }
-
 }

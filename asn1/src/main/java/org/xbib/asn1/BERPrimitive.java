@@ -31,10 +31,18 @@ public class BERPrimitive extends BEREncoding {
      * classes. It is not intended that higher level classes create
      * BERPrimitives directly.
      *
+     * @param asn1Class ASN.1 class
+     * @param tag tag
+     * @param contents contents
+     *
+     * @throws ASN1Exception if BER primitive fails
+     *
      * @see org.xbib.asn1.BEREncoding#UNIVERSAL_TAG
      * @see org.xbib.asn1.BEREncoding#APPLICATION_TAG
      * @see org.xbib.asn1.BEREncoding#CONTEXT_SPECIFIC_TAG
      * @see org.xbib.asn1.BEREncoding#PRIVATE_TAG
+     *
+     *
      */
     public BERPrimitive(int asn1Class, int tag, int[] contents) throws ASN1Exception {
         init(asn1Class, false, tag, contents.length);
@@ -44,6 +52,7 @@ public class BERPrimitive extends BEREncoding {
     /**
      * This method allows the content octets to be examined.
      * Once again, only the ASN.1 standard objects should be using this.
+     * @return content octets
      */
     public int[] getContentOctets() {
         return contentsOctets;
@@ -52,11 +61,12 @@ public class BERPrimitive extends BEREncoding {
     /**
      * Returns a new String object representing this BER encoded
      * ASN.1 object's value.
+     * @return string
      */
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("[");
-        switch (iTagType) {
+        switch (tagType) {
             case BEREncoding.UNIVERSAL_TAG:
                 str.append("UNIVERSAL ");
                 break;
@@ -72,7 +82,7 @@ public class BERPrimitive extends BEREncoding {
             default:
                 break;
         }
-        str.append(String.valueOf(iTag)).append("] '");
+        str.append(String.valueOf(tag)).append("] '");
         for (int octet : contentsOctets) {
             str.append(hex[(octet >> 4) & 0x0f]);
             str.append(hex[octet & 0x0f]);
@@ -83,10 +93,12 @@ public class BERPrimitive extends BEREncoding {
 
     /**
      * This protected method is used to implement the "get_encoding" method.
+     *
+     * @return integer
      */
     @Override
-    protected int iEncodingGet(int offset, byte[] data) {
-        int i = iGetHead(offset, data);
+    protected int getEncoding(int offset, byte[] data) {
+        int i = getHead(offset, data);
         for (int contentsOctet : contentsOctets) {
             data[i++] = (byte) contentsOctet;
         }

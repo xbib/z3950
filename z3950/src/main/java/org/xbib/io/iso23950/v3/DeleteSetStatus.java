@@ -28,6 +28,7 @@ public final class DeleteSetStatus extends ASN1Any {
     public static final int E_NOT_ALL_REQUESTED_RESULT_SETS_DELETED = 9;
     public static final int E_RESULT_SET_IN_USE = 10;
     public ASN1Integer value;
+
     /**
      * Constructor for a DeleteSetStatus from a BER encoding.
      *
@@ -37,7 +38,6 @@ public final class DeleteSetStatus extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
     public DeleteSetStatus(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
@@ -51,11 +51,12 @@ public final class DeleteSetStatus extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         if (checkTag) {
-            if (ber.tagGet() != 33 ||
-                    ber.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-                throw new ASN1EncodingException("DeleteSetStatus: bad BER: tag=" + ber.tagGet() + " expected 33\n");
+            if (ber.getTag() != 33 ||
+                    ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected 33");
             }
         }
         value = new ASN1Integer(ber, false);
@@ -67,7 +68,7 @@ public final class DeleteSetStatus extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 33);
     }
@@ -80,6 +81,7 @@ public final class DeleteSetStatus extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         return value.berEncode(tagType, tag);
     }
@@ -88,10 +90,8 @@ public final class DeleteSetStatus extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the DeleteSetStatus.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         return value.toString();
     }
-
 }

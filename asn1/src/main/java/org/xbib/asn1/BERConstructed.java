@@ -29,7 +29,7 @@ public class BERConstructed extends BEREncoding {
             throws ASN1Exception {
         int contentLength = 0;
         for (BEREncoding element : elements) {
-            contentLength += element.iTotalLength;
+            contentLength += element.totalLength;
         }
         init(asn1Class, true, tag, contentLength);
         contentElements = elements;
@@ -65,7 +65,7 @@ public class BERConstructed extends BEREncoding {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("[");
-        switch (iTagType) {
+        switch (tagType) {
             case BEREncoding.UNIVERSAL_TAG:
                 str.append("UNIVERSAL ");
                 break;
@@ -81,7 +81,7 @@ public class BERConstructed extends BEREncoding {
             default:
                 break;
         }
-        str.append(String.valueOf(iTag)).append("]{");
+        str.append(String.valueOf(tag)).append("]{");
         for (int x = 0; x < contentElements.length; x++) {
             if (x != 0) {
                 str.append(',');
@@ -96,10 +96,10 @@ public class BERConstructed extends BEREncoding {
      * This protected method is used to implement the "get_encoding" method.
      */
     @Override
-    protected int iEncodingGet(int offset, byte[] data) {
-        int i = iGetHead(offset, data);
+    protected int getEncoding(int offset, byte[] data) {
+        int i = getHead(offset, data);
         for (BEREncoding contentElement : contentElements) {
-            i = contentElement.iEncodingGet(i, data);
+            i = contentElement.getEncoding(i, data);
         }
         return i;
     }

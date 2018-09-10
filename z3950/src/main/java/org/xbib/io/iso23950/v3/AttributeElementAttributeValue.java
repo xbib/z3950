@@ -18,9 +18,9 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class AttributeElementAttributeValue extends ASN1Any {
 
-    public ASN1Integer cNumeric;
+    public ASN1Integer numeric;
 
-    public AttributeElementAttributeValueComplex attributeValueComplex;
+    public AttributeElementAttributeValueComplex complex;
 
     /**
      * Default constructor for a AttributeElement_attributeValue.
@@ -52,16 +52,16 @@ public final class AttributeElementAttributeValue extends ASN1Any {
      * @throws ASN1Exception if the BER encoding is bad.
      */
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
-        cNumeric = null;
-        attributeValueComplex = null;
-        if (ber.tagGet() == 121 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            cNumeric = new ASN1Integer(ber, false);
+        numeric = null;
+        complex = null;
+        if (ber.getTag() == 121 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            numeric = new ASN1Integer(ber, false);
             return;
         }
-        if (ber.tagGet() == 224 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            attributeValueComplex = new AttributeElementAttributeValueComplex(ber, false);
+        if (ber.getTag() == 224 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            complex = new AttributeElementAttributeValueComplex(ber, false);
             return;
         }
         throw new ASN1Exception("AttributeElement_attributeValue: bad BER encoding: choice not matched");
@@ -75,14 +75,14 @@ public final class AttributeElementAttributeValue extends ASN1Any {
      */
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
-        if (cNumeric != null) {
-            chosen = cNumeric.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 121);
+        if (numeric != null) {
+            chosen = numeric.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 121);
         }
-        if (attributeValueComplex != null) {
+        if (complex != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = attributeValueComplex.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 224);
+            chosen = complex.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 224);
         }
         if (chosen == null) {
             throw new ASN1Exception("CHOICE not set");
@@ -101,17 +101,17 @@ public final class AttributeElementAttributeValue extends ASN1Any {
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         boolean found = false;
-        if (cNumeric != null) {
+        if (numeric != null) {
             found = true;
             str.append("numeric ");
-            str.append(cNumeric);
+            str.append(numeric);
         }
-        if (attributeValueComplex != null) {
+        if (complex != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: complex> ");
             }
             str.append("complex ");
-            str.append(attributeValueComplex);
+            str.append(complex);
         }
         str.append("}");
         return str.toString();

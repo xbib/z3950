@@ -13,8 +13,8 @@ public class ASN1Decoder {
     }
 
     public static ASN1Any toASN1(BEREncoding ber) throws ASN1Exception {
-        if (ber.tagTypeGet() == BEREncoding.UNIVERSAL_TAG) {
-            switch (ber.tagGet()) {
+        if (ber.getTagType() == BEREncoding.UNIVERSAL_TAG) {
+            switch (ber.getTag()) {
                 case ASN1Boolean.TAG:
                     return new ASN1Boolean(ber, true);
                 case ASN1Integer.INTEGER_TAG:

@@ -19,14 +19,13 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class PresentRequestRecordComposition extends ASN1Any {
 
-    public ElementSetNames c_simple;
+    public ElementSetNames simple;
 
-    public CompSpec c_complex;
+    public CompSpec complex;
 
     /**
      * Default constructor for a PresentRequest_recordComposition.
      */
-
     public PresentRequestRecordComposition() {
     }
 
@@ -52,29 +51,30 @@ public final class PresentRequestRecordComposition extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed tagwrapper;
-        c_simple = null;
-        c_complex = null;
-        if (ber.tagGet() == 19 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        simple = null;
+        complex = null;
+        if (ber.getTag() == 19 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("PresentRequest_recordComposition: bad BER form");
+                throw new ASN1EncodingException("bad BER form");
             }
             if (tagwrapper.numberComponents() != 1) {
-                throw new ASN1EncodingException("PresentRequest_recordComposition: bad BER form");
+                throw new ASN1EncodingException("bad BER form");
             }
-            c_simple = new ElementSetNames(tagwrapper.elementAt(0), true);
+            simple = new ElementSetNames(tagwrapper.elementAt(0), true);
             return;
         }
-        if (ber.tagGet() == 209 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            c_complex = new CompSpec(ber, false);
+        if (ber.getTag() == 209 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            complex = new CompSpec(ber, false);
             return;
         }
-        throw new ASN1Exception("PresentRequest_recordComposition: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -83,19 +83,20 @@ public final class PresentRequestRecordComposition extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
         BEREncoding[] enc;
-        if (c_simple != null) {
+        if (simple != null) {
             enc = new BEREncoding[1];
-            enc[0] = c_simple.berEncode();
+            enc[0] = simple.berEncode();
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 19, enc);
         }
-        if (c_complex != null) {
+        if (complex != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = c_complex.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 209);
+            chosen = complex.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 209);
         }
         if (chosen == null) {
             throw new ASN1Exception("CHOICE not set");
@@ -103,28 +104,30 @@ public final class PresentRequestRecordComposition extends ASN1Any {
         return chosen;
     }
 
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
-        throw new ASN1EncodingException("PresentRequest_recordComposition: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the PresentRequest_recordComposition.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         boolean found = false;
-        if (c_simple != null) {
+        if (simple != null) {
             found = true;
             str.append("simple ");
-            str.append(c_simple);
+            str.append(simple);
         }
-        if (c_complex != null) {
+        if (complex != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: complex> ");
             }
             str.append("complex ");
-            str.append(c_complex);
+            str.append(complex);
         }
         str.append("}");
         return str.toString();

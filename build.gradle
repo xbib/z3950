@@ -1,4 +1,5 @@
 plugins {
+    id "com.github.spotbugs" version "1.6.2"
     id "org.sonarqube" version '2.6.1'
     id "io.codearte.nexus-staging" version "0.11.0"
 }
@@ -17,18 +18,22 @@ printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGradle: %s Groovy: %s Java: %s
         GroovySystem.getVersion(),
         JavaVersion.current()
 
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+apply plugin: 'jacoco'
+apply plugin: "com.github.spotbugs"
+
+
+apply from: "${rootProject.projectDir}/gradle/ext.gradle"
+apply from: "${rootProject.projectDir}/gradle/sonarqube.gradle"
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'signing'
-    apply plugin: 'findbugs'
-    apply plugin: 'pmd'
-    apply plugin: 'checkstyle'
-    apply plugin: 'jacoco'
-
-    repositories {
-        mavenCentral()
-    }
 
     configurations {
         wagon
@@ -82,8 +87,6 @@ subprojects {
             sign configurations.archives
         }
     }
-
-    apply from: "${rootProject.projectDir}/gradle/ext.gradle"
     apply from: "${rootProject.projectDir}/gradle/publish.gradle"
-    apply from: "${rootProject.projectDir}/gradle/sonarqube.gradle"
+
 }

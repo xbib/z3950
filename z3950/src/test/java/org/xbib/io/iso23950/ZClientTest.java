@@ -26,7 +26,7 @@ public class ZClientTest {
             int size = 10;
             try (ZClient client = newZClient(serviceName)) {
                 logger.log(Level.INFO, "executing CQL " + serviceName);
-                int count = client.executeCQL(query, from, size,
+                int count = client.searchCQL(query, from, size,
                         (status, total, returned, elapsedMillis) ->
                                 logger.log(Level.INFO, serviceName + " total results = " + total),
                         record -> logger.log(Level.INFO, "record = " + record));
@@ -38,6 +38,24 @@ public class ZClientTest {
     }
 
     @Test
+    public void testGBV() {
+        String serviceName = "GBV";
+        String query = "gbv.controlNumberZDB = 1413423-8";
+        int from = 1;
+        int size = 2;
+        try (ZClient client = newZClient(serviceName)) {
+            logger.log(Level.INFO, "executing CQL " + query);
+            int count = client.searchCQL(query, from, size,
+                    (status, total, returned, elapsedMillis) ->
+                            logger.log(Level.INFO, serviceName + " total results = " + total),
+                    record -> logger.log(Level.INFO, "record = " + record));
+            logger.log(Level.INFO, "returned records = " + count);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    @Test
     public void testPQF() {
         for (String serviceName : Arrays.asList("LIBRIS", "SWB")) {
             String query = "@attr 1=8 \"00280836\"";
@@ -45,7 +63,7 @@ public class ZClientTest {
             int size = 10;
             try (ZClient client = newZClient(serviceName)) {
                 logger.log(Level.INFO, "executing PQF " + serviceName);
-                int count = client.executePQF(query, from, size,
+                int count = client.searchPQF(query, from, size,
                         (status, total, returned, elapsedMillis) ->
                                 logger.log(Level.INFO, serviceName + " status = " + status + " total results = " + total),
                         record -> logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))));

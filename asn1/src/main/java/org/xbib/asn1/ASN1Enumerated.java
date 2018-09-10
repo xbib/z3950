@@ -52,9 +52,9 @@ public final class ASN1Enumerated extends ASN1Any {
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag)
             throws ASN1EncodingException {
-        if (checkTag && (berEncoding.tagGet() != ENUMERATED_TAG ||
-                    berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.tagGet() +
+        if (checkTag && (berEncoding.getTag() != ENUMERATED_TAG ||
+                    berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.getTag() +
                             " expected " + ENUMERATED_TAG + "\n");
         }
         if (!(berEncoding instanceof BERPrimitive)) {

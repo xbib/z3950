@@ -31,8 +31,8 @@ public final class ASN1GeneralizedTime extends ASN1VisibleString {
     public ASN1GeneralizedTime(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != GENERALIZED_TIME_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + ber.tagGet() +
+        if (checkTag && (ber.getTag() != GENERALIZED_TIME_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() +
                             " expected " + GENERALIZED_TIME_TAG + "\n");
         }
     }

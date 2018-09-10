@@ -48,9 +48,9 @@ public final class ASN1Boolean extends ASN1Any {
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag)
             throws ASN1EncodingException {
-        if (checkTag && (berEncoding.tagGet() != TAG || berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
+        if (checkTag && (berEncoding.getTag() != TAG || berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
             throw new ASN1EncodingException
-                    ("ASN.1 BOOLEAN: bad BER: tag=" + berEncoding.tagGet() +
+                    ("ASN.1 BOOLEAN: bad BER: tag=" + berEncoding.getTag() +
                             " expected " + "TAG\n");
         }
         if (berEncoding instanceof BERPrimitive) {

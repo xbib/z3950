@@ -56,6 +56,7 @@ public final class DeleteResultSetResponse extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
@@ -81,8 +82,8 @@ public final class DeleteResultSetResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 0 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 0 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException("DeleteResultSetResponse: bad tag in s_deleteOperationStatus\n");
         }
         sDeleteOperationStatus = new DeleteSetStatus(p, false);
@@ -96,8 +97,8 @@ public final class DeleteResultSetResponse extends ASN1Any {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 1 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 1 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sDeleteListStatuses = new ListStatuses(p, false);
             part++;
         }
@@ -105,8 +106,8 @@ public final class DeleteResultSetResponse extends ASN1Any {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 34 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 34 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sNumberNotDeleted = new ASN1Integer(p, false);
             part++;
         }
@@ -114,8 +115,8 @@ public final class DeleteResultSetResponse extends ASN1Any {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 35 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 35 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sBulkStatuses = new ListStatuses(p, false);
             part++;
         }
@@ -123,8 +124,8 @@ public final class DeleteResultSetResponse extends ASN1Any {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 36 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 36 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             sDeleteMessage = new InternationalString(p, false);
             part++;
         }
@@ -149,6 +150,7 @@ public final class DeleteResultSetResponse extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -161,6 +163,7 @@ public final class DeleteResultSetResponse extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 1;
         if (sReferenceId != null) {
@@ -209,6 +212,7 @@ public final class DeleteResultSetResponse extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the DeleteResultSetResponse.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;

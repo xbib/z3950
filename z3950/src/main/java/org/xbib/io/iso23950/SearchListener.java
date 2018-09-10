@@ -6,7 +6,7 @@ import java.io.IOException;
  *
  */
 @FunctionalInterface
-public interface ResponseListener {
+public interface SearchListener {
 
     void onResponse(int status, int total, int returned, long elapsedMillis) throws IOException;
 }

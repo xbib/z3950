@@ -20,9 +20,8 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class ListEntries extends ASN1Any {
 
-    public Entry s_entries[]; // optional
-    public DiagRec s_nonsurrogateDiagnostics[]; // optional
-
+    public Entry[] s_entries; // optional
+    public DiagRec[] s_nonsurrogateDiagnostics; // optional
 
     /**
      * Constructor for a ListEntries from a BER encoding.
@@ -46,17 +45,14 @@ public final class ListEntries extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // ListEntries should be encoded by a constructed BER
 
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
-        } catch (ClassCastException e) {
-            throw new ASN1EncodingException("ListEntries: bad BER form\n");
+        } catch (ClassCastException e) { throw new ASN1EncodingException("bad BER form");
         }
 
         // Prepare to decode the components
@@ -78,8 +74,8 @@ public final class ListEntries extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 1 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 1 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 BERConstructed cons = (BERConstructed) p;
                 int parts = cons.numberComponents();
@@ -89,7 +85,7 @@ public final class ListEntries extends ASN1Any {
                     s_entries[n] = new Entry(cons.elementAt(n), true);
                 }
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("Bad BER");
+                throw new ASN1EncodingException("bad BER");
             }
             part++;
         }
@@ -101,8 +97,8 @@ public final class ListEntries extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 2 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 2 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 BERConstructed cons = (BERConstructed) p;
                 int parts = cons.numberComponents();
@@ -112,7 +108,7 @@ public final class ListEntries extends ASN1Any {
                     s_nonsurrogateDiagnostics[n] = new DiagRec(cons.elementAt(n), true);
                 }
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException("Bad BER");
+                throw new ASN1EncodingException("bad BER");
             }
             part++;
         }
@@ -120,7 +116,7 @@ public final class ListEntries extends ASN1Any {
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("ListEntries: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -130,10 +126,8 @@ public final class ListEntries extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -145,6 +139,7 @@ public final class ListEntries extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
@@ -193,6 +188,7 @@ public final class ListEntries extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ListEntries.
      */
+    @Override
     public String toString() {
         int p;
         StringBuilder str = new StringBuilder("{");

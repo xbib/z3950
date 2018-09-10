@@ -53,12 +53,10 @@ public final class ASN1Set extends ASN1Any {
      * @throws ASN1Exception If the BER encoding is incorrect.
      */
     @Override
-    public void berDecode(BEREncoding berEncoding, boolean checkTag)
-            throws ASN1Exception {
-        if (checkTag && (berEncoding.tagGet() != SET_TAG ||
-                berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.tagGet() +
-                            " expected " + SET_TAG + "\n");
+    public void berDecode(BEREncoding berEncoding, boolean checkTag) throws ASN1Exception {
+        if (checkTag && (berEncoding.getTag() != SET_TAG ||
+                berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.getTag() + " expected " + SET_TAG);
         }
         if (berEncoding instanceof BERPrimitive) {
             throw new ASN1EncodingException("bad form, primitive");

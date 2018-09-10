@@ -35,12 +35,13 @@ public final class ResourceReportResponse extends ASN1Any {
     public ASN1Integer s_resourceReportStatus;
     public ResourceReport s_resourceReport; // optional
     public OtherInformation s_otherInfo; // optional
+
     /**
      * Default constructor for a ResourceReportResponse.
      */
-
     public ResourceReportResponse() {
     }
+
     /**
      * Constructor for a ResourceReportResponse from a BER encoding.
      *
@@ -50,9 +51,7 @@ public final class ResourceReportResponse extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public ResourceReportResponse(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ResourceReportResponse(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -65,6 +64,7 @@ public final class ResourceReportResponse extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // ResourceReportResponse should be encoded by a constructed BER
 
@@ -105,8 +105,8 @@ public final class ResourceReportResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 50 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 50 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException("ResourceReportResponse: bad tag in s_resourceReportStatus\n");
         }
 
@@ -126,8 +126,8 @@ public final class ResourceReportResponse extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 51 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 51 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {
@@ -168,6 +168,7 @@ public final class ResourceReportResponse extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -180,6 +181,7 @@ public final class ResourceReportResponse extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
@@ -196,9 +198,9 @@ public final class ResourceReportResponse extends ASN1Any {
 
         // Encode it
 
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
-        BEREncoding enc[];
+        BEREncoding[] enc;
 
         // Encoding s_referenceId: ReferenceId OPTIONAL
 
@@ -227,6 +229,7 @@ public final class ResourceReportResponse extends ASN1Any {
         return new BERConstructed(tagType, tag, fields);
     }
 
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
@@ -262,8 +265,6 @@ public final class ResourceReportResponse extends ASN1Any {
         }
 
         str.append("}");
-
         return str.toString();
     }
-
 }

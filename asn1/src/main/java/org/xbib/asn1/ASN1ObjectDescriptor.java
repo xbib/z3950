@@ -32,9 +32,9 @@ public final class ASN1ObjectDescriptor extends ASN1GraphicString {
     public ASN1ObjectDescriptor(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != OBJECT_DESCRIPTOR_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
+        if (checkTag && (ber.getTag() != OBJECT_DESCRIPTOR_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
             throw new ASN1EncodingException
-                    ("ASN.1 ObjectDescriptor: bad BER: tag=" + ber.tagGet() +
+                    ("ASN.1 ObjectDescriptor: bad BER: tag=" + ber.getTag() +
                             " expected " + OBJECT_DESCRIPTOR_TAG + "\n");
         }
     }

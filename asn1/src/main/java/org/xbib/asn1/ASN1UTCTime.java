@@ -39,13 +39,10 @@ public final class ASN1UTCTime extends ASN1VisibleString {
      * @param checkTag If true, it checks the tag. Use false if is implicitly tagged.
      * @throws ASN1Exception If the BER encoding is incorrect.
      */
-    public ASN1UTCTime(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ASN1UTCTime(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != UTC_TIME_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException
-                    ("ASN.1 UTCTime: bad BER: tag=" + ber.tagGet() +
-                            " expected " + UTC_TIME_TAG + "\n");
+        if (checkTag && (ber.getTag() != UTC_TIME_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() + " expected " + UTC_TIME_TAG);
         }
     }
 

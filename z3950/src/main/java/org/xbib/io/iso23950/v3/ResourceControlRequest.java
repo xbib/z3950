@@ -37,12 +37,13 @@ public final class ResourceControlRequest extends ASN1Any {
     public ASN1Boolean s_responseRequired;
     public ASN1Boolean s_triggeredRequestFlag; // optional
     public OtherInformation s_otherInfo; // optional
+
     /**
      * Default constructor for a ResourceControlRequest.
      */
-
     public ResourceControlRequest() {
     }
+
     /**
      * Constructor for a ResourceControlRequest from a BER encoding.
      *
@@ -52,9 +53,7 @@ public final class ResourceControlRequest extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public ResourceControlRequest(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ResourceControlRequest(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -67,18 +66,15 @@ public final class ResourceControlRequest extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // ResourceControlRequest should be encoded by a constructed BER
 
         BERConstructed berConstructed;
         try {
             berConstructed = (BERConstructed) ber;
         } catch (ClassCastException e) {
-            throw new ASN1EncodingException
-                    ("ResourceControlRequest: bad BER form\n");
+            throw new ASN1EncodingException("bad BER form");
         }
 
         // Prepare to decode the components
@@ -92,7 +88,7 @@ public final class ResourceControlRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ResourceControlRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
@@ -107,12 +103,12 @@ public final class ResourceControlRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ResourceControlRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 39 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 39 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             s_suspendedFlag = new ASN1Boolean(p, false);
             part++;
         }
@@ -121,23 +117,20 @@ public final class ResourceControlRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ResourceControlRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 40 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 40 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {
-                throw new ASN1EncodingException
-                        ("ResourceControlRequest: bad BER encoding: s_resourceReport tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: s_resourceReport tag bad");
             }
             if (tagged.numberComponents() != 1) {
-                throw new ASN1EncodingException
-                        ("ResourceControlRequest: bad BER encoding: s_resourceReport tag bad\n");
+                throw new ASN1EncodingException("bad BER encoding: s_resourceReport tag bad");
             }
-
             s_resourceReport = new ResourceReport(tagged.elementAt(0), true);
             part++;
         }
@@ -146,12 +139,12 @@ public final class ResourceControlRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ResourceControlRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 41 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 41 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             s_partialResultsAvailable = new ASN1Integer(p, false);
             part++;
         }
@@ -160,14 +153,13 @@ public final class ResourceControlRequest extends ASN1Any {
 
         if (numParts <= part) {
             // End of record, but still more elements to get
-            throw new ASN1Exception("ResourceControlRequest: incomplete");
+            throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() != 42 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            throw new ASN1EncodingException
-                    ("ResourceControlRequest: bad tag in s_responseRequired\n");
+        if (p.getTag() != 42 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            throw new ASN1EncodingException("bad tag in s_responseRequired");
         }
 
         s_responseRequired = new ASN1Boolean(p, false);
@@ -186,8 +178,8 @@ public final class ResourceControlRequest extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
 
-        if (p.tagGet() == 43 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 43 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             s_triggeredRequestFlag = new ASN1Boolean(p, false);
             part++;
         }
@@ -209,7 +201,7 @@ public final class ResourceControlRequest extends ASN1Any {
         // Should not be any more parts
 
         if (part < numParts) {
-            throw new ASN1Exception("ResourceControlRequest: bad BER: extra data " + part + "/" + numParts + " processed");
+            throw new ASN1Exception("bad BER: extra data " + part + "/" + numParts + " processed");
         }
     }
 
@@ -219,10 +211,8 @@ public final class ResourceControlRequest extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
 
@@ -234,10 +224,8 @@ public final class ResourceControlRequest extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // Calculate the number of fields in the encoding
 
         int numFields = 1; // number of mandatories
@@ -315,9 +303,8 @@ public final class ResourceControlRequest extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ResourceControlRequest.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
 
@@ -376,12 +363,8 @@ public final class ResourceControlRequest extends ASN1Any {
             }
             str.append("otherInfo ");
             str.append(s_otherInfo);
-            outputted++;
         }
-
         str.append("}");
-
         return str.toString();
     }
-
 }

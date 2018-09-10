@@ -31,8 +31,8 @@ public class ASN1NumericString extends ASN1OctetString {
     public ASN1NumericString(BEREncoding ber, boolean checkTag)
             throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != NUMERIC_STRING_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + ber.tagGet() +
+        if (checkTag && (ber.getTag() != NUMERIC_STRING_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() +
                             " expected " + NUMERIC_STRING_TAG + "\n");
         }
     }

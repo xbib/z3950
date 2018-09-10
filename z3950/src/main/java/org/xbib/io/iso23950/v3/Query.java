@@ -34,9 +34,9 @@ public final class Query extends ASN1Any {
     /**
      * Default constructor for a Query.
      */
-
     public Query() {
     }
+
     /**
      * Constructor for a Query from a BER encoding.
      *
@@ -46,9 +46,7 @@ public final class Query extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public Query(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public Query(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -61,10 +59,8 @@ public final class Query extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed tagwrapper;
 
         // Null out all choices
@@ -77,8 +73,8 @@ public final class Query extends ASN1Any {
         c_type_102 = null;
 
         // Try choice type-0
-        if (ber.tagGet() == 0 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 0 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
@@ -92,15 +88,15 @@ public final class Query extends ASN1Any {
         }
 
         // Try choice type-1
-        if (ber.tagGet() == 1 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 1 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_type_1 = new RPNQuery(ber, false);
             return;
         }
 
         // Try choice type-2
-        if (ber.tagGet() == 2 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 2 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
@@ -116,8 +112,8 @@ public final class Query extends ASN1Any {
         }
 
         // Try choice type-100
-        if (ber.tagGet() == 100 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 100 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
@@ -133,15 +129,15 @@ public final class Query extends ASN1Any {
         }
 
         // Try choice type-101
-        if (ber.tagGet() == 101 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 101 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_type_101 = new RPNQuery(ber, false);
             return;
         }
 
         // Try choice type-102
-        if (ber.tagGet() == 102 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 102 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagwrapper = (BERConstructed) ber;
             } catch (ClassCastException e) {
@@ -155,7 +151,6 @@ public final class Query extends ASN1Any {
             c_type_102 = new ASN1OctetString(tagwrapper.elementAt(0), true);
             return;
         }
-
         throw new ASN1Exception("Query: bad BER encoding: choice not matched");
     }
 
@@ -165,10 +160,8 @@ public final class Query extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
         BEREncoding enc[];
@@ -248,10 +241,8 @@ public final class Query extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
         // Method is not available because this is a basic CHOICE
@@ -260,16 +251,15 @@ public final class Query extends ASN1Any {
         // tag on it, otherwise the tag identifying which CHOICE
         // it is will be overwritten and lost.
 
-        throw new ASN1EncodingException("Query: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the Query.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
 
         boolean found = false;
@@ -326,8 +316,6 @@ public final class Query extends ASN1Any {
         }
 
         str.append("}");
-
         return str.toString();
     }
-
 }

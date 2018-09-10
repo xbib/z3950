@@ -76,8 +76,8 @@ public final class ASN1External extends ASN1Any {
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag)
             throws ASN1Exception {
-        if (checkTag && (berEncoding.tagGet() != EXTERNAL_TAG || berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.tagGet() +
+        if (checkTag && (berEncoding.getTag() != EXTERNAL_TAG || berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.getTag() +
                             " expected " + EXTERNAL_TAG + "\n");
         }
         if (berEncoding instanceof BERPrimitive) {
@@ -96,31 +96,31 @@ public final class ASN1External extends ASN1Any {
         }
         int part = 0;
         BEREncoding p = ber.elementAt(part);
-        if (p.tagGet() == ASN1ObjectIdentifier.OBJECT_IDENTIFIER_TAG &&
-                p.tagTypeGet() == BEREncoding.UNIVERSAL_TAG) {
+        if (p.getTag() == ASN1ObjectIdentifier.OBJECT_IDENTIFIER_TAG &&
+                p.getTagType() == BEREncoding.UNIVERSAL_TAG) {
             sDirectReference = new ASN1ObjectIdentifier(p, true);
             if (numParts <= ++part) {
                 throw new ASN1EncodingException("incomplete");
             }
             p = ber.elementAt(part);
         }
-        if (p.tagGet() == ASN1Integer.INTEGER_TAG &&
-                p.tagTypeGet() == BEREncoding.UNIVERSAL_TAG) {
+        if (p.getTag() == ASN1Integer.INTEGER_TAG &&
+                p.getTagType() == BEREncoding.UNIVERSAL_TAG) {
             sIndirectReference = new ASN1Integer(p, true);
             if (numParts <= ++part) {
                 throw new ASN1EncodingException("incomplete");
             }
             p = ber.elementAt(part);
         }
-        if (p.tagGet() == ASN1ObjectDescriptor.OBJECT_DESCRIPTOR_TAG &&
-                p.tagTypeGet() == BEREncoding.UNIVERSAL_TAG) {
+        if (p.getTag() == ASN1ObjectDescriptor.OBJECT_DESCRIPTOR_TAG &&
+                p.getTagType() == BEREncoding.UNIVERSAL_TAG) {
             sDataValueDescriptor = new ASN1ObjectDescriptor(p, true);
             if (numParts <= ++part) {
                 throw new ASN1EncodingException("incomplete");
             }
             p = ber.elementAt(part);
         }
-        switch (p.tagGet()) {
+        switch (p.getTag()) {
             case 0:
                 if (!(p instanceof BERConstructed)) {
                     throw new ASN1EncodingException("singleASN1type: bad form, primitive");
@@ -132,20 +132,20 @@ public final class ASN1External extends ASN1Any {
                 break;
             case 1:
                 // octetAligned [1] IMPLICIT OCTET STRING
-                if (p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                if (p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
                     throw new ASN1EncodingException("encoding: bad tag type " + p);
                 }
                 cOctetAligned = new ASN1OctetString(p, false);
                 break;
             case 2:
                 // arbitrary [2] IMPLICIT BIT STRING
-                if (p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+                if (p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
                     throw new ASN1EncodingException("encoding: bad tag type " + p);
                 }
                 cArbitrary = new ASN1BitString(p, false);
                 break;
             default:
-                throw new ASN1EncodingException("encoding: tag = " + p.tagGet());
+                throw new ASN1EncodingException("encoding: tag = " + p.getTag());
         }
         if (part != (numParts - 1)) {
             throw new ASN1Exception("extra element(s)");

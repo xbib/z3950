@@ -68,9 +68,9 @@ public class ASN1OctetString extends ASN1Any {
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag)
             throws ASN1EncodingException {
-        if (checkTag && (berEncoding.tagGet() != OCTET_STRING_TAG ||
-                    berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.tagGet() +
+        if (checkTag && (berEncoding.getTag() != OCTET_STRING_TAG ||
+                    berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.getTag() +
                             " expected " + OCTET_STRING_TAG + "\n");
         }
         if (berEncoding instanceof BERPrimitive) {

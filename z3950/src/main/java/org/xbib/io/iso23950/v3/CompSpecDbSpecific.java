@@ -45,6 +45,7 @@ public final class CompSpecDbSpecific extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
@@ -60,8 +61,8 @@ public final class CompSpecDbSpecific extends ASN1Any {
             throw new ASN1Exception("CompSpec_dbSpecific: incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 1 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 1 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException
                     ("CompSpec_dbSpecific: bad tag in s_db\n");
         }
@@ -81,8 +82,8 @@ public final class CompSpecDbSpecific extends ASN1Any {
             throw new ASN1Exception("CompSpec_dbSpecific: incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 2 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 2 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException
                     ("CompSpec_dbSpecific: bad tag in s_spec\n");
         }
@@ -99,6 +100,7 @@ public final class CompSpecDbSpecific extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -111,6 +113,7 @@ public final class CompSpecDbSpecific extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2;
         BEREncoding fields[] = new BEREncoding[numFields];
@@ -127,6 +130,7 @@ public final class CompSpecDbSpecific extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the CompSpec_dbSpecific.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;

@@ -23,14 +23,13 @@ public final class AttributeElement extends ASN1Any {
 
     public AttributeSetId attributeSetId; // optional
 
-    public ASN1Integer sAttributeType;
+    public ASN1Integer attributeType;
 
     public AttributeElementAttributeValue attributeValue;
 
     /**
      * Default constructor for a AttributeElement.
      */
-
     public AttributeElement() {
     }
 
@@ -56,6 +55,7 @@ public final class AttributeElement extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
@@ -70,8 +70,8 @@ public final class AttributeElement extends ASN1Any {
             throw new ASN1Exception("AttributeElement: incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 1 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 1 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             attributeSetId = new AttributeSetId(p, false);
             part++;
         }
@@ -79,11 +79,11 @@ public final class AttributeElement extends ASN1Any {
             throw new ASN1Exception("AttributeElement: incomplete");
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() != 120 ||
-                p.tagTypeGet() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() != 120 ||
+                p.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1EncodingException("AttributeElement: bad tag in s_attributeType\n");
         }
-        sAttributeType = new ASN1Integer(p, false);
+        attributeType = new ASN1Integer(p, false);
         part++;
         if (numParts <= part) {
             throw new ASN1Exception("AttributeElement: incomplete");
@@ -102,6 +102,7 @@ public final class AttributeElement extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -118,6 +119,7 @@ public final class AttributeElement extends ASN1Any {
      * @see org.xbib.asn1.BEREncoding#CONTEXT_SPECIFIC_TAG
      * @see org.xbib.asn1.BEREncoding#PRIVATE_TAG
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2;
         if (attributeSetId != null) {
@@ -128,7 +130,7 @@ public final class AttributeElement extends ASN1Any {
         if (attributeSetId != null) {
             fields[x++] = attributeSetId.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 1);
         }
-        fields[x++] = sAttributeType.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 120);
+        fields[x++] = attributeType.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 120);
         fields[x] = attributeValue.berEncode();
         return new BERConstructed(tagType, tag, fields);
     }
@@ -137,6 +139,7 @@ public final class AttributeElement extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the AttributeElement.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
@@ -149,7 +152,7 @@ public final class AttributeElement extends ASN1Any {
             str.append(", ");
         }
         str.append("attributeType ");
-        str.append(sAttributeType);
+        str.append(attributeType);
         outputted++;
         if (0 < outputted) {
             str.append(", ");

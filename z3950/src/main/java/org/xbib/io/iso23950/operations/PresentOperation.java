@@ -7,19 +7,20 @@ import org.xbib.asn1.ASN1Integer;
 import org.xbib.asn1.ASN1ObjectIdentifier;
 import org.xbib.asn1.io.BERReader;
 import org.xbib.asn1.io.BERWriter;
+import org.xbib.io.iso23950.Diagnostics;
 import org.xbib.io.iso23950.ErrorRecord;
 import org.xbib.io.iso23950.Record;
 import org.xbib.io.iso23950.RecordListener;
-import org.xbib.io.iso23950.ResponseListener;
+import org.xbib.io.iso23950.SearchListener;
 import org.xbib.io.iso23950.exceptions.MessageSizeTooSmallException;
 import org.xbib.io.iso23950.exceptions.NoRecordsReturnedException;
 import org.xbib.io.iso23950.exceptions.RequestTerminatedByAccessControlException;
 import org.xbib.io.iso23950.exceptions.RequestTerminatedException;
 import org.xbib.io.iso23950.exceptions.ZException;
+import org.xbib.io.iso23950.v3.DefaultDiagFormat;
 import org.xbib.io.iso23950.v3.ElementSetNames;
 import org.xbib.io.iso23950.v3.InternationalString;
 import org.xbib.io.iso23950.v3.NamePlusRecord;
-import org.xbib.io.iso23950.v3.PDU;
 import org.xbib.io.iso23950.v3.PresentRequest;
 import org.xbib.io.iso23950.v3.PresentRequestRecordComposition;
 import org.xbib.io.iso23950.v3.PresentResponse;
@@ -27,11 +28,16 @@ import org.xbib.io.iso23950.v3.PresentStatus;
 import org.xbib.io.iso23950.v3.ResultSetId;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Present operation for Z39.50.
  */
-public class PresentOperation extends AbstractOperation {
+public class PresentOperation extends AbstractOperation<PresentResponse, PresentRequest> {
+
+    private static final Logger logger = Logger.getLogger(PresentOperation.class.getName());
 
     private final String resultSetName;
 
@@ -50,49 +56,55 @@ public class PresentOperation extends AbstractOperation {
     }
 
     public void execute(int offset, int length, int total,
-                        ResponseListener responseListener, RecordListener recordListener) throws IOException {
-        PresentRequest pr = new PresentRequest();
-        pr.s_resultSetId = new ResultSetId();
-        pr.s_resultSetId.value = new InternationalString();
-        pr.s_resultSetId.value.value = new ASN1GeneralString(resultSetName);
-        pr.s_resultSetStartPoint = new ASN1Integer(offset);
-        pr.s_numberOfRecordsRequested = new ASN1Integer(length);
-        pr.s_recordComposition = new PresentRequestRecordComposition();
-        pr.s_recordComposition.c_simple = new ElementSetNames();
-        pr.s_recordComposition.c_simple.cGenericElementSetName = new InternationalString();
-        pr.s_recordComposition.c_simple.cGenericElementSetName.value = new ASN1GeneralString(elementSetName);
-        pr.s_preferredRecordSyntax = new ASN1ObjectIdentifier(makeOID(preferredRecordSyntax));
-        PDU pdu = new PDU();
-        pdu.c_presentRequest = pr;
+                        SearchListener searchListener, RecordListener recordListener) throws IOException {
+        PresentRequest presentRequest = new PresentRequest();
+        presentRequest.resultSetId = new ResultSetId();
+        presentRequest.resultSetId.value = new InternationalString();
+        presentRequest.resultSetId.value.value = new ASN1GeneralString(resultSetName);
+        presentRequest.resultSetStartPoint = new ASN1Integer(offset);
+        presentRequest.numberOfRecordsRequested = new ASN1Integer(length);
+        presentRequest.recordComposition = new PresentRequestRecordComposition();
+        presentRequest.recordComposition.simple = new ElementSetNames();
+        presentRequest.recordComposition.simple.cGenericElementSetName = new InternationalString();
+        presentRequest.recordComposition.simple.cGenericElementSetName.value = new ASN1GeneralString(elementSetName);
+        presentRequest.preferredRecordSyntax = new ASN1ObjectIdentifier(makeOID(preferredRecordSyntax));
         long millis = System.currentTimeMillis();
-        writePDU(pdu);
-        pdu = readPDU();
-        PresentResponse response = pdu.c_presentResponse;
-        int nReturned = response.s_numberOfRecordsReturned != null ? response.s_numberOfRecordsReturned.get() : 0;
-        int status = response.s_presentStatus.value != null ? response.s_presentStatus.value.get() : 0;
-        if (responseListener != null) {
-            responseListener.onResponse(status, total, nReturned,  System.currentTimeMillis() - millis);
+        write(presentRequest);
+        PresentResponse response = read();
+        int nReturned = response.numberOfRecordsReturned != null ? response.numberOfRecordsReturned.get() : 0;
+        int status = response.presentStatus.value != null ? response.presentStatus.value.get() : 0;
+        if (searchListener != null) {
+            searchListener.onResponse(status, total, nReturned,  System.currentTimeMillis() - millis);
         }
         if (status == PresentStatus.E_success) {
             for (int n = 0; n < nReturned; n++) {
-                NamePlusRecord nr = response.s_records.c_responseRecords[n];
+                NamePlusRecord nr = response.records.c_responseRecords[n];
                 try {
-                    if (nr.s_record.c_retrievalRecord != null) {
-                        ASN1External asn1External = new ASN1External(nr.s_record.c_retrievalRecord.berEncode(), true);
+                    if (nr.record.retrievalRecord != null) {
+                        ASN1External asn1External = new ASN1External(nr.record.retrievalRecord.berEncode(), true);
                         Record record = new Record(offset + n, asn1External.getcOctetAligned().getBytes());
                         if (recordListener != null) {
                             recordListener.onRecord(record);
                         }
-                    } else if (nr.s_record.c_surrogateDiagnostic != null) {
-                        ASN1External asn1External =
-                                new ASN1External(nr.s_record.c_surrogateDiagnostic.cDefaultFormat.berEncode(), true);
-                        ErrorRecord record = new ErrorRecord(offset + n, asn1External.getcOctetAligned().getBytes());
-                        if (recordListener != null) {
-                            recordListener.onRecord(record);
+                    } else if (nr.record.surrogateDiagnostic != null) {
+                        DefaultDiagFormat diagFormat = nr.record.surrogateDiagnostic.defaultFormat;
+                        if (diagFormat != null) {
+                            logger.log(Level.WARNING, diagFormat.toString());
+                        }
+                        ASN1External asn1External = nr.record.surrogateDiagnostic.externallyDefined;
+                        if (asn1External != null) {
+                            ErrorRecord record = new ErrorRecord(offset + n, asn1External.getcOctetAligned().getBytes());
+                            if (recordListener != null) {
+                                recordListener.onRecord(record);
+                            }
                         }
                     }
                 } catch (ASN1Exception e) {
-                    throw new IOException("Present error: " + e.getMessage());
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                    if (recordListener != null) {
+                        ErrorRecord record = new ErrorRecord(offset + n, e.getMessage().getBytes(StandardCharsets.UTF_8));
+                        recordListener.onRecord(record);
+                    }
                 }
             }
         } else {

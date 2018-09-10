@@ -49,9 +49,9 @@ public final class ASN1ObjectIdentifier extends ASN1Any {
      */
     @Override
     public void berDecode(BEREncoding berEncoding, boolean checkTag) throws ASN1EncodingException {
-        if (checkTag && (berEncoding.tagGet() != OBJECT_IDENTIFIER_TAG ||
-                berEncoding.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.tagGet() +
+        if (checkTag && (berEncoding.getTag() != OBJECT_IDENTIFIER_TAG ||
+                berEncoding.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + berEncoding.getTag() +
                             " expected " + OBJECT_IDENTIFIER_TAG + "\n");
         }
         if (!(berEncoding instanceof BERPrimitive)) {

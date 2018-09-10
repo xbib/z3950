@@ -5,7 +5,6 @@ import org.xbib.asn1.ASN1EncodingException;
 import org.xbib.asn1.ASN1Exception;
 import org.xbib.asn1.BEREncoding;
 
-
 /**
  * Class for representing a <code>Operand</code> from <code>Z39-50-APDU-1995</code>.
  * <pre>
@@ -19,14 +18,12 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class Operand extends ASN1Any {
 
-    public AttributesPlusTerm c_attrTerm;
-    public ResultSetId c_resultSet;
-    public ResultSetPlusAttributes c_resultAttr;
-
+    public AttributesPlusTerm attrTerm;
+    public ResultSetId resultSet;
+    public ResultSetPlusAttributes resultAttr;
 
     public Operand() {
     }
-
 
     /**
      * Constructor for a Operand from a BER encoding.
@@ -37,9 +34,7 @@ public final class Operand extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public Operand(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public Operand(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -52,19 +47,17 @@ public final class Operand extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Null out all choices
 
-        c_attrTerm = null;
-        c_resultSet = null;
-        c_resultAttr = null;
+        attrTerm = null;
+        resultSet = null;
+        resultAttr = null;
 
         // Try choice attrTerm
         try {
-            c_attrTerm = new AttributesPlusTerm(ber, checkTag);
+            attrTerm = new AttributesPlusTerm(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
@@ -72,7 +65,7 @@ public final class Operand extends ASN1Any {
 
         // Try choice resultSet
         try {
-            c_resultSet = new ResultSetId(ber, checkTag);
+            resultSet = new ResultSetId(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
@@ -80,13 +73,13 @@ public final class Operand extends ASN1Any {
 
         // Try choice resultAttr
         try {
-            c_resultAttr = new ResultSetPlusAttributes(ber, checkTag);
+            resultAttr = new ResultSetPlusAttributes(ber, checkTag);
             return;
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
 
-        throw new ASN1Exception("Operand: bad BER encoding: choice not matched");
+        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
     /**
@@ -95,31 +88,29 @@ public final class Operand extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
         // Encoding choice: c_attrTerm
-        if (c_attrTerm != null) {
-            chosen = c_attrTerm.berEncode();
+        if (attrTerm != null) {
+            chosen = attrTerm.berEncode();
         }
 
         // Encoding choice: c_resultSet
-        if (c_resultSet != null) {
+        if (resultSet != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = c_resultSet.berEncode();
+            chosen = resultSet.berEncode();
         }
 
         // Encoding choice: c_resultAttr
-        if (c_resultAttr != null) {
+        if (resultAttr != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            chosen = c_resultAttr.berEncode();
+            chosen = resultAttr.berEncode();
         }
 
         // Check for error of having none of the choices set
@@ -144,6 +135,7 @@ public final class Operand extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
@@ -153,46 +145,44 @@ public final class Operand extends ASN1Any {
         // tag on it, otherwise the tag identifying which CHOICE
         // it is will be overwritten and lost.
 
-        throw new ASN1EncodingException("Operand: cannot implicitly tag");
+        throw new ASN1EncodingException("cannot implicitly tag");
     }
 
     /**
      * Returns a new String object containing a text representing
      * of the Operand.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
 
         boolean found = false;
 
-        if (c_attrTerm != null) {
+        if (attrTerm != null) {
             found = true;
             str.append("attrTerm ");
-            str.append(c_attrTerm);
+            str.append(attrTerm);
         }
 
-        if (c_resultSet != null) {
+        if (resultSet != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: resultSet> ");
             }
             found = true;
             str.append("resultSet ");
-            str.append(c_resultSet);
+            str.append(resultSet);
         }
 
-        if (c_resultAttr != null) {
+        if (resultAttr != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: resultAttr> ");
             }
             str.append("resultAttr ");
-            str.append(c_resultAttr);
+            str.append(resultAttr);
         }
 
         str.append("}");
 
         return str.toString();
     }
-
 }

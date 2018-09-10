@@ -25,17 +25,17 @@ import org.xbib.asn1.BEREncoding;
 
 public final class Close extends ASN1Any {
 
-    public ReferenceId sReferenceId; // optional
+    public ReferenceId referenceId; // optional
 
-    public CloseReason sCloseReason;
+    public CloseReason closeReason;
 
-    public InternationalString sDiagnosticInformation; // optional
+    public InternationalString diagnosticInformation; // optional
 
-    public ResourceReportId sResourceReportFormat; // optional
+    public ResourceReportId resourceReportFormat; // optional
 
-    public ResourceReport sResourceReport; // optional
+    public ResourceReport resourceReport; // optional
 
-    public OtherInformation sOtherInfo; // optional
+    public OtherInformation otherInformation; // optional
 
     /**
      * Default constructor for a Close.
@@ -66,6 +66,7 @@ public final class Close extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
+    @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         BERConstructed berConstructed;
         try {
@@ -82,45 +83,45 @@ public final class Close extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
         try {
-            sReferenceId = new ReferenceId(p, true);
+            referenceId = new ReferenceId(p, true);
             part++;
         } catch (ASN1Exception e) {
-            sReferenceId = null;
+            referenceId = null;
         }
         if (numParts <= part) {
             throw new ASN1Exception("Close: incomplete");
         }
         p = berConstructed.elementAt(part);
-        sCloseReason = new CloseReason(p, true);
+        closeReason = new CloseReason(p, true);
         part++;
-        sDiagnosticInformation = null;
-        sResourceReportFormat = null;
-        sResourceReport = null;
-        sOtherInfo = null;
+        diagnosticInformation = null;
+        resourceReportFormat = null;
+        resourceReport = null;
+        otherInformation = null;
         if (numParts <= part) {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 3 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            sDiagnosticInformation = new InternationalString(p, false);
+        if (p.getTag() == 3 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            diagnosticInformation = new InternationalString(p, false);
             part++;
         }
         if (numParts <= part) {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 4 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
-            sResourceReportFormat = new ResourceReportId(p, false);
+        if (p.getTag() == 4 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+            resourceReportFormat = new ResourceReportId(p, false);
             part++;
         }
         if (numParts <= part) {
             return;
         }
         p = berConstructed.elementAt(part);
-        if (p.tagGet() == 5 &&
-                p.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (p.getTag() == 5 &&
+                p.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             try {
                 tagged = (BERConstructed) p;
             } catch (ClassCastException e) {
@@ -129,7 +130,7 @@ public final class Close extends ASN1Any {
             if (tagged.numberComponents() != 1) {
                 throw new ASN1EncodingException("Close: bad BER encoding: s_resourceReport tag bad");
             }
-            sResourceReport = new ResourceReport(tagged.elementAt(0), true);
+            resourceReport = new ResourceReport(tagged.elementAt(0), true);
             part++;
         }
         if (numParts <= part) {
@@ -137,10 +138,10 @@ public final class Close extends ASN1Any {
         }
         p = berConstructed.elementAt(part);
         try {
-            sOtherInfo = new OtherInformation(p, true);
+            otherInformation = new OtherInformation(p, true);
             part++;
         } catch (ASN1Exception e) {
-            sOtherInfo = null;
+            otherInformation = null;
         }
         if (part < numParts) {
             throw new ASN1Exception("Close: bad BER: extra data " + part + "/" + numParts + " processed");
@@ -153,6 +154,7 @@ public final class Close extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode() throws ASN1Exception {
         return berEncode(BEREncoding.UNIVERSAL_TAG, ASN1Sequence.SEQUENCE_TAG);
     }
@@ -165,43 +167,44 @@ public final class Close extends ASN1Any {
      * @return The BER encoding of the object.
      * @throws ASN1Exception When invalid or cannot be encoded.
      */
+    @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 1;
-        if (sReferenceId != null) {
+        if (referenceId != null) {
             numFields++;
         }
-        if (sDiagnosticInformation != null) {
+        if (diagnosticInformation != null) {
             numFields++;
         }
-        if (sResourceReportFormat != null) {
+        if (resourceReportFormat != null) {
             numFields++;
         }
-        if (sResourceReport != null) {
+        if (resourceReport != null) {
             numFields++;
         }
-        if (sOtherInfo != null) {
+        if (otherInformation != null) {
             numFields++;
         }
         BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
         BEREncoding[] enc;
-        if (sReferenceId != null) {
-            fields[x++] = sReferenceId.berEncode();
+        if (referenceId != null) {
+            fields[x++] = referenceId.berEncode();
         }
-        fields[x++] = sCloseReason.berEncode();
-        if (sDiagnosticInformation != null) {
-            fields[x++] = sDiagnosticInformation.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 3);
+        fields[x++] = closeReason.berEncode();
+        if (diagnosticInformation != null) {
+            fields[x++] = diagnosticInformation.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 3);
         }
-        if (sResourceReportFormat != null) {
-            fields[x++] = sResourceReportFormat.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 4);
+        if (resourceReportFormat != null) {
+            fields[x++] = resourceReportFormat.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 4);
         }
-        if (sResourceReport != null) {
+        if (resourceReport != null) {
             enc = new BEREncoding[1];
-            enc[0] = sResourceReport.berEncode();
+            enc[0] = resourceReport.berEncode();
             fields[x++] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 5, enc);
         }
-        if (sOtherInfo != null) {
-            fields[x] = sOtherInfo.berEncode();
+        if (otherInformation != null) {
+            fields[x] = otherInformation.berEncode();
         }
         return new BERConstructed(tagType, tag, fields);
     }
@@ -210,50 +213,51 @@ public final class Close extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the Close.
      */
+    @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
         int outputted = 0;
-        if (sReferenceId != null) {
+        if (referenceId != null) {
             str.append("referenceId ");
-            str.append(sReferenceId);
+            str.append(referenceId);
             outputted++;
         }
         if (0 < outputted) {
             str.append(", ");
         }
         str.append("closeReason ");
-        str.append(sCloseReason);
+        str.append(closeReason);
         outputted++;
-        if (sDiagnosticInformation != null) {
+        if (diagnosticInformation != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("diagnosticInformation ");
-            str.append(sDiagnosticInformation);
+            str.append(diagnosticInformation);
             outputted++;
         }
-        if (sResourceReportFormat != null) {
+        if (resourceReportFormat != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("resourceReportFormat ");
-            str.append(sResourceReportFormat);
+            str.append(resourceReportFormat);
             outputted++;
         }
-        if (sResourceReport != null) {
+        if (resourceReport != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("resourceReport ");
-            str.append(sResourceReport);
+            str.append(resourceReport);
             outputted++;
         }
-        if (sOtherInfo != null) {
+        if (otherInformation != null) {
             if (0 < outputted) {
                 str.append(", ");
             }
             str.append("otherInfo ");
-            str.append(sOtherInfo);
+            str.append(otherInformation);
         }
         str.append("}");
         return str.toString();

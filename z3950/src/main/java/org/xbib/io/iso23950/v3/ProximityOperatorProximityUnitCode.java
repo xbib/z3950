@@ -6,7 +6,6 @@ import org.xbib.asn1.ASN1Exception;
 import org.xbib.asn1.ASN1Integer;
 import org.xbib.asn1.BEREncoding;
 
-
 /**
  * Class for representing a <code>ProximityOperator_proximityUnitCode</code> from <code>Z39-50-APDU-1995</code>.
  * <pre>
@@ -22,7 +21,6 @@ public final class ProximityOperatorProximityUnitCode extends ASN1Any {
     public KnownProximityUnit c_known;
     public ASN1Integer c_private;
 
-
     /**
      * Constructor for a ProximityOperator_proximityUnitCode from a BER encoding.
      *
@@ -32,9 +30,7 @@ public final class ProximityOperatorProximityUnitCode extends ASN1Any {
      *                  usually be passing true.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public ProximityOperatorProximityUnitCode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    public ProximityOperatorProximityUnitCode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, checkTag);
     }
 
@@ -47,25 +43,23 @@ public final class ProximityOperatorProximityUnitCode extends ASN1Any {
      * @param checkTag if the tag should be checked.
      * @throws ASN1Exception if the BER encoding is bad.
      */
-
-    public void
-    berDecode(BEREncoding ber, boolean checkTag)
-            throws ASN1Exception {
+    @Override
+    public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Null out all choices
 
         c_known = null;
         c_private = null;
 
         // Try choice known
-        if (ber.tagGet() == 1 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 1 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_known = new KnownProximityUnit(ber, false);
             return;
         }
 
         // Try choice private
-        if (ber.tagGet() == 2 &&
-                ber.tagTypeGet() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
+        if (ber.getTag() == 2 &&
+                ber.getTagType() == BEREncoding.CONTEXT_SPECIFIC_TAG) {
             c_private = new ASN1Integer(ber, false);
             return;
         }
@@ -79,10 +73,8 @@ public final class ProximityOperatorProximityUnitCode extends ASN1Any {
      * @return The BER encoding.
      * @throws ASN1Exception Invalid or cannot be encoded.
      */
-
-    public BEREncoding
-    berEncode()
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
         // Encoding choice: c_known
@@ -120,10 +112,8 @@ public final class ProximityOperatorProximityUnitCode extends ASN1Any {
      * @param tag      the tag.
      * @throws ASN1Exception if it cannot be BER encoded.
      */
-
-    public BEREncoding
-    berEncode(int tagType, int tag)
-            throws ASN1Exception {
+    @Override
+    public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         // This method must not be called!
 
         // Method is not available because this is a basic CHOICE
@@ -139,9 +129,8 @@ public final class ProximityOperatorProximityUnitCode extends ASN1Any {
      * Returns a new String object containing a text representing
      * of the ProximityOperator_proximityUnitCode.
      */
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         StringBuilder str = new StringBuilder("{");
 
         boolean found = false;
@@ -165,5 +154,4 @@ public final class ProximityOperatorProximityUnitCode extends ASN1Any {
 
         return str.toString();
     }
-
 }

@@ -147,8 +147,8 @@ public class InputStreamBERReader implements BERReader {
                     if (chunk == null) {
                         throw new ASN1EncodingException(ERROR);
                     }
-                    if (chunk.getITag() == 0 && chunk.getITagType() == BEREncoding.UNIVERSAL_TAG &&
-                            chunk.getITotalLength() == 2) {
+                    if (chunk.getTag() == 0 && chunk.getTagType() == BEREncoding.UNIVERSAL_TAG &&
+                            chunk.getTotalLength() == 2) {
                         break;
                     } else {
                         chunks.add(chunk);

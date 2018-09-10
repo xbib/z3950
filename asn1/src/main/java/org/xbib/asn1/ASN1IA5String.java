@@ -31,8 +31,8 @@ public final class ASN1IA5String extends ASN1OctetString {
      */
     public ASN1IA5String(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         super(ber, false);
-        if (checkTag && (ber.tagGet() != IA5_STRING_TAG || ber.tagTypeGet() != BEREncoding.UNIVERSAL_TAG)) {
-            throw new ASN1EncodingException("bad BER: tag=" + ber.tagGet() +
+        if (checkTag && (ber.getTag() != IA5_STRING_TAG || ber.getTagType() != BEREncoding.UNIVERSAL_TAG)) {
+            throw new ASN1EncodingException("bad BER: tag=" + ber.getTag() +
                             " expected " + IA5_STRING_TAG + "\n");
         }
     }

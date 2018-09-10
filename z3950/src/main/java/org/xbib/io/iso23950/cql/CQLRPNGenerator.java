@@ -47,26 +47,14 @@ import java.util.Stack;
 public final class CQLRPNGenerator implements Visitor {
 
     /**
-     * BIB-1 Use attributes resource bundle.
-     */
-    private static final ResourceBundle bib =
-            ResourceBundle.getBundle("org.xbib.io.iso23950.cql.bib-1");
-
-    /**
-     * Dublin Core Use attributes resource bundle.
-     */
-    private static final ResourceBundle dc =
-            ResourceBundle.getBundle("org.xbib.io.iso23950.cql.dc");
-
-    /**
      * Context map.
      */
     private final Map<String, ResourceBundle> contexts = new HashMap<String, ResourceBundle>() {
         private static final long serialVersionUID = 8199395368653216950L;
-
         {
-            put("bib", bib);
-            put("dc", dc);
+            put("bib", ResourceBundle.getBundle("org.xbib.io.iso23950.cql.bib-1"));
+            put("dc",  ResourceBundle.getBundle("org.xbib.io.iso23950.cql.dc"));
+            put("gbv",  ResourceBundle.getBundle("org.xbib.io.iso23950.cql.gbv"));
         }
     };
     private Stack<ASN1Any> result;
@@ -90,10 +78,10 @@ public final class CQLRPNGenerator implements Visitor {
         }
         if (!result.isEmpty()) {
             this.rpnQuery = new RPNQuery();
-            rpnQuery.s_rpn = (RPNStructure) result.pop();
+            rpnQuery.rpn = (RPNStructure) result.pop();
             // Z39.50 BIB-1: urn:oid:1.2.840.10003.3.1
-            rpnQuery.s_attributeSet = new AttributeSetId();
-            rpnQuery.s_attributeSet.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
+            rpnQuery.attributeSet = new AttributeSetId();
+            rpnQuery.attributeSet.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
         } else {
             throw new SyntaxException("unable to generate RPN from CQL");
         }
@@ -154,13 +142,13 @@ public final class CQLRPNGenerator implements Visitor {
             BooleanOperator op = node.getBooleanGroup().getOperator();
             switch (op) {
                 case AND:
-                    rpn.c_rpnRpnOp.s_op.c_and = new ASN1Null();
+                    rpn.c_rpnRpnOp.s_op.andOp = new ASN1Null();
                     break;
                 case OR:
-                    rpn.c_rpnRpnOp.s_op.c_or = new ASN1Null();
+                    rpn.c_rpnRpnOp.s_op.orOp = new ASN1Null();
                     break;
                 case NOT:
-                    rpn.c_rpnRpnOp.s_op.c_and_not = new ASN1Null();
+                    rpn.c_rpnRpnOp.s_op.andNotOp = new ASN1Null();
                     break;
                 default:
                     break;
@@ -193,17 +181,17 @@ public final class CQLRPNGenerator implements Visitor {
             node.getRelation().accept(this);
         }
         Operand operand = new Operand();
-        operand.c_attrTerm = new AttributesPlusTerm();
-        operand.c_attrTerm.sTerm = new org.xbib.io.iso23950.v3.Term();
-        operand.c_attrTerm.sTerm.c_general = new ASN1OctetString(node.getTerm().getValue());
+        operand.attrTerm = new AttributesPlusTerm();
+        operand.attrTerm.term = new org.xbib.io.iso23950.v3.Term();
+        operand.attrTerm.term.c_general = new ASN1OctetString(node.getTerm().getValue());
         Stack<AttributeElement> attrs = new Stack<>();
         ASN1Any any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
         while (any != null) {
             attrs.push((AttributeElement) any);
             any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
         }
-        operand.c_attrTerm.sAttributes = new AttributeList();
-        operand.c_attrTerm.sAttributes.value = attrs.toArray(new AttributeElement[attrs.size()]);
+        operand.attrTerm.attributes = new AttributeList();
+        operand.attrTerm.attributes.value = attrs.toArray(new AttributeElement[attrs.size()]);
         RPNStructure rpn = new RPNStructure();
         rpn.c_op = operand;
         result.push(rpn);
@@ -248,9 +236,9 @@ public final class CQLRPNGenerator implements Visitor {
         }
         if (n != 3) {
             AttributeElement ae = new AttributeElement();
-            ae.sAttributeType = new ASN1Integer(t);
+            ae.attributeType = new ASN1Integer(t);
             ae.attributeValue = new AttributeElementAttributeValue();
-            ae.attributeValue.cNumeric = new ASN1Integer(n);
+            ae.attributeValue.numeric = new ASN1Integer(n);
             result.push(ae);
         }
     }
@@ -289,9 +277,9 @@ public final class CQLRPNGenerator implements Visitor {
         }
         if (n != 100) {
             AttributeElement ae = new AttributeElement();
-            ae.sAttributeType = new ASN1Integer(t);
+            ae.attributeType = new ASN1Integer(t);
             ae.attributeValue = new AttributeElementAttributeValue();
-            ae.attributeValue.cNumeric = new ASN1Integer(n);
+            ae.attributeValue.numeric = new ASN1Integer(n);
             result.push(ae);
             v = v.replaceAll("\\*", "");
         }
@@ -318,9 +306,9 @@ public final class CQLRPNGenerator implements Visitor {
         int t = 1;
         int n = getUseAttr(context, node.getName());
         AttributeElement ae = new AttributeElement();
-        ae.sAttributeType = new ASN1Integer(t);
+        ae.attributeType = new ASN1Integer(t);
         ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.cNumeric = new ASN1Integer(n);
+        ae.attributeValue.numeric = new ASN1Integer(n);
         result.push(ae);
     }
 
