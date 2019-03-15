@@ -1,8 +1,0 @@
-ext {
-    user = 'xbib'
-    projectName = 'z3950'
-    projectDescription = 'Z39.50 for Java'
-    scmUrl = 'https://github.com/xbib/z3950'
-    scmConnection = 'scm:git:git://github.com/xbib/z3950.git'
-    scmDeveloperConnection = 'scm:git:git://github.com/xbib/z3950.git'
-}

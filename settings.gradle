@@ -1,2 +1,6 @@
-include 'asn1'
-include 'z3950'
+include 'z3950-asn1'
+include 'z3950-api'
+include 'z3950-common'
+include 'z3950-client'
+include 'z3950-client-netty'
+include 'z3950-sru'
