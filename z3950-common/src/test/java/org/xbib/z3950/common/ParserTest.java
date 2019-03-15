@@ -25,7 +25,7 @@ public abstract class ParserTest extends Assert {
     protected Iterable<String> readFromResource(String path)
         throws IOException {
         final ArrayList<String> lines = new ArrayList<>();
-        InputStream in = getClass().getClassLoader().getResourceAsStream(path);
+        InputStream in = getClass().getResourceAsStream(path);
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String line;
         while ((line = br.readLine()) != null) {

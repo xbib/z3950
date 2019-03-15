@@ -1,9 +1,9 @@
-package org.xbib.z3950.common;
+package org.xbib.z3950.client.test;
 
 import org.junit.Test;
 import org.xbib.z3950.common.exceptions.MessageSizeTooSmallException;
 import org.xbib.z3950.common.exceptions.NoRecordsReturnedException;
-import org.xbib.z3950.common.DefaultClient;
+import org.xbib.z3950.client.DefaultClient;
 
 import java.util.Collections;
 import java.util.logging.Level;
@@ -22,7 +22,8 @@ public class SearchTest {
         int port = 210;
         String database = "COPAC";
         String query = "@attr 1=1 smith";
-        String preferredRecordSyntax = "1.2.840.10003.5.109.10"; // xml // "1.2.840.10003.5.10"; // MARC
+        // "1.2.840.10003.5.10"; // MARC
+        String preferredRecordSyntax = "1.2.840.10003.5.109.10"; // xml
         int from = 1;
         int length = 1;
         try {

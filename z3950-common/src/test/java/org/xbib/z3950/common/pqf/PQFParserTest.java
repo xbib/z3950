@@ -19,7 +19,7 @@ public class PQFParserTest extends ParserTest {
     public void testSucceed() throws SyntaxException, IOException {
         int ok = 0;
         int errors = 0;
-        for (String q : readFromResource("org/xbib/io/iso23950/pqf/pqf-must-succeed")) {
+        for (String q : readFromResource("pqf-must-succeed")) {
             PQFParser parser = new PQFParser(new StringReader(q));
             try {
                 parser.parse();

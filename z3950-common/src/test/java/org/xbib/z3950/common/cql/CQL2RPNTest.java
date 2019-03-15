@@ -2,7 +2,6 @@ package org.xbib.z3950.common.cql;
 
 import org.junit.Test;
 import org.xbib.cql.CQLParser;
-import org.xbib.z3950.common.cql.CQLRPNGenerator;
 
 /**
  *
