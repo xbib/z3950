@@ -1,15 +1,15 @@
 package org.xbib.z3950.common.cql;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xbib.cql.CQLParser;
 
 /**
  *
  */
-public class CQL2RPNTest {
+class CQL2RPNTest {
 
     @Test
-    public void testCQL2RPN() {
+    void testCQL2RPN() {
         String cql = "dc.title = Test";
         CQLParser parser = new CQLParser(cql);
         parser.parse();

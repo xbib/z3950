@@ -1,6 +1,6 @@
 package org.xbib.z3950.client.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xbib.z3950.client.DefaultClient;
 
 import java.io.IOException;
@@ -15,12 +15,12 @@ import java.util.logging.Logger;
 /**
  *
  */
-public class DefaultClientTest {
+class DefaultClientTest {
 
     private static final Logger logger = Logger.getLogger(DefaultClientTest.class.getName());
 
     @Test
-    public void testCQL() {
+    void testCQL() {
         for (String serviceName : Arrays.asList("LIBRIS", "SWB")) {
             String query = "bib.identifierISSN = 00280836";
             int from = 1;
@@ -39,7 +39,7 @@ public class DefaultClientTest {
     }
 
     @Test
-    public void testPQF() {
+    void testPQF() {
         for (String serviceName : Arrays.asList("LIBRIS", "SWB")) {
             String query = "@attr 1=8 \"00280836\"";
             int from = 1;
@@ -106,5 +106,4 @@ public class DefaultClientTest {
         }
         return builder.build();
     }
-
 }

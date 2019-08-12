@@ -1,6 +1,6 @@
 package org.xbib.z3950.client.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xbib.z3950.client.DefaultClient;
 
 import java.io.IOException;
@@ -11,17 +11,17 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * GBV test.
  */
-public class GBVZClientTest {
+class GBVZClientTest {
 
     private static final Logger logger = Logger.getLogger(GBVZClientTest.class.getName());
 
     @Test
-    public void testGBV() {
+    void testGBV() {
         String query = "@attr 1=4 linux";
         int from = 1;
         int size = 10;
@@ -38,7 +38,7 @@ public class GBVZClientTest {
     }
 
     @Test
-    public void testControlNumberZDB() {
+    void testControlNumberZDB() {
         String serviceName = "GBV";
         String query = "bib.controlNumberZDB = 1413423-8";
         int from = 1;

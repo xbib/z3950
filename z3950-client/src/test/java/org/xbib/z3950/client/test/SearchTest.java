@@ -1,6 +1,6 @@
 package org.xbib.z3950.client.test;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.xbib.z3950.common.exceptions.MessageSizeTooSmallException;
 import org.xbib.z3950.common.exceptions.NoRecordsReturnedException;
 import org.xbib.z3950.client.DefaultClient;
@@ -12,12 +12,12 @@ import java.util.logging.Logger;
 /**
  *
  */
-public class SearchTest {
+class SearchTest {
 
     private static final Logger logger = Logger.getLogger(SearchTest.class.getName());
 
     @Test
-    public void testCopac() throws Exception {
+    void testCopac() throws Exception {
         String host = "z3950.copac.ac.uk";
         int port = 210;
         String database = "COPAC";

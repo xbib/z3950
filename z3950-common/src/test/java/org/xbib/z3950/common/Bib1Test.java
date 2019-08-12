@@ -1,6 +1,6 @@
 package org.xbib.z3950.common;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,12 +10,12 @@ import java.util.logging.Logger;
 /**
  *
  */
-public class Bib1Test {
+class Bib1Test {
 
     private static final Logger logger = Logger.getLogger(Bib1Test.class.getName());
 
     @Test
-    public void testBibUse() {
+    void testBibUse() {
         ResourceBundle bundle = ResourceBundle.getBundle("org.xbib.z3950.common.bib-1");
         ArrayList<String> values = new ArrayList<>();
         for (String key : bundle.keySet()) {
