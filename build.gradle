@@ -1,7 +1,7 @@
 plugins {
-    id "com.github.spotbugs" version "2.0.0"
-    id "org.sonarqube" version '2.6.1'
-    id "io.codearte.nexus-staging" version "0.11.0"
+    id "com.github.spotbugs" version "2.0.1"
+    id "org.sonarqube" version '2.8'
+    id "io.codearte.nexus-staging" version "0.21.1"
 }
 
 subprojects {
@@ -40,7 +40,8 @@ subprojects {
 
     test {
         useJUnitPlatform()
-        systemProperty 'java.util.logging.config.file', project.file('src/test/resources/logging.properties')
+        systemProperty 'java.util.logging.config.file',
+                project.file('src/test/resources/logging.properties')
         failFast = false
         testLogging {
             events 'STARTED', 'PASSED', 'FAILED', 'SKIPPED'
@@ -173,10 +174,8 @@ subprojects {
             }
         }
     }
+}
 
-    nexusStaging {
-        packageGroup = "org.xbib"
-    }
-
-
+nexusStaging {
+    packageGroup = "org.xbib"
 }
