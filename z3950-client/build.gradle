@@ -1,3 +1,5 @@
 dependencies {
-    compile project(':z3950-common')
+    api project(':z3950-common')
+    testImplementation "org.xbib:bibliographic-character-sets:${project.property('xbib-bibliographic-character-sets.version')}"
+
 }
