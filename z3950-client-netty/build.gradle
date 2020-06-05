@@ -1,5 +1,5 @@
 dependencies {
-    implementation project(':z3950-common')
+    api project(':z3950-common')
     implementation "io.netty:netty-handler:${project.property('netty.version')}"
     implementation "io.netty:netty-transport:${project.property('netty.version')}"
 }
