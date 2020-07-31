@@ -19,6 +19,7 @@ import org.xbib.asn1.BEREncoding;
 public final class RPNStructure extends ASN1Any {
 
     public Operand c_op;
+
     public RPNStructureRpnRpnOp c_rpnRpnOp;
 
     /**
@@ -86,16 +87,13 @@ public final class RPNStructure extends ASN1Any {
     @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
-
-        BEREncoding enc[];
-
+        BEREncoding[] enc;
         // Encoding choice: c_op
         if (c_op != null) {
             enc = new BEREncoding[1];
             enc[0] = c_op.berEncode();
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 0, enc);
         }
-
         // Encoding choice: c_rpnRpnOp
         if (c_rpnRpnOp != null) {
             if (chosen != null) {
@@ -103,7 +101,6 @@ public final class RPNStructure extends ASN1Any {
             }
             chosen = c_rpnRpnOp.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 1);
         }
-
         // Check for error of having none of the choices set
         if (chosen == null) {
             throw new ASN1Exception("CHOICE not set");

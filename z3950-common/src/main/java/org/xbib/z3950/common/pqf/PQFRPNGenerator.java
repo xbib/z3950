@@ -42,8 +42,8 @@ public class PQFRPNGenerator implements Visitor {
             rpnQuery.rpn = (RPNStructure) result.pop();
             if (pqf.getAttrSet() == null) {
                 // Z39.50 BIB-1: urn:oid:1.2.840.10003.3.1
-                rpnQuery.attributeSet = new AttributeSetId();
-                rpnQuery.attributeSet.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
+                rpnQuery.attributeSetId = new AttributeSetId();
+                rpnQuery.attributeSetId.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
             }
         } else {
             throw new SyntaxException("no valid PQF found");

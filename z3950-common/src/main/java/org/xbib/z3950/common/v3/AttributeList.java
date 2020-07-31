@@ -89,7 +89,7 @@ public final class AttributeList extends ASN1Any {
      */
     @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
-        BEREncoding fields[] = new BERConstructed[value.length];
+        BEREncoding[] fields = new BERConstructed[value.length];
         int p;
         for (p = 0; p < value.length; p++) {
             fields[p] = value[p].berEncode();

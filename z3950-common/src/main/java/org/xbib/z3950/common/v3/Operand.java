@@ -19,7 +19,9 @@ import org.xbib.asn1.BEREncoding;
 public final class Operand extends ASN1Any {
 
     public AttributesPlusTerm attrTerm;
+
     public ResultSetId resultSet;
+
     public ResultSetPlusAttributes resultAttr;
 
     public Operand() {
@@ -50,11 +52,9 @@ public final class Operand extends ASN1Any {
     @Override
     public void berDecode(BEREncoding ber, boolean checkTag) throws ASN1Exception {
         // Null out all choices
-
         attrTerm = null;
         resultSet = null;
         resultAttr = null;
-
         // Try choice attrTerm
         try {
             attrTerm = new AttributesPlusTerm(ber, checkTag);
@@ -62,7 +62,6 @@ public final class Operand extends ASN1Any {
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
-
         // Try choice resultSet
         try {
             resultSet = new ResultSetId(ber, checkTag);
@@ -70,7 +69,6 @@ public final class Operand extends ASN1Any {
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
-
         // Try choice resultAttr
         try {
             resultAttr = new ResultSetPlusAttributes(ber, checkTag);
@@ -78,7 +76,6 @@ public final class Operand extends ASN1Any {
         } catch (ASN1Exception e) {
             // failed to decode, continue on
         }
-
         throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
@@ -91,12 +88,10 @@ public final class Operand extends ASN1Any {
     @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
-
         // Encoding choice: c_attrTerm
         if (attrTerm != null) {
             chosen = attrTerm.berEncode();
         }
-
         // Encoding choice: c_resultSet
         if (resultSet != null) {
             if (chosen != null) {

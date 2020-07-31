@@ -19,7 +19,8 @@ import org.xbib.asn1.BEREncoding;
  */
 public final class RPNQuery extends ASN1Any {
 
-    public AttributeSetId attributeSet;
+    public AttributeSetId attributeSetId;
+
     public RPNStructure rpn;
 
     /**
@@ -65,7 +66,7 @@ public final class RPNQuery extends ASN1Any {
             throw new ASN1Exception("incomplete");
         }
         p = berConstructed.elementAt(part);
-        attributeSet = new AttributeSetId(p, true);
+        attributeSetId = new AttributeSetId(p, true);
         part++;
         if (numParts <= part) {
             throw new ASN1Exception("incomplete");
@@ -100,9 +101,9 @@ public final class RPNQuery extends ASN1Any {
     @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2;
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
-        fields[x++] = attributeSet.berEncode();
+        fields[x++] = attributeSetId.berEncode();
         fields[x] = rpn.berEncode();
         return new BERConstructed(tagType, tag, fields);
     }
@@ -113,17 +114,6 @@ public final class RPNQuery extends ASN1Any {
      */
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("{");
-        int outputted = 0;
-        str.append("attributeSet ");
-        str.append(attributeSet);
-        outputted++;
-        if (0 < outputted) {
-            str.append(", ");
-        }
-        str.append("rpn ");
-        str.append(rpn);
-        str.append("}");
-        return str.toString();
+        return "{" + "attributeSetId " + attributeSetId + ", " + "rpn " + rpn + "}";
     }
 }

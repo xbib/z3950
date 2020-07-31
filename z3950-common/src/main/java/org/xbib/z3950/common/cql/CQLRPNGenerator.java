@@ -32,7 +32,6 @@ import org.xbib.z3950.common.v3.Operator;
 import org.xbib.z3950.common.v3.RPNQuery;
 import org.xbib.z3950.common.v3.RPNStructure;
 import org.xbib.z3950.common.v3.RPNStructureRpnRpnOp;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -49,18 +48,25 @@ public final class CQLRPNGenerator implements Visitor {
     /**
      * Context map.
      */
-    private final Map<String, ResourceBundle> contexts = new HashMap<String, ResourceBundle>() {
+    private final Map<String, ResourceBundle> contexts = new HashMap<>() {
         private static final long serialVersionUID = 8199395368653216950L;
+
         {
+            put("cql", ResourceBundle.getBundle("org.xbib.z3950.common.cql.cql"));
             put("bib", ResourceBundle.getBundle("org.xbib.z3950.common.cql.bib-1"));
-            put("dc",  ResourceBundle.getBundle("org.xbib.z3950.common.cql.dc"));
-            put("gbv",  ResourceBundle.getBundle("org.xbib.z3950.common.cql.gbv"));
+            put("dc", ResourceBundle.getBundle("org.xbib.z3950.common.cql.dc"));
+            put("gbv", ResourceBundle.getBundle("org.xbib.z3950.common.cql.gbv"));
         }
     };
-    private Stack<ASN1Any> result;
+
+    private final Stack<AttributeElement> attributeElements;
+
+    private final Stack<ASN1Any> result;
+
     private RPNQuery rpnQuery;
 
     public CQLRPNGenerator() {
+        this.attributeElements = new Stack<>();
         this.result = new Stack<>();
     }
 
@@ -80,8 +86,8 @@ public final class CQLRPNGenerator implements Visitor {
             this.rpnQuery = new RPNQuery();
             rpnQuery.rpn = (RPNStructure) result.pop();
             // Z39.50 BIB-1: urn:oid:1.2.840.10003.3.1
-            rpnQuery.attributeSet = new AttributeSetId();
-            rpnQuery.attributeSet.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
+            rpnQuery.attributeSetId = new AttributeSetId();
+            rpnQuery.attributeSetId.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
         } else {
             throw new SyntaxException("unable to generate RPN from CQL");
         }
@@ -183,15 +189,14 @@ public final class CQLRPNGenerator implements Visitor {
         Operand operand = new Operand();
         operand.attrTerm = new AttributesPlusTerm();
         operand.attrTerm.term = new org.xbib.z3950.common.v3.Term();
-        operand.attrTerm.term.c_general = new ASN1OctetString(node.getTerm().getValue());
-        Stack<AttributeElement> attrs = new Stack<>();
-        ASN1Any any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
-        while (any != null) {
-            attrs.push((AttributeElement) any);
-            any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
+        ASN1Any any = result.pop();
+        if (any instanceof ASN1OctetString) {
+            operand.attrTerm.term.c_general = (ASN1OctetString)any;
+        } else {
+            operand.attrTerm.term.c_general = new ASN1OctetString(node.getTerm().getValue());
         }
         operand.attrTerm.attributes = new AttributeList();
-        operand.attrTerm.attributes.value = attrs.toArray(new AttributeElement[attrs.size()]);
+        operand.attrTerm.attributes.value = attributeElements.toArray(new AttributeElement[0]);
         RPNStructure rpn = new RPNStructure();
         rpn.c_op = operand;
         result.push(rpn);
@@ -202,43 +207,43 @@ public final class CQLRPNGenerator implements Visitor {
         if (node.getModifierList() != null) {
             node.getModifierList().accept(this);
         }
-        int t = 2;
-        int n = 3;
+        int attributeType = 2;
+        int attributeValue = 3;
         switch (node.getComparitor()) {
             case LESS: // 2=1
-                n = 1;
+                attributeValue = 1;
                 break;
             case LESS_EQUALS: // 2=2
-                n = 2;
+                attributeValue = 2;
                 break;
             case EQUALS: // 2=3
-                n = 3;
+                attributeValue = 3;
                 break;
             case GREATER_EQUALS: // 2=4
-                n = 4;
+                attributeValue = 4;
                 break;
             case GREATER: // 2=5    
-                n = 5;
+                attributeValue = 5;
                 break;
             case NOT_EQUALS: // 2=6
-                n = 6;
+                attributeValue = 6;
                 break;
             case ALL: // 4=6
-                t = 4;
-                n = 6;
+                attributeType = 4;
+                attributeValue = 6;
                 break;
             case ANY: // 4=105
-                t = 4;
-                n = 104;
+                attributeType = 4;
+                attributeValue = 104;
                 break;
             default:
                 break;
         }
-        if (n != 3) {
+        if (attributeValue != 3) {
             AttributeElement ae = new AttributeElement();
-            ae.attributeType = new ASN1Integer(t);
+            ae.attributeType = new ASN1Integer(attributeType);
             ae.attributeValue = new AttributeElementAttributeValue();
-            ae.attributeValue.numeric = new ASN1Integer(n);
+            ae.attributeValue.numeric = new ASN1Integer(attributeValue);
             result.push(ae);
         }
     }
@@ -261,29 +266,9 @@ public final class CQLRPNGenerator implements Visitor {
     }
 
     @Override
-    public void visit(Term node) {
-        int t = 5;
-        int n = 100;
-        // check for '*'
-        String v = node.getValue();
-        if (v.endsWith("*")) {
-            if (v.startsWith("*")) {
-                n = 3;
-            } else {
-                n = 1;
-            }
-        } else if (v.startsWith("*")) {
-            n = 2;
-        }
-        if (n != 100) {
-            AttributeElement ae = new AttributeElement();
-            ae.attributeType = new ASN1Integer(t);
-            ae.attributeValue = new AttributeElementAttributeValue();
-            ae.attributeValue.numeric = new ASN1Integer(n);
-            result.push(ae);
-            v = v.replaceAll("\\*", "");
-        }
-        ASN1OctetString s = new ASN1OctetString(v);
+    public void visit(Term term) {
+        // the value
+        ASN1OctetString s = transformTerm(term);
         result.push(s);
     }
 
@@ -298,18 +283,18 @@ public final class CQLRPNGenerator implements Visitor {
     }
 
     @Override
-    public void visit(Index node) {
-        String context = node.getContext();
+    public void visit(Index index) {
+        String context = index.getContext();
         if (context == null) {
             context = "dc"; // default context
         }
-        int t = 1;
-        int n = getUseAttr(context, node.getName());
+        int attributeType = 1; // use attribute set: bib-1 = 1
+        int attributeValue = getUseAttr(context, index.getName());
         AttributeElement ae = new AttributeElement();
-        ae.attributeType = new ASN1Integer(t);
+        ae.attributeType = new ASN1Integer(attributeType);
         ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.numeric = new ASN1Integer(n);
-        result.push(ae);
+        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
+        attributeElements.push(ae);
     }
 
     private int getUseAttr(String context, String attrName) {
@@ -318,5 +303,64 @@ public final class CQLRPNGenerator implements Visitor {
         } catch (MissingResourceException e) {
             throw new SyntaxException("unknown use attribute '" + attrName + "' for context " + context, e);
         }
+    }
+
+    private ASN1OctetString transformTerm(Term term) {
+        String v = term.getValue();
+        // let's derive attributes from the search term
+
+        // relation attribute = 2
+        int attributeType = 2;
+        int attributeValue = 3; // equal = 3
+        AttributeElement ae = new AttributeElement();
+        ae.attributeType = new ASN1Integer(attributeType);
+        ae.attributeValue = new AttributeElementAttributeValue();
+        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
+        attributeElements.push(ae);
+
+        // position attribute = 3
+        attributeType = 3;
+        attributeValue = 3; // any position = 3
+        ae = new AttributeElement();
+        ae.attributeType = new ASN1Integer(attributeType);
+        ae.attributeValue = new AttributeElementAttributeValue();
+        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
+        attributeElements.push(ae);
+
+        // structure attribute = 4
+        attributeType = 4;
+        attributeValue = 2; // word = 2
+        if (v.startsWith("\"") && v.endsWith("\"")) {
+            attributeValue = 1; // phrase
+            v = v.substring(1, v.length()-1);
+        }
+        ae = new AttributeElement();
+        ae.attributeType = new ASN1Integer(attributeType);
+        ae.attributeValue = new AttributeElementAttributeValue();
+        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
+        attributeElements.push(ae);
+
+        // truncation attribute = 5
+        attributeType = 5;
+        attributeValue = 100; // do not truncate = 5
+        if (v.endsWith("*")) {
+            if (v.startsWith("*")) {
+                attributeValue = 3; // Left and right truncation = 3
+                v = v.substring(1, v.length() - 1);
+            } else {
+                attributeValue = 1; // Right truncation  = 1
+                v = v.substring(0, v.length() - 1);
+            }
+        } else if (v.startsWith("*")) {
+            attributeValue = 2; // Left truncation = 2
+            v = v.substring(1);
+        }
+        ae = new AttributeElement();
+        ae.attributeType = new ASN1Integer(attributeType);
+        ae.attributeValue = new AttributeElementAttributeValue();
+        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
+        attributeElements.push(ae);
+
+        return new ASN1OctetString(v);
     }
 }
