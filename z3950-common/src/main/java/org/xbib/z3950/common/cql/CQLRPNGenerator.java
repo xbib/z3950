@@ -32,6 +32,7 @@ import org.xbib.z3950.common.v3.Operator;
 import org.xbib.z3950.common.v3.RPNQuery;
 import org.xbib.z3950.common.v3.RPNStructure;
 import org.xbib.z3950.common.v3.RPNStructureRpnRpnOp;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -67,6 +68,12 @@ public final class CQLRPNGenerator implements Visitor {
 
     public CQLRPNGenerator() {
         this.attributeElements = new Stack<>();
+        this.result = new Stack<>();
+    }
+
+    public CQLRPNGenerator(Collection<AttributeElement> attributeElements) {
+        this.attributeElements = new Stack<>();
+        this.attributeElements.addAll(attributeElements);
         this.result = new Stack<>();
     }
 
@@ -196,7 +203,8 @@ public final class CQLRPNGenerator implements Visitor {
             operand.attrTerm.term.c_general = new ASN1OctetString(node.getTerm().getValue());
         }
         operand.attrTerm.attributes = new AttributeList();
-        operand.attrTerm.attributes.value = attributeElements.toArray(new AttributeElement[0]);
+        operand.attrTerm.attributes.value = attributeElements.stream()
+                .filter(ae -> ae.attributeValue != null).toArray(AttributeElement[]::new);
         RPNStructure rpn = new RPNStructure();
         rpn.c_op = operand;
         result.push(rpn);
@@ -307,25 +315,17 @@ public final class CQLRPNGenerator implements Visitor {
 
     private ASN1OctetString transformTerm(Term term) {
         String v = term.getValue();
-        // let's derive attributes from the search term
+        // let's derive attributes from the search term syntax
 
         // relation attribute = 2
         int attributeType = 2;
         int attributeValue = 3; // equal = 3
-        AttributeElement ae = new AttributeElement();
-        ae.attributeType = new ASN1Integer(attributeType);
-        ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
-        attributeElements.push(ae);
+        push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
         // position attribute = 3
-        attributeType = 3;
-        attributeValue = 3; // any position = 3
-        ae = new AttributeElement();
-        ae.attributeType = new ASN1Integer(attributeType);
-        ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
-        attributeElements.push(ae);
+        //attributeType = 3;
+        // attributeValue = 3; // any position = 3
+        //push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
         // structure attribute = 4
         attributeType = 4;
@@ -334,11 +334,7 @@ public final class CQLRPNGenerator implements Visitor {
             attributeValue = 1; // phrase
             v = v.substring(1, v.length()-1);
         }
-        ae = new AttributeElement();
-        ae.attributeType = new ASN1Integer(attributeType);
-        ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
-        attributeElements.push(ae);
+        push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
         // truncation attribute = 5
         attributeType = 5;
@@ -355,12 +351,27 @@ public final class CQLRPNGenerator implements Visitor {
             attributeValue = 2; // Left truncation = 2
             v = v.substring(1);
         }
-        ae = new AttributeElement();
-        ae.attributeType = new ASN1Integer(attributeType);
-        ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
-        attributeElements.push(ae);
-
+        push(attributeElements, createAttributeElement(attributeType, attributeValue));
         return new ASN1OctetString(v);
+    }
+
+    private static void push(Stack<AttributeElement> stack, AttributeElement attributeElement) {
+        if (attributeElement != null) {
+            if (!stack.contains(attributeElement)) {
+                stack.push(attributeElement);
+            }
+        }
+    }
+
+    private static AttributeElement createAttributeElement(Integer attributeType, Integer attributeValue) {
+        if (attributeType != null && attributeValue != null) {
+            AttributeElement ae = new AttributeElement();
+            ae.attributeType = new ASN1Integer(attributeType);
+            ae.attributeValue = new AttributeElementAttributeValue();
+            ae.attributeValue.numeric = new ASN1Integer(attributeValue);
+            return ae;
+        } else {
+            return null;
+        }
     }
 }

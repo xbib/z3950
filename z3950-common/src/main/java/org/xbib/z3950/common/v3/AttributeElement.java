@@ -19,7 +19,7 @@ import org.xbib.asn1.BEREncoding;
  * }
  * </pre>
  */
-public final class AttributeElement extends ASN1Any {
+public final class AttributeElement extends ASN1Any implements Comparable<AttributeElement> {
 
     public AttributeSetId attributeSetId; // optional
 
@@ -125,7 +125,7 @@ public final class AttributeElement extends ASN1Any {
         if (attributeSetId != null) {
             numFields++;
         }
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
         if (attributeSetId != null) {
             fields[x++] = attributeSetId.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 1);
@@ -153,13 +153,15 @@ public final class AttributeElement extends ASN1Any {
         }
         str.append("attributeType ");
         str.append(attributeType);
-        outputted++;
-        if (0 < outputted) {
-            str.append(", ");
-        }
+        str.append(", ");
         str.append("attributeValue ");
         str.append(attributeValue);
         str.append("}");
         return str.toString();
+    }
+
+    @Override
+    public int compareTo(AttributeElement o) {
+        return attributeType.toString().compareTo(o.attributeType.toString());
     }
 }

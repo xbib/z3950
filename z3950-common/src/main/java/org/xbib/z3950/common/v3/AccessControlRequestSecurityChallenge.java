@@ -82,7 +82,7 @@ public final class AccessControlRequestSecurityChallenge extends ASN1Any {
     @Override
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
-        BEREncoding enc[];
+        BEREncoding[] enc;
         if (cSimpleForm != null) {
             chosen = cSimpleForm.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 37);
         }

@@ -1,4 +1,4 @@
-package org.xbib.z3950.api;
+package org.xbib.z3950.client.api;
 
 /**
  * Client provider.

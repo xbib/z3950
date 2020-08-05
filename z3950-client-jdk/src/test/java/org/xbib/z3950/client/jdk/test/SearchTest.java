@@ -1,9 +1,9 @@
-package org.xbib.z3950.client.test;
+package org.xbib.z3950.client.jdk.test;
 
 import org.junit.jupiter.api.Test;
 import org.xbib.z3950.common.exceptions.MessageSizeTooSmallException;
 import org.xbib.z3950.common.exceptions.NoRecordsReturnedException;
-import org.xbib.z3950.client.DefaultClient;
+import org.xbib.z3950.client.jdk.JDKZClient;
 
 import java.util.Collections;
 import java.util.logging.Level;
@@ -27,7 +27,7 @@ class SearchTest {
         int from = 1;
         int length = 1;
         try {
-            DefaultClient client = DefaultClient.builder()
+            JDKZClient client = JDKZClient.builder()
                     .setHost(host)
                     .setPort(port)
                     .setDatabases(Collections.singletonList(database))

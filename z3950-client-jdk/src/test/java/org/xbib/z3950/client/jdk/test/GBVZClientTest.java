@@ -1,7 +1,7 @@
-package org.xbib.z3950.client.test;
+package org.xbib.z3950.client.jdk.test;
 
 import org.junit.jupiter.api.Test;
-import org.xbib.z3950.client.DefaultClient;
+import org.xbib.z3950.client.jdk.JDKZClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +25,7 @@ class GBVZClientTest {
         String query = "@attr 1=4 linux";
         int from = 1;
         int size = 10;
-        try (DefaultClient client = newZClient("GBV")) {
+        try (JDKZClient client = newZClient("GBV")) {
             logger.log(Level.INFO, "executing PQF " + query);
             int count = client.searchPQF(query, from, size,
                     (status, total, returned, elapsedMillis) ->
@@ -43,7 +43,7 @@ class GBVZClientTest {
         String query = "bib.controlNumberZDB = 1413423-8";
         int from = 1;
         int size = 2;
-        try (DefaultClient client = newZClient(serviceName)) {
+        try (JDKZClient client = newZClient(serviceName)) {
             logger.log(Level.INFO, "executing CQL " + query);
             int count = client.searchCQL(query, from, size,
                     (status, total, returned, elapsedMillis) ->
@@ -57,7 +57,7 @@ class GBVZClientTest {
     }
 
 
-    private DefaultClient newZClient(String name) throws IOException {
+    private JDKZClient newZClient(String name) throws IOException {
         return newZClient(getProperties(name));
     }
 
@@ -69,8 +69,8 @@ class GBVZClientTest {
         return properties;
     }
 
-    private static DefaultClient newZClient(Properties properties) {
-        DefaultClient.Builder builder = DefaultClient.builder();
+    private static JDKZClient newZClient(Properties properties) {
+        JDKZClient.Builder builder = JDKZClient.builder();
         if (properties.containsKey("host")) {
             builder.setHost(properties.getProperty("host"));
         }

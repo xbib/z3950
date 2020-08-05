@@ -1,4 +1,4 @@
-package org.xbib.z3950.client;
+package org.xbib.z3950.client.jdk;
 
 import org.xbib.asn1.io.InputStreamBERReader;
 import org.xbib.asn1.io.OutputStreamBERWriter;
@@ -7,14 +7,14 @@ import org.xbib.z3950.common.operations.InitOperation;
 import org.xbib.z3950.common.operations.PresentOperation;
 import org.xbib.z3950.common.operations.ScanOperation;
 import org.xbib.z3950.common.operations.SearchOperation;
-import org.xbib.z3950.api.Client;
+import org.xbib.z3950.client.api.Client;
 import org.xbib.z3950.api.InitListener;
 import org.xbib.z3950.api.RecordListener;
 import org.xbib.z3950.api.ScanListener;
 import org.xbib.z3950.api.SearchListener;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,9 +32,9 @@ import java.util.logging.Logger;
 /**
  * Default Z client.
  */
-public class DefaultClient implements Client {
+public class JDKZClient implements Client, Closeable {
 
-    private static final Logger logger = Logger.getLogger(DefaultClient.class.getName());
+    private static final Logger logger = Logger.getLogger(JDKZClient.class.getName());
 
     private final String host;
 
@@ -72,16 +72,16 @@ public class DefaultClient implements Client {
 
     private OutputStreamBERWriter berWriter;
 
-    private DefaultClient(String host, int port, String user, String pass, long timeout,
-                          String preferredRecordSyntax,
-                          String resultSetName,
-                          String elementSetName,
-                          String encoding,
-                          String format,
-                          String type,
-                          List<String> databases,
-                          Integer preferredMessageSize,
-                          InitListener initListener) {
+    private JDKZClient(String host, int port, String user, String pass, long timeout,
+                       String preferredRecordSyntax,
+                       String resultSetName,
+                       String elementSetName,
+                       String encoding,
+                       String format,
+                       String type,
+                       List<String> databases,
+                       Integer preferredMessageSize,
+                       InitListener initListener) {
         this.host = host;
         this.port = port;
         this.user = user;
@@ -97,39 +97,6 @@ public class DefaultClient implements Client {
         this.preferredMessageSize = preferredMessageSize;
         this.initListener = initListener;
         this.lock = new ReentrantLock();
-    }
-
-    @Override
-    public void close() {
-        if (isConnected()) {
-            try {
-                lock.lock();
-                try {
-                    sendClose(0);
-                } catch (IOException e) {
-                    logger.log(Level.WARNING, "while attempting to send close for close connection: " + e.getMessage(), e);
-                }
-                try {
-                    berReader.close();
-                } catch (IOException e) {
-                    logger.log(Level.WARNING, "error attempting to close src: " + e.getMessage(), e);
-                }
-                try {
-                    berWriter.close();
-                } catch (IOException e) {
-                    logger.log(Level.WARNING, "error attempting to close dest: " + e.getMessage(), e);
-                }
-                try {
-                    if (socket != null) {
-                        socket.close();
-                    }
-                } catch (IOException e) {
-                    logger.log(Level.WARNING, "error attempting to close socket: " + e.getMessage(), e);
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
     }
 
     @Override
@@ -288,8 +255,66 @@ public class DefaultClient implements Client {
         return databases;
     }
 
-    private void connect() throws IOException {
+    public void connect() throws IOException {
+        try {
+            lock.lock();
+            Socket socket = new Socket();
+            socket.connect(new InetSocketAddress(host, port), (int) timeout);
+            socket.setSoTimeout((int) timeout * 1000);
+            this.socket = socket;
+            InputStream src = new BufferedInputStream(socket.getInputStream());
+            OutputStream dest = new BufferedOutputStream(socket.getOutputStream());
+            this.berReader = new InputStreamBERReader(src);
+            this.berWriter = new OutputStreamBERWriter(dest);
+            InitOperation initOperation = new InitOperation(berReader, berWriter, user, pass);
+            if (initOperation.execute(preferredMessageSize, initListener)) {
+                throw new IOException("could not initiate connection");
+            }
+            logger.log(Level.INFO, initOperation.getTargetInfo());
+        } finally {
+            lock.unlock();
+        }
+    }
 
+    public void disconnect() throws IOException {
+        try {
+            lock.lock();
+            try {
+                sendClose(0);
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "while attempting to send close for close connection: " + e.getMessage(), e);
+            }
+            try {
+                berReader.close();
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "error attempting to close src: " + e.getMessage(), e);
+            }
+            try {
+                berWriter.close();
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "error attempting to close dest: " + e.getMessage(), e);
+            }
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "error attempting to close socket: " + e.getMessage(), e);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (isConnected()) {
+            disconnect();
+        }
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     private boolean isConnected() {
@@ -298,29 +323,8 @@ public class DefaultClient implements Client {
 
     private void ensureConnected() throws IOException {
         if (!isConnected()) {
-            try {
-                lock.lock();
-                Socket socket = new Socket();
-                socket.connect(new InetSocketAddress(host, port), (int) timeout);
-                socket.setSoTimeout((int) timeout * 1000);
-                this.socket = socket;
-                InputStream src = new BufferedInputStream(socket.getInputStream());
-                OutputStream dest = new BufferedOutputStream(socket.getOutputStream());
-                this.berReader = new InputStreamBERReader(src);
-                this.berWriter = new OutputStreamBERWriter(dest);
-                InitOperation initOperation = new InitOperation(berReader, berWriter, user, pass);
-                if (initOperation.execute(preferredMessageSize, initListener)) {
-                    throw new IOException("could not initiate connection");
-                }
-                logger.log(Level.INFO, initOperation.getTargetInfo());
-            } finally {
-                lock.unlock();
-            }
+           connect();
         }
-    }
-
-    public static Builder builder() {
-        return new Builder();
     }
 
     /**
@@ -454,8 +458,8 @@ public class DefaultClient implements Client {
             return this;
         }
 
-        public DefaultClient build() {
-            return new DefaultClient(host, port, user, pass, timeout,
+        public JDKZClient build() {
+            return new JDKZClient(host, port, user, pass, timeout,
                     preferredRecordSyntax,
                     resultSetName,
                     elementSetName,

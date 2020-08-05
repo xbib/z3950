@@ -1,5 +1,8 @@
-package org.xbib.z3950.api;
+package org.xbib.z3950.client.api;
 
+import org.xbib.z3950.api.RecordListener;
+import org.xbib.z3950.api.ScanListener;
+import org.xbib.z3950.api.SearchListener;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
@@ -7,8 +10,8 @@ import java.util.List;
 public interface Client extends Closeable {
 
     int searchCQL(String query, int offset, int length,
-                         SearchListener searchListener,
-                         RecordListener recordListener) throws IOException;
+                  SearchListener searchListener,
+                  RecordListener recordListener) throws IOException;
 
     int searchPQF(String query, int offset, int length,
                   SearchListener searchListener,
@@ -40,5 +43,4 @@ public interface Client extends Closeable {
     String getType();
 
     List<String> getDatabases();
-
 }

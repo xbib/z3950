@@ -120,7 +120,7 @@ public final class AccessControlRequest extends ASN1Any {
         if (sOtherInfo != null) {
             numFields++;
         }
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
         if (sReferenceId != null) {
             fields[x++] = sReferenceId.berEncode();
@@ -149,11 +149,8 @@ public final class AccessControlRequest extends ASN1Any {
         }
         str.append("securityChallenge ");
         str.append(sSecurityChallenge);
-        outputted++;
         if (sOtherInfo != null) {
-            if (0 < outputted) {
-                str.append(", ");
-            }
+            str.append(", ");
             str.append("otherInfo ");
             str.append(sOtherInfo);
         }

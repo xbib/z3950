@@ -13,12 +13,19 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.CharsetUtil;
 
+import org.xbib.z3950.api.RecordListener;
+import org.xbib.z3950.api.ScanListener;
+import org.xbib.z3950.api.SearchListener;
+import org.xbib.z3950.client.api.Client;
+import java.io.Closeable;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  *
  */
-public class NettyZClient {
+public class NettyZClient implements Client, Closeable {
 
     private final EventLoopGroup group;
     private final Bootstrap clientBootstrap;
@@ -44,6 +51,86 @@ public class NettyZClient {
 
     public void shutdown() throws InterruptedException {
         group.shutdownGracefully().sync();
+    }
+
+    @Override
+    public void close() throws IOException {
+
+    }
+
+    @Override
+    public int searchCQL(String query, int offset, int length, SearchListener searchListener, RecordListener recordListener) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public int searchPQF(String query, int offset, int length, SearchListener searchListener, RecordListener recordListener) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public void scanPQF(String query, int nTerms, int step, int position, ScanListener scanListener) throws IOException {
+
+    }
+
+    @Override
+    public String getHost() {
+        return null;
+    }
+
+    @Override
+    public int getPort() {
+        return 0;
+    }
+
+    @Override
+    public String getUser() {
+        return null;
+    }
+
+    @Override
+    public String getPass() {
+        return null;
+    }
+
+    @Override
+    public long getTimeout() {
+        return 0;
+    }
+
+    @Override
+    public String getPreferredRecordSyntax() {
+        return null;
+    }
+
+    @Override
+    public String getResultSetName() {
+        return null;
+    }
+
+    @Override
+    public String getElementSetName() {
+        return null;
+    }
+
+    @Override
+    public String getEncoding() {
+        return null;
+    }
+
+    @Override
+    public String getFormat() {
+        return null;
+    }
+
+    @Override
+    public String getType() {
+        return null;
+    }
+
+    @Override
+    public List<String> getDatabases() {
+        return null;
     }
 
     class Handler extends SimpleChannelInboundHandler<ByteBuf> {
