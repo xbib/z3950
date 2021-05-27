@@ -53,12 +53,14 @@ if (project.hasProperty("signing.keyId")) {
     }
 }
 
-nexusPublishing {
-    repositories {
-        sonatype {
-            username = project.property('ossrhUsername')
-            password = project.property('ossrhPassword')
-            packageGroup = "org.xbib"
+if (project.hasProperty("ossrhUsername")) {
+    nexusPublishing {
+        repositories {
+            sonatype {
+                username = project.property('ossrhUsername')
+                password = project.property('ossrhPassword')
+                packageGroup = "org.xbib"
+            }
         }
     }
 }
