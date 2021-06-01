@@ -53,6 +53,7 @@ public final class CQLRPNGenerator implements Visitor {
         private static final long serialVersionUID = 8199395368653216950L;
 
         {
+            put("default", ResourceBundle.getBundle("org.xbib.z3950.common.cql.default"));
             put("cql", ResourceBundle.getBundle("org.xbib.z3950.common.cql.cql"));
             put("bib", ResourceBundle.getBundle("org.xbib.z3950.common.cql.bib-1"));
             put("dc", ResourceBundle.getBundle("org.xbib.z3950.common.cql.dc"));
@@ -67,13 +68,14 @@ public final class CQLRPNGenerator implements Visitor {
     private RPNQuery rpnQuery;
 
     public CQLRPNGenerator() {
-        this.attributeElements = new Stack<>();
-        this.result = new Stack<>();
+        this(null);
     }
 
     public CQLRPNGenerator(Collection<AttributeElement> attributeElements) {
         this.attributeElements = new Stack<>();
-        this.attributeElements.addAll(attributeElements);
+        if (attributeElements != null) {
+            this.attributeElements.addAll(attributeElements);
+        }
         this.result = new Stack<>();
     }
 
@@ -294,7 +296,7 @@ public final class CQLRPNGenerator implements Visitor {
     public void visit(Index index) {
         String context = index.getContext();
         if (context == null) {
-            context = "dc"; // default context
+            context = "default"; // default context
         }
         int attributeType = 1; // use attribute set: bib-1 = 1
         int attributeValue = getUseAttr(context, index.getName());
