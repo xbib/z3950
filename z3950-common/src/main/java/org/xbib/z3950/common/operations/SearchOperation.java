@@ -133,6 +133,8 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
                         }
                     }
                 }
+            } else {
+                logger.log(Level.WARNING, "no search response returned for host " + host + " " + databases);
             }
         } catch (IOException e) {
             // add host in IOException message

@@ -120,39 +120,44 @@ public class AbstractOperation<IN extends ASN1Any, OUT extends ASN1Any> {
         if (ber.getTagType() != BEREncoding.CONTEXT_SPECIFIC_TAG) {
             throw new ASN1Exception("bad BER encoding: choice not matched");
         }
-        switch (ber.getTag()) {
-            case 20:
-                return (IN)new InitializeRequest(ber, false);
-            case 21:
-                return (IN)new InitializeResponse(ber, false);
-            case 22:
-                return (IN)new SearchRequest(ber, false);
-            case 23:
-                return (IN)new SearchResponse(ber, false);
-            case 24:
-                return (IN)new PresentRequest(ber, false);
-            case 25:
-                return (IN)new PresentResponse(ber, false);
-            // 26 new DeleteResultSetRequest(ber, false);
-            // 27 new DeleteResultSetResponse(ber, false);
-            // 28 new AccessControlRequest(ber, false);
-            // 29 new AccessControlResponse(ber, false);
-            // 30 new ResourceControlRequest(ber, false);
-            // 31 new ResourceControlResponse(ber, false);
-            // 32 new TriggerResourceControlRequest(ber, false);
-            // 33 new ResourceReportRequest(ber, false);
-            // 34 new ResourceReportResponse(ber, false);
-            case 35:
-                return (IN) new ScanRequest(ber, false);
-            case 36:
-                return (IN) new ScanResponse(ber, false);
-            // 43 new SortRequest(ber, false);
-            // 44  new SortResponse(ber, false);
-            // 45  new Segment(ber, false);
-            // 46  new ExtendedServicesRequest(ber, false);
-            // 47  new ExtendedServicesResponse(ber, false);
-            case 48:
-                return (IN) new Close(ber, false);
+        try {
+            switch (ber.getTag()) {
+                case 20:
+                    return (IN) new InitializeRequest(ber, false);
+                case 21:
+                    return (IN) new InitializeResponse(ber, false);
+                case 22:
+                    return (IN) new SearchRequest(ber, false);
+                case 23:
+                    return (IN) new SearchResponse(ber, false);
+                case 24:
+                    return (IN) new PresentRequest(ber, false);
+                case 25:
+                    return (IN) new PresentResponse(ber, false);
+                // 26 new DeleteResultSetRequest(ber, false);
+                // 27 new DeleteResultSetResponse(ber, false);
+                // 28 new AccessControlRequest(ber, false);
+                // 29 new AccessControlResponse(ber, false);
+                // 30 new ResourceControlRequest(ber, false);
+                // 31 new ResourceControlResponse(ber, false);
+                // 32 new TriggerResourceControlRequest(ber, false);
+                // 33 new ResourceReportRequest(ber, false);
+                // 34 new ResourceReportResponse(ber, false);
+                case 35:
+                    return (IN) new ScanRequest(ber, false);
+                case 36:
+                    return (IN) new ScanResponse(ber, false);
+                // 43 new SortRequest(ber, false);
+                // 44  new SortResponse(ber, false);
+                // 45  new Segment(ber, false);
+                // 46  new ExtendedServicesRequest(ber, false);
+                // 47  new ExtendedServicesResponse(ber, false);
+                case 48:
+                    return (IN) new Close(ber, false);
+            }
+        } catch (Exception e) {
+            // class cast exception if Close is returned, ignore
+            return null;
         }
         throw new ASN1Exception("bad BER encoding: choice not matched");
     }
