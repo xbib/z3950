@@ -72,7 +72,11 @@ public class JDKZClient implements Client, Closeable {
 
     private OutputStreamBERWriter berWriter;
 
-    private JDKZClient(String host, int port, String user, String pass, long timeout,
+    private JDKZClient(String host,
+                       int port,
+                       String user,
+                       String pass,
+                       long timeout,
                        String preferredRecordSyntax,
                        String resultSetName,
                        String elementSetName,
@@ -259,8 +263,8 @@ public class JDKZClient implements Client, Closeable {
         try {
             lock.lock();
             Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), (int) timeout);
-            socket.setSoTimeout((int) timeout * 1000);
+            socket.connect(new InetSocketAddress(host, port), (int) timeout); // in milliseconds
+            socket.setSoTimeout((int) timeout); // timeout in milliseconds
             this.socket = socket;
             InputStream src = new BufferedInputStream(socket.getInputStream());
             OutputStream dest = new BufferedOutputStream(socket.getOutputStream());
@@ -365,7 +369,7 @@ public class JDKZClient implements Client, Closeable {
 
         private String pass;
 
-        private long timeout;
+        private long timeout = 5000;
 
         private String preferredRecordSyntax = "1.2.840.10003.5.10"; // marc21
 
