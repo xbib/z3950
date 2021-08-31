@@ -35,7 +35,8 @@ class SearchTest {
                     .build();
             client.searchPQF(query, from, length,
                     (status, total, returned, elapsedMillis) -> logger.log(Level.INFO, "total records = " + total),
-                    record -> logger.log(Level.INFO, "found record " + record));
+                    record -> logger.log(Level.INFO, "found record " + record),
+                    () -> logger.log(Level.WARNING, "timeout"));
             client.close();
         } catch (NoRecordsReturnedException | MessageSizeTooSmallException e) {
             logger.log(Level.SEVERE, e.getMessage(), e);

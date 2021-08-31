@@ -30,7 +30,8 @@ class GBVZClientTest {
             int count = client.searchPQF(query, from, size,
                     (status, total, returned, elapsedMillis) ->
                             logger.log(Level.INFO, "total results = " + total + " millis = " + elapsedMillis),
-                    record -> logger.log(Level.INFO, "record = " + record.toString(StandardCharsets.UTF_8)));
+                    record -> logger.log(Level.INFO, "record = " + record.toString(StandardCharsets.UTF_8)),
+                    () -> logger.log(Level.WARNING, "timeout"));
             logger.log(Level.INFO, "record count = " + count);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -48,7 +49,8 @@ class GBVZClientTest {
             int count = client.searchCQL(query, from, size,
                     (status, total, returned, elapsedMillis) ->
                             logger.log(Level.INFO, serviceName + " total results = " + total),
-                    record -> logger.log(Level.INFO, "record = " + record));
+                    record -> logger.log(Level.INFO, "record = " + record),
+                    () -> logger.log(Level.WARNING, "timeout"));
             logger.log(Level.INFO, "returned records = " + count);
             assertEquals(1, count);
         } catch (Exception e) {

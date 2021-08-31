@@ -30,7 +30,8 @@ class DefaultClientTest {
                 int count = client.searchCQL(query, from, size,
                         (status, total, returned, elapsedMillis) ->
                                 logger.log(Level.INFO, serviceName + " total results = " + total),
-                        record -> logger.log(Level.INFO, "record = " + record));
+                        record -> logger.log(Level.INFO, "record = " + record),
+                        () -> logger.log(Level.INFO, "timeout"));
                 logger.log(Level.INFO, "returned records = " + count);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);
@@ -49,7 +50,8 @@ class DefaultClientTest {
                 int count = client.searchPQF(query, from, size,
                         (status, total, returned, elapsedMillis) ->
                                 logger.log(Level.INFO, serviceName + " status = " + status + " total results = " + total),
-                        record -> logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))));
+                        record -> logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))),
+                        () -> logger.log(Level.WARNING, "timeout"));
                 logger.log(Level.INFO, "returned records = " + count);
             } catch (Exception e) {
                 logger.log(Level.SEVERE, e.getMessage(), e);

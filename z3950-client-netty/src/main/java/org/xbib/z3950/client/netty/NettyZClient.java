@@ -16,6 +16,7 @@ import io.netty.util.CharsetUtil;
 import org.xbib.z3950.api.RecordListener;
 import org.xbib.z3950.api.ScanListener;
 import org.xbib.z3950.api.SearchListener;
+import org.xbib.z3950.api.TimeoutListener;
 import org.xbib.z3950.client.api.Client;
 import java.io.Closeable;
 import java.io.IOException;
@@ -59,17 +60,32 @@ public class NettyZClient implements Client, Closeable {
     }
 
     @Override
-    public int searchCQL(String query, int offset, int length, SearchListener searchListener, RecordListener recordListener) throws IOException {
+    public int searchCQL(String query,
+                         int offset,
+                         int length,
+                         SearchListener searchListener,
+                         RecordListener recordListener,
+                         TimeoutListener timoutListener) throws IOException {
         return 0;
     }
 
     @Override
-    public int searchPQF(String query, int offset, int length, SearchListener searchListener, RecordListener recordListener) throws IOException {
+    public int searchPQF(String query,
+                         int offset,
+                         int length,
+                         SearchListener searchListener,
+                         RecordListener recordListener,
+                         TimeoutListener timeoutListener) throws IOException {
         return 0;
     }
 
     @Override
-    public void scanPQF(String query, int nTerms, int step, int position, ScanListener scanListener) throws IOException {
+    public void scanPQF(String query,
+                        int nTerms,
+                        int step,
+                        int position,
+                        ScanListener scanListener,
+                        TimeoutListener timeoutListener) throws IOException {
 
     }
 

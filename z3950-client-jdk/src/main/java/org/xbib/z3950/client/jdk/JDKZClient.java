@@ -2,6 +2,7 @@ package org.xbib.z3950.client.jdk;
 
 import org.xbib.asn1.io.InputStreamBERReader;
 import org.xbib.asn1.io.OutputStreamBERWriter;
+import org.xbib.z3950.api.TimeoutListener;
 import org.xbib.z3950.common.operations.CloseOperation;
 import org.xbib.z3950.common.operations.InitOperation;
 import org.xbib.z3950.common.operations.PresentOperation;
@@ -20,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.List;
@@ -106,7 +108,8 @@ public class JDKZClient implements Client, Closeable {
     @Override
     public int searchCQL(String query, int offset, int length,
                          SearchListener searchListener,
-                         RecordListener recordListener) throws IOException {
+                         RecordListener recordListener,
+                         TimeoutListener timeoutListener) throws IOException {
         if (query == null) {
             throw new IllegalArgumentException("no query");
         }
@@ -139,6 +142,11 @@ public class JDKZClient implements Client, Closeable {
                 }
             }
             return searchOperation.getCount();
+        } catch (SocketTimeoutException e) {
+            if (timeoutListener != null) {
+                timeoutListener.onTimeout();
+            }
+            return 0;
         } finally {
             lock.unlock();
         }
@@ -147,7 +155,8 @@ public class JDKZClient implements Client, Closeable {
     @Override
     public int searchPQF(String query, int offset, int length,
                          SearchListener searchListener,
-                         RecordListener recordListener) throws IOException {
+                         RecordListener recordListener,
+                         TimeoutListener timeoutListener) throws IOException {
         if (query == null) {
             throw new IllegalArgumentException("no query");
         }
@@ -181,19 +190,32 @@ public class JDKZClient implements Client, Closeable {
                 }
             }
             return search.getCount();
+        } catch (SocketTimeoutException e) {
+            if (timeoutListener != null) {
+                timeoutListener.onTimeout();
+            }
+            return 0;
         } finally {
             lock.unlock();
         }
     }
 
     @Override
-    public void scanPQF(String query, int nTerms, int step, int position,
-                        ScanListener scanListener) throws IOException {
+    public void scanPQF(String query,
+                        int nTerms,
+                        int step,
+                        int position,
+                        ScanListener scanListener,
+                        TimeoutListener timeoutListener) throws IOException {
         ensureConnected();
         try {
             lock.lock();
             ScanOperation scanOperation = new ScanOperation(berReader, berWriter, databases);
             scanOperation.executePQF(nTerms, step, position, query, scanListener);
+        } catch (SocketTimeoutException e) {
+            if (timeoutListener != null) {
+                timeoutListener.onTimeout();
+            }
         } finally {
             lock.unlock();
         }
@@ -280,7 +302,7 @@ public class JDKZClient implements Client, Closeable {
         }
     }
 
-    public void disconnect() throws IOException {
+    public void disconnect() {
         try {
             lock.lock();
             try {
@@ -311,7 +333,7 @@ public class JDKZClient implements Client, Closeable {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (isConnected()) {
             disconnect();
         }
