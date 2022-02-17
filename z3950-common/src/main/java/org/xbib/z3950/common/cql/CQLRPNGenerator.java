@@ -331,7 +331,7 @@ public final class CQLRPNGenerator implements Visitor {
 
         // structure attribute = 4
         attributeType = 4;
-        attributeValue = 2; // word = 2
+        attributeValue = 2; // phrase = 1, word = 2
         if (v.startsWith("\"") && v.endsWith("\"")) {
             attributeValue = 1; // phrase
             v = v.substring(1, v.length()-1);
