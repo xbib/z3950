@@ -1,65 +1,57 @@
 package org.xbib.z3950.client.jdk.test;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.xbib.z3950.client.jdk.JDKZClient;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.junit.jupiter.api.Test;
+import org.xbib.z3950.client.jdk.JDKZClient;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+class SWBClientTest {
 
-/**
- * GBV test.
- */
-class GBVZClientTest {
-
-    private static final Logger logger = Logger.getLogger(GBVZClientTest.class.getName());
+    private static final Logger logger = Logger.getLogger(SWBClientTest.class.getName());
 
     @Test
-    void testGBV() {
-        String query = "@attr 1=4 linux";
+    void testCQL() {
+        String serviceName = "SWB";
+        String query = "bib.identifierISSN = 00280836";
         int from = 1;
         int size = 10;
-        try (JDKZClient client = newZClient("GBV")) {
-            logger.log(Level.INFO, "executing PQF " + query);
-            int count = client.searchPQF(query, from, size,
-                    (status, total, returned, elapsedMillis) ->
-                            logger.log(Level.INFO, "total results = " + total + " millis = " + elapsedMillis),
-                    record -> logger.log(Level.INFO, "record = " + record.toString(StandardCharsets.UTF_8)),
-                    () -> logger.log(Level.WARNING, "timeout"));
-            logger.log(Level.INFO, "record count = " + count);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
-        }
-    }
-
-    @Test
-    @Disabled("unsupported search")
-    void testControlNumberZDB() {
-        String serviceName = "GBV";
-        String query = "bib.controlNumberZDB = 1413423-8";
-        int from = 1;
-        int size = 2;
         try (JDKZClient client = newZClient(serviceName)) {
-            logger.log(Level.INFO, "executing CQL " + query);
+            logger.log(Level.INFO, "executing CQL " + serviceName);
             int count = client.searchCQL(query, from, size,
                     (status, total, returned, elapsedMillis) ->
                             logger.log(Level.INFO, serviceName + " total results = " + total),
                     record -> logger.log(Level.INFO, "record = " + record),
-                    () -> logger.log(Level.WARNING, "timeout"));
+                    () -> logger.log(Level.INFO, "timeout"));
             logger.log(Level.INFO, "returned records = " + count);
-            assertEquals(1, count);
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
+    @Test
+    void testPQF() {
+        String serviceName = "SWB";
+        String query = "@attr 1=8 \"00280836\"";
+        int from = 1;
+        int size = 10;
+        try (JDKZClient client = newZClient(serviceName)) {
+            logger.log(Level.INFO, "executing PQF " + serviceName);
+            int count = client.searchPQF(query, from, size,
+                    (status, total, returned, elapsedMillis) ->
+                            logger.log(Level.INFO, serviceName + " status = " + status + " total results = " + total),
+                    record -> logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))),
+                    () -> logger.log(Level.WARNING, "timeout"));
+            logger.log(Level.INFO, "returned records = " + count);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
 
     private JDKZClient newZClient(String name) throws IOException {
         return newZClient(getProperties(name));
@@ -110,5 +102,4 @@ class GBVZClientTest {
         }
         return builder.build();
     }
-
 }

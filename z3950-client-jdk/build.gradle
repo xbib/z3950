@@ -1,4 +1,4 @@
 dependencies {
     api project(':z3950-client-api')
-    testImplementation "org.xbib:bibliographic-character-sets:${project.property('xbib-bibliographic-character-sets.version')}"
+    testImplementation libs.charactersets
 }

@@ -1,0 +1,30 @@
+apply plugin: 'groovy'
+
+dependencies {
+    implementation libs.groovy
+}
+
+compileGroovy {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileTestGroovy {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(GroovyCompile) {
+    options.compilerArgs
+    if (!options.compilerArgs.contains("-processor")) {
+        options.compilerArgs << '-proc:none'
+    }
+}
+
+task groovydocJar(type: Jar, dependsOn: 'groovydoc') {
+    from groovydoc.destinationDir
+    archiveClassifier.set('javadoc')
+}
+
+// BUG! exception in phase 'instruction selection' in source unit 'graphics/graphics-pdfbox-groovy/src/main/groovy/org/xbib/graphics/pdfbox/groovy/render/RowRenderer.groovy' unexpected NullPointerException
+//compileGroovy.groovyOptions.configurationScript = rootProject.file('gradle/compile/groovyc.groovy')

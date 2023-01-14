@@ -4,7 +4,7 @@ plugins {
 }
 
 wrapper {
-    gradleVersion = "${project.property('gradle.wrapper.version')}"
+    gradleVersion = libs.versions.gradle.get()
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -24,11 +24,9 @@ ext {
 }
 
 subprojects {
-    apply plugin: 'java-library'
     apply from: rootProject.file('gradle/ide/idea.gradle')
     apply from: rootProject.file('gradle/compile/java.gradle')
     apply from: rootProject.file('gradle/test/junit5.gradle')
     apply from: rootProject.file('gradle/publishing/publication.gradle')
 }
-
 apply from: rootProject.file('gradle/publishing/sonatype.gradle')

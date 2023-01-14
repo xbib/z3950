@@ -1,5 +1,6 @@
 package org.xbib.z3950.common;
 
+import java.nio.charset.StandardCharsets;
 import org.xbib.z3950.api.Record;
 
 import java.io.ByteArrayInputStream;
@@ -36,5 +37,10 @@ public class DefaultRecord implements Record {
     @Override
     public String toString(Charset charset) {
         return new String(content, charset);
+    }
+
+    @Override
+    public String toString() {
+        return toString(StandardCharsets.UTF_8);
     }
 }

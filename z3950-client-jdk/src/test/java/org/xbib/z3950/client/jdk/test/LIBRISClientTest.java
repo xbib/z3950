@@ -6,56 +6,50 @@ import org.xbib.z3950.client.jdk.JDKZClient;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- */
-class DefaultClientTest {
+class LIBRISClientTest {
 
-    private static final Logger logger = Logger.getLogger(DefaultClientTest.class.getName());
+    private static final Logger logger = Logger.getLogger(LIBRISClientTest.class.getName());
 
     @Test
     void testCQL() {
-        for (String serviceName : Arrays.asList("LIBRIS", "SWB")) {
-            String query = "bib.identifierISSN = 00280836";
-            int from = 1;
-            int size = 10;
-            try (JDKZClient client = newZClient(serviceName)) {
-                logger.log(Level.INFO, "executing CQL " + serviceName);
-                int count = client.searchCQL(query, from, size,
-                        (status, total, returned, elapsedMillis) ->
-                                logger.log(Level.INFO, serviceName + " total results = " + total),
-                        record -> logger.log(Level.INFO, "record = " + record),
-                        () -> logger.log(Level.INFO, "timeout"));
-                logger.log(Level.INFO, "returned records = " + count);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
+        String serviceName = "LIBRIS";
+        String query = "bib.identifierISSN = 00280836";
+        int from = 1;
+        int size = 10;
+        try (JDKZClient client = newZClient(serviceName)) {
+            logger.log(Level.INFO, "executing CQL " + serviceName);
+            int count = client.searchCQL(query, from, size,
+                    (status, total, returned, elapsedMillis) ->
+                            logger.log(Level.INFO, serviceName + " total results = " + total),
+                    record -> logger.log(Level.INFO, "record = " + record),
+                    () -> logger.log(Level.INFO, "timeout"));
+            logger.log(Level.INFO, "returned records = " + count);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
     @Test
     void testPQF() {
-        for (String serviceName : Arrays.asList("LIBRIS", "SWB")) {
-            String query = "@attr 1=8 \"00280836\"";
-            int from = 1;
-            int size = 10;
-            try (JDKZClient client = newZClient(serviceName)) {
-                logger.log(Level.INFO, "executing PQF " + serviceName);
-                int count = client.searchPQF(query, from, size,
-                        (status, total, returned, elapsedMillis) ->
-                                logger.log(Level.INFO, serviceName + " status = " + status + " total results = " + total),
-                        record -> logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))),
-                        () -> logger.log(Level.WARNING, "timeout"));
-                logger.log(Level.INFO, "returned records = " + count);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, e.getMessage(), e);
-            }
+        String serviceName = "LIBRIS";
+        String query = "@attr 1=8 \"00280836\"";
+        int from = 1;
+        int size = 10;
+        try (JDKZClient client = newZClient(serviceName)) {
+            logger.log(Level.INFO, "executing PQF " + serviceName);
+            int count = client.searchPQF(query, from, size,
+                    (status, total, returned, elapsedMillis) ->
+                            logger.log(Level.INFO, serviceName + " status = " + status + " total results = " + total),
+                    record -> logger.log(Level.INFO, "record = " + record.toString(Charset.forName(client.getEncoding()))),
+                    () -> logger.log(Level.WARNING, "timeout"));
+            logger.log(Level.INFO, "returned records = " + count);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 

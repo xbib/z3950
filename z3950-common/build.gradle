@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     api project(':z3950-api')
-    api "org.xbib:cql-common:${project.property('xbib-cql.version')}"
+    api libs.cql.common
 }
 
 sourceSets {

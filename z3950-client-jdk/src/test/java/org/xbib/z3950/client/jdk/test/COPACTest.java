@@ -9,12 +9,9 @@ import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- */
-class SearchTest {
+class COPACTest {
 
-    private static final Logger logger = Logger.getLogger(SearchTest.class.getName());
+    private static final Logger logger = Logger.getLogger(COPACTest.class.getName());
 
     @Test
     void testCopac() throws Exception {
@@ -35,7 +32,7 @@ class SearchTest {
                     .build();
             client.searchPQF(query, from, length,
                     (status, total, returned, elapsedMillis) -> logger.log(Level.INFO, "total records = " + total),
-                    record -> logger.log(Level.INFO, "found record " + record),
+                    record -> logger.log(Level.INFO, "found record " + record), // MODS
                     () -> logger.log(Level.WARNING, "timeout"));
             client.close();
         } catch (NoRecordsReturnedException | MessageSizeTooSmallException e) {

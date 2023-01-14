@@ -1,0 +1,30 @@
+apply plugin: 'groovy'
+
+dependencies {
+    implementation libs.groovy
+}
+
+compileGroovy {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+compileTestGroovy {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(GroovyCompile) {
+    if (!options.compilerArgs.contains("-processor")) {
+        options.compilerArgs.add('-proc:none')
+    }
+}
+
+task groovydocJar(type: Jar, dependsOn: 'groovydoc') {
+    from groovydoc.destinationDir
+    archiveClassifier.set('groovydoc')
+}
+
+artifacts {
+    archives groovydocJar
+}

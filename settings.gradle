@@ -1,3 +1,34 @@
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            version('gradle', '7.5.1')
+            version('groovy', '4.0.7')
+            version('junit', '5.9.2')
+            version('junit4', '4.13.2')
+            version('netty', '4.1.87.Final')
+            library('junit-jupiter-api', 'org.junit.jupiter', 'junit-jupiter-api').versionRef('junit')
+            library('junit-jupiter-params', 'org.junit.jupiter', 'junit-jupiter-params').versionRef('junit')
+            library('junit-jupiter-engine', 'org.junit.jupiter', 'junit-jupiter-engine').versionRef('junit')
+            library('junit-jupiter-vintage', 'org.junit.vintage', 'junit-vintage-engine').versionRef('junit4')
+            library('hamcrest', 'org.hamcrest', 'hamcrest-library').version('2.2')
+            library('cql-common', 'org.xbib', 'cql-common').version('5.0.0')
+            library('netty-transport', 'io.netty', 'netty-transport').versionRef('netty')
+            library('netty-handler', 'io.netty', 'netty-handler').versionRef('netty')
+            library('netty-common', 'io.netty', 'netty-common').versionRef('netty')
+            library('netty-buffer', 'io.netty', 'netty-buffer').versionRef('netty')
+            library('charactersets', 'org.xbib', 'bibliographic-character-sets').version('2.0.0')
+            library('groovy', 'org.apache.groovy', 'groovy').versionRef('groovy')
+            library('groovy-xml', 'org.apache.groovy', 'groovy-xml').versionRef('groovy')
+            library('groovy-json', 'org.apache.groovy', 'groovy-json').versionRef('groovy')
+            library('groovy-nio', 'org.apache.groovy', 'groovy-nio').versionRef('groovy')
+            library('groovy-sql', 'org.apache.groovy', 'groovy-sql').versionRef('groovy')
+            library('groovy-macro', 'org.apache.groovy', 'groovy-macro').versionRef('groovy')
+            library('groovy-templates', 'org.apache.groovy', 'groovy-templates').versionRef('groovy')
+            library('groovy-test', 'org.apache.groovy', 'groovy-test').versionRef('groovy')
+        }
+    }
+}
+
 include 'z3950-asn1'
 include 'z3950-api'
 include 'z3950-common'
@@ -5,3 +36,4 @@ include 'z3950-client-api'
 include 'z3950-client-jdk'
 include 'z3950-client-netty'
 include 'z3950-sru'
+include 'z3950-groovy'
