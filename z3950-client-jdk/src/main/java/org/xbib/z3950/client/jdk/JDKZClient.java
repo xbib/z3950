@@ -397,7 +397,7 @@ public class JDKZClient implements Client, Closeable {
 
         private String resultSetName = "default";
 
-        private String elementSetName = "F";
+        private String elementSetName = null;
 
         private String encoding = "ANSEL";
 
@@ -407,7 +407,7 @@ public class JDKZClient implements Client, Closeable {
 
         private List<String> databases = Collections.singletonList("");
 
-        private Integer preferredMessageSize = 1024 * 1024;
+        private Integer preferredMessageSize = 10 * 1024 * 1024;
 
         private InitListener initListener;
 

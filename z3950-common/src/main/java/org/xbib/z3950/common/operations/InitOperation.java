@@ -89,7 +89,7 @@ public class InitOperation extends AbstractOperation<InitializeResponse, Initial
         if (initResp.implementationName != null) {
             targetInfo = initResp.implementationName.toString();
             if (initResp.implementationVersion != null) {
-                targetInfo += " - " + initResp.implementationVersion.toString();
+                targetInfo += " - " + initResp.implementationVersion;
             }
         } else {
             targetInfo = "server";

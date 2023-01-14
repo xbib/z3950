@@ -1,11 +1,8 @@
 package org.xbib.z3950.common.operations;
 
-import org.xbib.asn1.ASN1Any;
 import org.xbib.asn1.ASN1Boolean;
-import org.xbib.asn1.ASN1Exception;
 import org.xbib.asn1.ASN1GeneralString;
 import org.xbib.asn1.ASN1Integer;
-import org.xbib.asn1.ASN1Sequence;
 import org.xbib.asn1.io.BERReader;
 import org.xbib.asn1.io.BERWriter;
 import org.xbib.cql.CQLParser;
@@ -15,7 +12,6 @@ import org.xbib.z3950.common.pqf.PQFParser;
 import org.xbib.z3950.common.pqf.PQFRPNGenerator;
 import org.xbib.z3950.common.v3.DatabaseName;
 import org.xbib.z3950.common.v3.InternationalString;
-import org.xbib.z3950.common.v3.OtherInformation1;
 import org.xbib.z3950.common.v3.PresentStatus;
 import org.xbib.z3950.common.v3.Query;
 import org.xbib.z3950.common.v3.RPNQuery;
@@ -24,30 +20,26 @@ import org.xbib.z3950.common.v3.SearchResponse;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Base class for Z39.50 Search operation.
+ * Z39.50 Search operation.
  */
 public class SearchOperation extends AbstractOperation<SearchResponse, SearchRequest> {
 
     private static final Logger logger = Logger.getLogger(SearchOperation.class.getName());
-
-    private int count = -1;
-
-    private boolean status = false;
-
-    private final Map<ASN1Any, Integer> results;
 
     private final String resultSetName;
 
     private final List<String> databases;
 
     private final String host;
+
+    private int count;
+
+    private boolean status;
 
     public SearchOperation(BERReader reader, BERWriter writer,
                            String resultSetName,
@@ -57,7 +49,8 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
         this.resultSetName = resultSetName;
         this.databases = databases;
         this.host = host;
-        this.results = new HashMap<>();
+        this.count = -1;
+        this.status = false;
     }
 
     public boolean executePQF(String pqf) throws IOException {
@@ -109,35 +102,10 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
                 if (presentStatus != null && presentStatus.value != null && presentStatus.value.get() == 5) {
                     throw new IOException("present status is failure");
                 }
-                if (response.s_additionalSearchInfo != null && response.s_additionalSearchInfo.value[0] != null) {
-                    OtherInformation1 info = response.s_additionalSearchInfo.value[0];
-                    ASN1Sequence targetSeq = (ASN1Sequence) info.information.c_externallyDefinedInfo.getSingleASN1Type();
-                    ASN1Any[] targets = targetSeq.get();
-                    DatabaseName dbName;
-                    for (int i = 0; i < targets.length; i++) {
-                        ASN1Sequence target = (ASN1Sequence) targets[i];
-                        try {
-                            ASN1Any[] details = target.get();
-                            dbName = new DatabaseName(details[0].berEncode(), false);
-                            if (!dbName.value.value.get().equalsIgnoreCase(databases.get(i))) {
-                                String message = "database name listed in additional search info " +
-                                        "doesn't match database name in names set";
-                                throw new IOException(host + ": " + message);
-                            }
-                            ASN1Integer res = (ASN1Integer) details[1];
-                            results.put(target, res.get());
-                        } catch (ASN1Exception ex) {
-                            logger.log(Level.WARNING, ex.getMessage(), ex);
-                            // non-fatal, e.g. String message = "Error in accessing additional search info.";
-                            results.put(target, -1);
-                        }
-                    }
-                }
             } else {
                 logger.log(Level.WARNING, "no search response returned for host " + host + " " + databases);
             }
         } catch (IOException e) {
-            // add host in IOException message
             throw new IOException(host + ": " + e.getMessage(), e);
         }
         return status;
@@ -149,10 +117,6 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
 
     public boolean isSuccess() {
         return status;
-    }
-
-    public Map<ASN1Any, Integer> getResults() {
-        return results;
     }
 
     private RPNQuery createRPNQueryFromCQL(String query) {

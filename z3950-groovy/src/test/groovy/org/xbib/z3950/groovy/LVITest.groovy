@@ -1,24 +1,25 @@
 package org.xbib.z3950.groovy
 
 import groovy.util.logging.Log
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.xbib.z3950.client.jdk.JDKZClient
 
 import java.util.logging.Level
 
 @Log
-class COPACTest {
+@Disabled("internal test")
+class LVITest {
 
     @Test
-    void testCOPAC() {
-        String host = "z3950.copac.ac.uk"
-        int port = 210
-        String database = "COPAC"
-        String query = "@attr 1=1 smith"
-        // "1.2.840.10003.5.10"; // MARC
-        String preferredRecordSyntax =  "xml" // "1.2.840.10003.5.109.10" // xml
+    void testLVI() {
+        String host = "localhost"
+        int port = 2100
+        String database = "lvi"
+        String query = "@attr 1=4 linux"
+        String preferredRecordSyntax = "xml"
         int from = 1
-        int length = 1
+        int size = 1
         JDKZClient client = JDKZClient.builder()
                 .setHost(host)
                 .setPort(port)
@@ -26,9 +27,9 @@ class COPACTest {
                 .setPreferredRecordSyntax(preferredRecordSyntax)
                 .build()
         client.withCloseable {cl ->
-            cl.searchPQF(query, from, length,
+            cl.searchPQF(query, from, size,
                     (status, total, returned, elapsedMillis) -> log.log(Level.INFO, "total records = " + total),
-                    record -> log.log(Level.INFO, "found record " + record), // MODS
+                    record -> log.log(Level.INFO, "found record " + record),
                     () -> log.log(Level.WARNING, "timeout"))
         }
     }

@@ -62,10 +62,12 @@ public class PresentOperation extends AbstractOperation<PresentResponse, Present
         presentRequest.resultSetId.value.value = new ASN1GeneralString(resultSetName);
         presentRequest.resultSetStartPoint = new ASN1Integer(offset);
         presentRequest.numberOfRecordsRequested = new ASN1Integer(length);
-        presentRequest.recordComposition = new PresentRequestRecordComposition();
-        presentRequest.recordComposition.simple = new ElementSetNames();
-        presentRequest.recordComposition.simple.cGenericElementSetName = new InternationalString();
-        presentRequest.recordComposition.simple.cGenericElementSetName.value = new ASN1GeneralString(elementSetName);
+        if (elementSetName != null) {
+            presentRequest.recordComposition = new PresentRequestRecordComposition();
+            presentRequest.recordComposition.simple = new ElementSetNames();
+            presentRequest.recordComposition.simple.cGenericElementSetName = new InternationalString();
+            presentRequest.recordComposition.simple.cGenericElementSetName.value = new ASN1GeneralString(elementSetName);
+        }
         presentRequest.preferredRecordSyntax = new ASN1ObjectIdentifier(makeOID(preferredRecordSyntax));
         long millis = System.currentTimeMillis();
         write(presentRequest);
