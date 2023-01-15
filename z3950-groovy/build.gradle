@@ -11,4 +11,5 @@ dependencies {
     testImplementation libs.groovy.macro
     testImplementation libs.groovy.templates
     testImplementation libs.groovy.test
+    testImplementation libs.marc
 }
