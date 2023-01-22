@@ -30,6 +30,7 @@ dependencyResolutionManagement {
     }
 }
 
+include 'sru-client-jdk'
 include 'z3950-asn1'
 include 'z3950-api'
 include 'z3950-common'

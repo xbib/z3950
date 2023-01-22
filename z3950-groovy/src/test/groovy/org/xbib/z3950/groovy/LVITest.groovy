@@ -31,7 +31,7 @@ class LVITest {
         //String query = "@attr 1=12 \"(DE-101)1016677359\"" // record ID plus prefix OK!
         //String query = "@attr 1=12 \"(DE-600)2635378-7\"" // ZDB ID plus prefix NOT OK!
         //String query = "@attr 1=1016 \"2020\"" // any OK!
-        //String query = "@attr 1=1052 12-7" // ZDB-ID OK!
+        String query = "@attr 1=1052 12-7" // ZDB-ID OK!
         String preferredRecordSyntax = "marc21"
         int from = 1
         int size = 1

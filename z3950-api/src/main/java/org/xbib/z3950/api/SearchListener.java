@@ -2,9 +2,6 @@ package org.xbib.z3950.api;
 
 import java.io.IOException;
 
-/**
- *
- */
 @FunctionalInterface
 public interface SearchListener {
 
