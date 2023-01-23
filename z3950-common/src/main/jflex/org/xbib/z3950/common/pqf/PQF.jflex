@@ -1,6 +1,7 @@
 package org.xbib.z3950.common.pqf;
 
 import java.io.*;
+import java.math.BigDecimal;
 
 %%
 %class PQFLexer
@@ -105,7 +106,7 @@ TERMTYPE = "general" | "numeric" | "string" | "oid" | "datetime" | "null"
     }	
 
 <YYINITIAL>{INTEGER}    { 
-        yylval = Integer.parseInt(yytext());
+        yylval = new BigDecimal(yytext());
         return INTEGER; 
     }
 				

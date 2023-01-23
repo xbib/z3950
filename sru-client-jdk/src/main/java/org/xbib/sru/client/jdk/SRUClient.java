@@ -1,15 +1,18 @@
 package org.xbib.sru.client.jdk;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.xbib.marc.Marc;
+import org.xbib.marc.MarcRecord;
 import org.xbib.sru.client.jdk.util.UrlBuilder;
 
 public class SRUClient {
@@ -35,7 +38,7 @@ public class SRUClient {
                                String recordSchema,
                                Integer startRecord,
                                Integer maximumRecords,
-                               Consumer<Reader> consumer) throws IOException, InterruptedException {
+                               Consumer<InputStream> consumer) throws IOException, InterruptedException {
         UrlBuilder url = UrlBuilder.fromUrl(builder.baseURL);
         url.queryParam(SRUConstants.OPERATION_PARAMETER, "searchRetrieve");
         url.queryParam(SRUConstants.VERSION_PARAMETER, "1.1");
@@ -50,20 +53,14 @@ public class SRUClient {
                 .header("user-agent", builder.userAgent != null ? builder.userAgent : "xbib SRU client")
                 .GET()
                 .build();
-        logger.log(Level.INFO, "sending " + httpRequest);
-        HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        logger.log(Level.FINE, "sending " + httpRequest);
+        HttpResponse<InputStream> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofInputStream());
         int status = httpResponse.statusCode();
         logger.log(Level.FINE, "response status = " + status + " headers = " + httpResponse.headers());
-        String contentType = httpResponse.headers().firstValue("content-type").orElse(null);
         if (status == 200) {
-            String string = httpResponse.body();
-            if (string != null && string.length() > 0) {
-                consumer.accept(new StringReader(string));
-            }
+            InputStream inputStream = httpResponse.body();
+            consumer.accept(inputStream);
         }
-    }
-
-    public void close() {
     }
 
     public static class Builder {

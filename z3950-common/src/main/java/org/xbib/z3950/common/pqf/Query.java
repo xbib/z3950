@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class Query extends Node {
 
     private String attrschema;
-    private LinkedList<AttrStr> attrspec = new LinkedList<>();
+    private final LinkedList<AttrStr> attrspec = new LinkedList<>();
     private Query querystruct;
     private Setname setname;
     private Term term;

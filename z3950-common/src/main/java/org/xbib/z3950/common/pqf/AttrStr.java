@@ -1,22 +1,26 @@
 package org.xbib.z3950.common.pqf;
 
+import java.math.BigDecimal;
+
 /**
  * PQF abstract syntax tree.
  */
 public class AttrStr extends Node {
 
-    private Integer left;
-    private Integer right;
-    private String rightStr;
+    private final Integer left;
+    private final Integer right;
+    private final String rightStr;
 
-    public AttrStr(Integer left, Integer right) {
-        this.left = left;
-        this.right = right;
+    public AttrStr(BigDecimal left, BigDecimal right) {
+        this.left = left.intValue();
+        this.right = right.intValue();
+        this.rightStr = null;
     }
 
-    public AttrStr(Integer left, String right) {
-        this.left = left;
+    public AttrStr(BigDecimal left, String right) {
+        this.left = left.intValue();
         this.rightStr = right;
+        this.right = null;
     }
 
     @Override

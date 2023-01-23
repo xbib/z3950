@@ -35,7 +35,7 @@ class PQFParserTest {
             }
         }
         assertEquals(errors, 0);
-        assertEquals(ok, 17);
+        assertEquals(ok, 19);
     }
 
     /**

@@ -77,6 +77,9 @@ public abstract class BEREncoding {
      */
     private int[] lengthEncoding;
 
+    public BEREncoding() {
+    }
+
     public int[] getIdentifierEncoding() {
         return identifierEncoding;
     }

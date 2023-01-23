@@ -5,6 +5,9 @@ package org.xbib.z3950.common.pqf;
  */
 public abstract class Node {
 
+    public Node () {
+    }
+
     /**
      * Try to accept this node by a visitor.
      *

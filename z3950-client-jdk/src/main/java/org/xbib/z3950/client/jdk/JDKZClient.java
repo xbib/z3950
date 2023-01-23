@@ -391,25 +391,36 @@ public class JDKZClient implements Client, Closeable {
 
         private String pass;
 
-        private long timeout = 5000;
+        private long timeout;
 
-        private String preferredRecordSyntax = "1.2.840.10003.5.10"; // marc21
+        private String preferredRecordSyntax;
 
-        private String resultSetName = "default";
+        private String resultSetName;
 
-        private String elementSetName = null;
+        private String elementSetName;
 
-        private String encoding = "ANSEL";
+        private String encoding;
 
-        private String format = "MARC21";
+        private String format;
 
-        private String type = "Bibliographic";
+        private String type;
 
-        private List<String> databases = Collections.singletonList("");
+        private List<String> databases;
 
-        private Integer preferredMessageSize = 10 * 1024 * 1024;
+        private Integer preferredMessageSize;
 
         private InitListener initListener;
+
+        private Builder() {
+            this.timeout = 5000;
+            this.preferredRecordSyntax = "1.2.840.10003.5.10"; // marc21
+            this.resultSetName = "default";
+            this.encoding = "ANSEL";
+            this.format = "MARC21";
+            this.type = "Bibliographic";
+            this.databases = Collections.singletonList("");
+            this.preferredMessageSize = 10 * 1024 * 1024;
+        }
 
         public Builder setHost(String host) {
             this.host = host;

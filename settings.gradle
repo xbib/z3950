@@ -25,7 +25,7 @@ dependencyResolutionManagement {
             library('groovy-macro', 'org.apache.groovy', 'groovy-macro').versionRef('groovy')
             library('groovy-templates', 'org.apache.groovy', 'groovy-templates').versionRef('groovy')
             library('groovy-test', 'org.apache.groovy', 'groovy-test').versionRef('groovy')
-            library('marc', 'org.xbib', 'marc').version('2.9.14')
+            library('marc', 'org.xbib', 'marc').version('2.9.15')
         }
     }
 }

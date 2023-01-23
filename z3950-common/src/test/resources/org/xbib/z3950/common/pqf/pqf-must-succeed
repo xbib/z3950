@@ -6,6 +6,8 @@ dylan
 @set Result-1
 @and @set seta @set setb
 @attr 1=4 computer
+@attr 1=4 123456789
+@attr 1=8 123456789123456789123456789
 @attr 1=12 @attr 5=1 "abc1234567"
 @attr 1=4 @attr 4=1 "self portrait"
 @attrset exp1 @attr 1=1 CategoryList

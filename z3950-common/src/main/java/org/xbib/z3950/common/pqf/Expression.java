@@ -5,11 +5,11 @@ package org.xbib.z3950.common.pqf;
  */
 public class Expression extends Node {
 
-    private String op;
+    private final String op;
 
-    private Query q1;
+    private final Query q1;
 
-    private Query q2;
+    private final Query q2;
 
     public Expression(String op, Query q1, Query q2) {
         this.op = op;

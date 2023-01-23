@@ -1,5 +1,7 @@
 package org.xbib.z3950.common.pqf;
 
+import java.math.BigDecimal;
+
 /**
  *
  */
@@ -9,6 +11,10 @@ public class Term extends Node {
 
     public Term(String value) {
         this.value = value;
+    }
+
+    public Term(BigDecimal value) {
+        this.value = value.toString();
     }
 
     public String getValue() {

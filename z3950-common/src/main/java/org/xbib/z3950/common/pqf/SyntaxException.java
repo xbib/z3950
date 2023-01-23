@@ -3,8 +3,8 @@ package org.xbib.z3950.common.pqf;
 /**
  * Syntax exception.
  */
+@SuppressWarnings("serial")
 public class SyntaxException extends RuntimeException {
-    private static final long serialVersionUID = -962913398056374183L;
 
     /**
      * Creates a new SyntaxException object.

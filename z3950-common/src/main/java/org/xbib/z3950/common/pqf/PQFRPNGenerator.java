@@ -23,7 +23,7 @@ import java.util.Stack;
  */
 public class PQFRPNGenerator implements Visitor {
 
-    private Stack<ASN1Any> result;
+    private final Stack<ASN1Any> result;
 
     private RPNQuery rpnQuery;
 
@@ -63,7 +63,7 @@ public class PQFRPNGenerator implements Visitor {
             any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
         }
         operand.attrTerm.attributes = new AttributeList();
-        operand.attrTerm.attributes.value = attrs.toArray(new AttributeElement[attrs.size()]);
+        operand.attrTerm.attributes.value = attrs.toArray(new AttributeElement[0]);
         RPNStructure rpn = new RPNStructure();
         rpn.c_op = operand;
         if (attrs.size() > 0) {
