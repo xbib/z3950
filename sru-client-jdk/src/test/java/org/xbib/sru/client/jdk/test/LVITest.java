@@ -20,9 +20,9 @@ public class LVITest {
     public void testLVI() throws IOException, InterruptedException {
         SRUClient client = SRUClient.builder()
                 .setBaseURL("https://sru.hbz-nrw.de/lvi")
+                .setRecordSchema("marcxml")
                 .build();
         client.searchRetrieve("bib.personalName = \"Smith\"",
-                "marcxml",
                 1,
                 10,
                 this::dumpRecords);

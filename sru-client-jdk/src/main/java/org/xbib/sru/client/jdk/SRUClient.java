@@ -6,13 +6,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.xbib.marc.Marc;
-import org.xbib.marc.MarcRecord;
 import org.xbib.sru.client.jdk.util.UrlBuilder;
 
 public class SRUClient {
@@ -35,14 +32,13 @@ public class SRUClient {
     }
 
     public void searchRetrieve(String query,
-                               String recordSchema,
                                Integer startRecord,
                                Integer maximumRecords,
                                Consumer<InputStream> consumer) throws IOException, InterruptedException {
         UrlBuilder url = UrlBuilder.fromUrl(builder.baseURL);
         url.queryParam(SRUConstants.OPERATION_PARAMETER, "searchRetrieve");
-        url.queryParam(SRUConstants.VERSION_PARAMETER, "1.1");
-        url.queryParam(SRUConstants.RECORD_SCHEMA_PARAMETER, recordSchema);
+        url.queryParam(SRUConstants.VERSION_PARAMETER, builder.version);
+        url.queryParam(SRUConstants.RECORD_SCHEMA_PARAMETER, builder.recordSchema);
         url.queryParam(SRUConstants.START_RECORD_PARAMETER, Integer.toString(startRecord));
         url.queryParam(SRUConstants.MAXIMUM_RECORDS_PARAMETER, Integer.toString(maximumRecords));
         url.queryParam(SRUConstants.QUERY_PARAMETER, query);
@@ -67,13 +63,29 @@ public class SRUClient {
 
         private String baseURL;
 
+        private String version;
+
+        private String recordSchema;
+
         private String userAgent;
 
         private Builder() {
+            this.version = "1.1";
+            this.recordSchema = "marcxml";
         }
 
         public Builder setBaseURL(String baseURL) {
             this.baseURL = baseURL;
+            return this;
+        }
+
+        public Builder setVersion(String version) {
+            this.version = version;
+            return this;
+        }
+
+        public Builder setRecordSchema(String recordSchema) {
+            this.recordSchema = recordSchema;
             return this;
         }
 
