@@ -13,9 +13,6 @@ import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- *
- */
 class PQFParserTest {
 
     private static final Logger logger = Logger.getLogger(PQFParserTest.class.getName());

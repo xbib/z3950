@@ -17,11 +17,15 @@ import org.xbib.z3950.common.v3.RPNStructure;
 import org.xbib.z3950.common.v3.RPNStructureRpnRpnOp;
 
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * PQF abstract syntax tree.
  */
 public class PQFRPNGenerator implements Visitor {
+
+    private static final Logger logger = Logger.getLogger(PQFRPNGenerator.class.getName());
 
     private final Stack<ASN1Any> result;
 
@@ -39,7 +43,12 @@ public class PQFRPNGenerator implements Visitor {
     public void visit(PQF pqf) {
         if (!result.isEmpty()) {
             this.rpnQuery = new RPNQuery();
-            rpnQuery.rpn = (RPNStructure) result.pop();
+            ASN1Any any = result.pop();
+            if (any instanceof RPNStructure) {
+                rpnQuery.rpn = (RPNStructure) any;
+            } else if (any instanceof ASN1OctetString) {
+                logger.log(Level.INFO, "found ASN1OctetString = " + ((ASN1OctetString) any).get());
+            }
             if (pqf.getAttrSet() == null) {
                 // Z39.50 BIB-1: urn:oid:1.2.840.10003.3.1
                 rpnQuery.attributeSetId = new AttributeSetId();
