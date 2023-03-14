@@ -15,7 +15,7 @@ public class InputStreamBERReader implements BERReader {
 
     private static final String ERROR = "Unexpected end in BER encoding";
 
-    private static final int MAX_BER_SIZE = 65536 * 4;
+    private static final int MAX_BER_SIZE = 10 * 1024 * 1024;
 
     private final InputStream inputStream;
 
