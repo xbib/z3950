@@ -2,9 +2,6 @@ package org.xbib.z3950.common.pqf;
 
 import java.math.BigDecimal;
 
-/**
- *
- */
 public class Term extends Node {
 
     private final String value;

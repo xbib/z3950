@@ -1,5 +1,6 @@
 package org.xbib.asn1;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -27,6 +28,8 @@ public class ASN1OctetString extends ASN1Any {
 
     private byte[] octets;
 
+    private final Charset charset;
+
     /**
      * Constructor for an OCTET STRING object. The tag is set to the
      * default of UNIVERSAL 4, and its value to the given bytes.
@@ -34,6 +37,7 @@ public class ASN1OctetString extends ASN1Any {
      */
     public ASN1OctetString(byte[] data) {
         octets = new byte[data.length];
+        this.charset = StandardCharsets.ISO_8859_1;
         System.arraycopy(data, 0, octets, 0, data.length);
     }
 
@@ -44,7 +48,12 @@ public class ASN1OctetString extends ASN1Any {
      * @param str string
      */
     public ASN1OctetString(String str) {
-        octets = str.getBytes(StandardCharsets.ISO_8859_1);
+        this(str, StandardCharsets.ISO_8859_1);
+    }
+
+    public ASN1OctetString(String str, Charset charset) {
+        this.octets = str.getBytes(charset);
+        this.charset = charset;
     }
 
     /**
@@ -55,7 +64,8 @@ public class ASN1OctetString extends ASN1Any {
      * @throws ASN1Exception If the BER encoding is incorrect.
      */
     public ASN1OctetString(BEREncoding ber, boolean checkTag) throws ASN1Exception {
-        super(ber, checkTag);
+        this.charset = StandardCharsets.ISO_8859_1;
+        berDecode(ber, checkTag);
     }
 
     /**
@@ -80,7 +90,7 @@ public class ASN1OctetString extends ASN1Any {
             for (int anEncoding : encoding) {
                 buf.append((char) (anEncoding & 0x00ff));
             }
-            octets = buf.toString().getBytes(StandardCharsets.ISO_8859_1);
+            octets = buf.toString().getBytes(charset);
         } else {
             throw new ASN1EncodingException("decode from constructed NOT IMPLEMENTED YET");
         }
@@ -140,7 +150,7 @@ public class ASN1OctetString extends ASN1Any {
      * @return the object.
      */
     public ASN1OctetString set(String str) {
-        octets = str.getBytes(StandardCharsets.ISO_8859_1);
+        octets = str.getBytes(charset);
         return this;
     }
 
@@ -150,7 +160,7 @@ public class ASN1OctetString extends ASN1Any {
      * @return the OCTET STRING's current value.
      */
     public String get() {
-        return new String(octets, StandardCharsets.ISO_8859_1);
+        return new String(octets, charset);
     }
 
     /**

@@ -1,5 +1,6 @@
 package org.xbib.z3950.common.operations;
 
+import java.nio.charset.Charset;
 import org.xbib.asn1.ASN1Boolean;
 import org.xbib.asn1.ASN1GeneralString;
 import org.xbib.asn1.ASN1Integer;
@@ -53,8 +54,8 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
         this.status = false;
     }
 
-    public boolean executePQF(String pqf) throws IOException {
-        return execute(createRPNQueryFromPQF(pqf));
+    public boolean executePQF(String pqf, Charset charset) throws IOException {
+        return execute(createRPNQueryFromPQF(pqf, charset));
     }
 
     public boolean executeCQL(String cql) throws IOException {
@@ -125,8 +126,8 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
         return generator.getQueryResult();
     }
 
-    private RPNQuery createRPNQueryFromPQF(String query) {
-        PQFRPNGenerator generator = new PQFRPNGenerator();
+    private RPNQuery createRPNQueryFromPQF(String query, Charset charset) {
+        PQFRPNGenerator generator = new PQFRPNGenerator(charset);
         PQFParser parser = new PQFParser(new StringReader(query));
         parser.parse();
         parser.getResult().accept(generator);

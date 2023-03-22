@@ -1,5 +1,6 @@
 package org.xbib.z3950.client.jdk;
 
+import java.nio.charset.StandardCharsets;
 import org.xbib.asn1.io.InputStreamBERReader;
 import org.xbib.asn1.io.OutputStreamBERWriter;
 import org.xbib.z3950.api.TimeoutListener;
@@ -164,7 +165,7 @@ public class JDKZClient implements Client, Closeable {
         try {
             lock.lock();
             SearchOperation search = new SearchOperation(berReader, berWriter, resultSetName, databases, host);
-            search.executePQF(query);
+            search.executePQF(query, StandardCharsets.UTF_8);
             if (!search.isSuccess()) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
             } else {

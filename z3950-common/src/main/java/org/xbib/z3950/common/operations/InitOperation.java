@@ -86,38 +86,40 @@ public class InitOperation extends AbstractOperation<InitializeResponse, Initial
         }
         write(init);
         InitializeResponse initResp = read();
-        if (initResp.implementationName != null) {
-            targetInfo = initResp.implementationName.toString();
-            if (initResp.implementationVersion != null) {
-                targetInfo += " - " + initResp.implementationVersion;
-            }
-        } else {
-            targetInfo = "server";
-        }
         int targetVersion = 0;
-        if (initResp.protocolVersion != null) {
-            for (int n = 0; n < initResp.protocolVersion.value.get().length; n++) {
-                if (initResp.protocolVersion.value.get()[n]) {
-                    targetVersion = n + 1;
+        if (initResp != null) {
+            if (initResp.implementationName != null) {
+                targetInfo = initResp.implementationName.toString();
+                if (initResp.implementationVersion != null) {
+                    targetInfo += " - " + initResp.implementationVersion;
                 }
+            } else {
+                targetInfo = "server";
             }
-            if (targetVersion > 0) {
-                targetInfo += " (Version " + targetVersion + ")";
+            if (initResp.protocolVersion != null) {
+                for (int n = 0; n < initResp.protocolVersion.value.get().length; n++) {
+                    if (initResp.protocolVersion.value.get()[n]) {
+                        targetVersion = n + 1;
+                    }
+                }
+                if (targetVersion > 0) {
+                    targetInfo += " (Version " + targetVersion + ")";
+                }
+            } else {
+                targetInfo += " (Version unknown)";
             }
-        } else {
-            targetInfo += " (Version unknown)";
+            if (initResp.userInformationField != null && initResp.userInformationField.getSingleASN1Type() != null) {
+                targetInfo += "\n" + initResp.userInformationField.getSingleASN1Type().toString();
+            }
+            if (initResp.otherInfo != null) {
+                targetInfo += "\n" + initResp.otherInfo.toString();
+            }
+            targetInfo = targetInfo.replaceAll("\"", "");
         }
-        if (initResp.userInformationField != null && initResp.userInformationField.getSingleASN1Type() != null) {
-            targetInfo += "\n" + initResp.userInformationField.getSingleASN1Type().toString();
-        }
-        if (initResp.otherInfo != null) {
-            targetInfo += "\n" + initResp.otherInfo.toString();
-        }
-        targetInfo = targetInfo.replaceAll("\"", "");
         if (initListener != null) {
             initListener.onInit(targetVersion, targetInfo);
         }
-        return !initResp.result.get();
+        return initResp != null && !initResp.result.get();
     }
 
     public String getTargetInfo() {

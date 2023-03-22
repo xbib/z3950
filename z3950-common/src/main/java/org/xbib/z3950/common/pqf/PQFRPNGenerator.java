@@ -1,5 +1,7 @@
 package org.xbib.z3950.common.pqf;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.xbib.asn1.ASN1Any;
 import org.xbib.asn1.ASN1Integer;
 import org.xbib.asn1.ASN1Null;
@@ -27,12 +29,19 @@ public class PQFRPNGenerator implements Visitor {
 
     private static final Logger logger = Logger.getLogger(PQFRPNGenerator.class.getName());
 
+    private final Charset charset;
+
     private final Stack<ASN1Any> result;
 
     private RPNQuery rpnQuery;
 
     public PQFRPNGenerator() {
+        this(StandardCharsets.ISO_8859_1);
+    }
+
+    public PQFRPNGenerator(Charset charset) {
         this.result = new Stack<>();
+        this.charset = charset;
     }
 
     public RPNQuery getResult() {
@@ -46,9 +55,6 @@ public class PQFRPNGenerator implements Visitor {
             ASN1Any any = result.pop();
             if (any instanceof RPNStructure) {
                 rpnQuery.rpn = (RPNStructure) any;
-            } else if (any instanceof ASN1OctetString) {
-                // TODO
-                logger.log(Level.INFO, "found ASN1OctetString = " + ((ASN1OctetString) any).get());
             }
             if (pqf.getAttrSet() == null) {
                 // Z39.50 BIB-1: urn:oid:1.2.840.10003.3.1
@@ -131,7 +137,7 @@ public class PQFRPNGenerator implements Visitor {
 
     @Override
     public void visit(Term term) {
-        result.push(new ASN1OctetString(term.getValue()));
+        result.push(new ASN1OctetString(term.getValue(), charset));
     }
 
     @Override

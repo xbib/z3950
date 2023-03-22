@@ -45,8 +45,7 @@ public class ASN1Any {
      * @throws ASN1Exception If the BER encoding is incorrect.
      *                       Never occurs for ASN1Any.
      */
-    public void berDecode(BEREncoding berEncoding, boolean checkTag)
-            throws ASN1Exception {
+    public void berDecode(BEREncoding berEncoding, boolean checkTag) throws ASN1Exception {
         asn1anyBer = berEncoding;
     }
 

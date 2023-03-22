@@ -1,5 +1,6 @@
 package org.xbib.z3950.common.pqf;
 
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.xbib.z3950.common.v3.RPNQuery;
 
@@ -38,8 +39,16 @@ class PQFTest {
                 createRPNQueryFromPQF(q).toString());
     }
 
+    @Test
+    void testRPN4() {
+        // test UTF-8
+        String q = "@attr 1=3 Jörg";
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 1, attributeValue {numeric 3}}}, term {general \"J\\703\\666rg\"}}}}}",
+                createRPNQueryFromPQF(q).toString());
+    }
+
     private RPNQuery createRPNQueryFromPQF(String query) {
-        PQFRPNGenerator generator = new PQFRPNGenerator();
+        PQFRPNGenerator generator = new PQFRPNGenerator(StandardCharsets.UTF_8);
         org.xbib.z3950.common.pqf.PQFParser parser = new org.xbib.z3950.common.pqf.PQFParser(new StringReader(query));
         parser.parse();
         parser.getResult().accept(generator);

@@ -14,7 +14,7 @@ class LVIZClientTest {
 
     @Test
     void testLVI() {
-        String query = "@attr 1=4 linux";
+        String query = "@attr 1=4 Köln";
         int from = 1;
         int size = 10;
         try (JDKZClient client = newZClient()) {
@@ -32,8 +32,8 @@ class LVIZClientTest {
 
     private JDKZClient newZClient() {
         JDKZClient.Builder builder = JDKZClient.builder();
-        builder.setHost("sru.hbz-nrw.de");
-        builder.setPort(210);
+        builder.setHost("localhost");
+        builder.setPort(1210);
         builder.setDatabases(Collections.singletonList("LVI"));
         builder.setElementSetName(null);
         builder.setPreferredRecordSyntax("xml");

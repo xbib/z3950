@@ -1,5 +1,7 @@
 package org.xbib.z3950.common.operations;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.xbib.asn1.ASN1Any;
 import org.xbib.asn1.ASN1Exception;
 import org.xbib.asn1.BEREncoding;
@@ -52,6 +54,8 @@ import java.io.IOException;
  * @param <OUT> output parameter
  */
 public class AbstractOperation<IN extends ASN1Any, OUT extends ASN1Any> {
+
+    private static final Logger logger = Logger.getLogger(AbstractOperation.class.getName());
 
     protected final BERReader reader;
 
@@ -122,18 +126,24 @@ public class AbstractOperation<IN extends ASN1Any, OUT extends ASN1Any> {
         }
         try {
             switch (ber.getTag()) {
-                case 20:
+                case 20 -> {
                     return (IN) new InitializeRequest(ber, false);
-                case 21:
+                }
+                case 21 -> {
                     return (IN) new InitializeResponse(ber, false);
-                case 22:
+                }
+                case 22 -> {
                     return (IN) new SearchRequest(ber, false);
-                case 23:
+                }
+                case 23 -> {
                     return (IN) new SearchResponse(ber, false);
-                case 24:
+                }
+                case 24 -> {
                     return (IN) new PresentRequest(ber, false);
-                case 25:
+                }
+                case 25 -> {
                     return (IN) new PresentResponse(ber, false);
+                }
                 // 26 new DeleteResultSetRequest(ber, false);
                 // 27 new DeleteResultSetResponse(ber, false);
                 // 28 new AccessControlRequest(ber, false);
@@ -143,23 +153,29 @@ public class AbstractOperation<IN extends ASN1Any, OUT extends ASN1Any> {
                 // 32 new TriggerResourceControlRequest(ber, false);
                 // 33 new ResourceReportRequest(ber, false);
                 // 34 new ResourceReportResponse(ber, false);
-                case 35:
+                case 35 -> {
                     return (IN) new ScanRequest(ber, false);
-                case 36:
+                }
+                case 36 -> {
                     return (IN) new ScanResponse(ber, false);
+                }
                 // 43 new SortRequest(ber, false);
                 // 44  new SortResponse(ber, false);
                 // 45  new Segment(ber, false);
                 // 46  new ExtendedServicesRequest(ber, false);
                 // 47  new ExtendedServicesResponse(ber, false);
-                case 48:
+                case 48 -> {
                     return (IN) new Close(ber, false);
+                }
+                default -> {
+                    throw new ASN1Exception("bad BER encoding: " + ber.getTag() + " not matched");
+                }
             }
         } catch (Exception e) {
             // class cast exception if Close is returned, ignore
+            logger.log(Level.SEVERE, e.getMessage(), e);
             return null;
         }
-        throw new ASN1Exception("bad BER encoding: choice not matched");
     }
 
 }
