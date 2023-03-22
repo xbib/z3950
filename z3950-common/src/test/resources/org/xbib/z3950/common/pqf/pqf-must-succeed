@@ -17,3 +17,4 @@ dylan
 @or @and bob dylan @set Result-1
 @attr 4=1 @and @attr 1=1 "bob dylan" @attr 1=4 "slow train coming"
 @and @attr 2=4 @attr gils 1=2038 -114 @attr 2=2 @attr gils 1=2039 -109
+@and @attr 1=4 @attr 2=3 @attr 3=3 @attr 4=1 @attr 5=1 @attr 6=1 "linux" @attr 1=2 @attr 2=3 @attr 3=3 @attr 4=1 @attr 5=1 @attr 6=1 "sybex"

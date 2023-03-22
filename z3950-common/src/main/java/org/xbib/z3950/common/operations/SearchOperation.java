@@ -79,9 +79,7 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
                 dbs[n].value.value = new ASN1GeneralString(databases.get(n));
             }
             search.databaseNames = dbs;
-            if (logger.isLoggable(Level.FINE)) {
-                logger.log(Level.FINE, search.toString());
-            }
+            logger.log(Level.FINER, search.toString());
             write(search);
             SearchResponse response = read();
             if (response != null) {

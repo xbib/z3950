@@ -8,11 +8,17 @@ import java.util.LinkedList;
 public class Query extends Node {
 
     private String attrschema;
+
     private final LinkedList<AttrStr> attrspec = new LinkedList<>();
+
     private Query querystruct;
+
     private Setname setname;
+
     private Term term;
+
     private Expression expr;
+
     private PQF pqf;
 
     // ATTR CHARSTRING1 attrstr querystruct
@@ -91,6 +97,9 @@ public class Query extends Node {
 
     @Override
     public String toString() {
+        if (expr != null) {
+            return "[Query: expr=" + expr + "]";
+        }
         return "[Query: term=" + term + " attrschema=" + attrschema + " setname=" + setname +
                 " querystruct=" + querystruct + "]";
     }
