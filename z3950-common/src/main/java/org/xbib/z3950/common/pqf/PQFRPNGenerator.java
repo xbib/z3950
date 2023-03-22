@@ -62,27 +62,35 @@ public class PQFRPNGenerator implements Visitor {
 
     @Override
     public void visit(Query query) {
+        // check for expression
+        ASN1Any any = !result.isEmpty() && result.peek() instanceof RPNStructure ? result.pop() : null;
+        if (any != null) {
+            // RPN structure is ready
+            result.push(any);
+            return;
+        }
+
+        // new attribute plus term
         Operand operand = new Operand();
         operand.attrTerm = new AttributesPlusTerm();
         operand.attrTerm.term = new org.xbib.z3950.common.v3.Term();
-        Term term = query.getTerm();
-        if (term != null) {
-            Logger.getLogger("").log(Level.INFO, "query = " + query + " term = " + term + " value = " + term.getValue());
-            operand.attrTerm.term.c_general = new ASN1OctetString(term.getValue());
-        } else {
-            operand.attrTerm.term.c_null = new ASN1Null();
-        }
         Stack<AttributeElement> attrs = new Stack<>();
-        ASN1Any any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
+        any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
         while (any != null) {
             attrs.push((AttributeElement) any);
             any = !result.isEmpty() && result.peek() instanceof AttributeElement ? result.pop() : null;
         }
         operand.attrTerm.attributes = new AttributeList();
         operand.attrTerm.attributes.value = attrs.toArray(new AttributeElement[0]);
+
+        any = !result.empty() && result.peek() instanceof ASN1OctetString ? result.pop() : null;
+        if (any != null) {
+            if (any instanceof ASN1OctetString) {
+                operand.attrTerm.term.c_general = (ASN1OctetString) any;
+            }
+        }
         RPNStructure rpn = new RPNStructure();
         rpn.c_op = operand;
-        Logger.getLogger("").log(Level.INFO, "push rpn = " + rpn);
         result.push(rpn);
     }
 
@@ -103,19 +111,12 @@ public class PQFRPNGenerator implements Visitor {
         }
         ASN1Any rpn1 = result.pop();
         if (rpn1 instanceof RPNStructure) {
-            Logger.getLogger("test").log(Level.INFO, "rpn1 = " + rpn1);
             rpn.c_rpnRpnOp.s_rpn1 = (RPNStructure) rpn1;
-        } else {
-            Logger.getLogger("test").log(Level.INFO, "debug rpn1: " + rpn1);
         }
         ASN1Any rpn2 = result.pop();
         if (rpn2 instanceof RPNStructure) {
-            Logger.getLogger("test").log(Level.INFO, "rpn2 = " + rpn2);
             rpn.c_rpnRpnOp.s_rpn2 = (RPNStructure) rpn2;
-        } else {
-            Logger.getLogger("test").log(Level.INFO, "debug rpn2: " + rpn2);
         }
-        Logger.getLogger("test").log(Level.INFO, "visit expr: rpn = " + rpn);
         result.push(rpn);
     }
 
@@ -130,7 +131,6 @@ public class PQFRPNGenerator implements Visitor {
 
     @Override
     public void visit(Term term) {
-        Logger.getLogger("test").log(Level.INFO, "push term = " + term);
         result.push(new ASN1OctetString(term.getValue()));
     }
 

@@ -8,7 +8,9 @@ import java.math.BigDecimal;
 public class AttrStr extends Node {
 
     private final Integer left;
+
     private final Integer right;
+
     private final String rightStr;
 
     public AttrStr(BigDecimal left, BigDecimal right) {

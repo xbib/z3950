@@ -1,17 +1,18 @@
 package org.xbib.z3950.common.pqf;
 
 import java.util.LinkedList;
+import java.util.logging.Logger;
 
 /**
  * PQF abstract syntax tree.
  */
 public class Query extends Node {
 
+    private static final Logger logger = Logger.getLogger(Query.class.getName());
+
     private String attrschema;
 
     private final LinkedList<AttrStr> attrspec = new LinkedList<>();
-
-    private Query querystruct;
 
     private Setname setname;
 
@@ -19,36 +20,35 @@ public class Query extends Node {
 
     private Expression expr;
 
-    private PQF pqf;
-
-    // ATTR CHARSTRING1 attrstr querystruct
-    public Query(String attrschema, AttrStr attrspec, Query querystruct) {
+    public Query(String attrschema, AttrStr attrspec, Query query) {
         this.attrschema = attrschema;
         this.attrspec.add(attrspec);
-        this.querystruct = querystruct;
-        this.term = querystruct.getTerm();
-        this.attrspec.addAll(querystruct.getAttrSpec());
+        this.attrspec.addAll(query.getAttrSpec());
+        this.setname = query.setname;
+        this.term = query.term;
+        this.expr = query.expr;
     }
 
-    // ATTR attrspec querystruct
-    public Query(AttrStr attrspec, Query querystruct) {
+    public Query(AttrStr attrspec, Query query) {
         this.attrspec.add(attrspec);
-        this.querystruct = querystruct;
-        this.term = querystruct.getTerm();
-        this.attrspec.addAll(querystruct.getAttrSpec());
+        this.attrspec.addAll(query.getAttrSpec());
+        this.setname = query.setname;
+        this.term = query.term;
+        this.expr = query.expr;
     }
 
-    // TERM TERMTYPE pqf
     public Query(PQF pqf) {
-        this.pqf = pqf;
+        this.attrschema = pqf.getQuery().attrschema;
+        this.attrspec.addAll(pqf.getQuery().attrspec);
+        this.setname = pqf.getQuery().setname;
+        this.term = pqf.getQuery().term;
+        this.expr = pqf.getQuery().expr;
     }
 
-    // simple
     public Query(Term term) {
         this.term = term;
     }
 
-    // complex
     public Query(Expression expr) {
         this.expr = expr;
     }
@@ -67,14 +67,8 @@ public class Query extends Node {
         if (expr != null) {
             expr.accept(visitor);
         }
-        if (querystruct != null) {
-            querystruct.accept(visitor);
-        }
         for (AttrStr attr : attrspec) {
             attr.accept(visitor);
-        }
-        if (pqf != null) {
-            pqf.accept(visitor);
         }
         visitor.visit(this);
     }
@@ -100,7 +94,6 @@ public class Query extends Node {
         if (expr != null) {
             return "[Query: expr=" + expr + "]";
         }
-        return "[Query: term=" + term + " attrschema=" + attrschema + " setname=" + setname +
-                " querystruct=" + querystruct + "]";
+        return "[Query: term=" + term + " attrschema=" + attrschema + " setname=" + setname + "]";
     }
 }

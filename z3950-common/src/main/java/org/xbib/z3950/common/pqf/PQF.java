@@ -6,6 +6,7 @@ package org.xbib.z3950.common.pqf;
 public class PQF extends Node {
 
     private final String attrset;
+
     private final Query query;
 
     public PQF(String attrset, Query query) {
@@ -25,6 +26,10 @@ public class PQF extends Node {
 
     public String getAttrSet() {
         return attrset;
+    }
+
+    public Query getQuery() {
+        return query;
     }
 
     @Override
