@@ -10,13 +10,12 @@ import java.nio.charset.StandardCharsets
 import java.util.logging.Level
 
 @Log
-//@Disabled("internal test")
 class LVITest {
 
     @Test
     void testLVI() {
         String host = "localhost"
-        int port = 2100
+        int port = 1210
         String database = "lvi"
         //String query = "@attr 1=1 Schmidt" // OK!
         //String query = "@attr 1=1 \"Schmidt, Heiner\"" // OK!
