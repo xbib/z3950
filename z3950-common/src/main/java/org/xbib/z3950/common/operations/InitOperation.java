@@ -37,7 +37,10 @@ public class InitOperation extends AbstractOperation<InitializeResponse, Initial
         this.pass = pass;
     }
 
-    public boolean execute(Integer preferredMessageSize, InitListener initListener) throws IOException {
+    public boolean execute(Integer preferredMessageSize,
+                           String implementationName,
+                           String implementationVersion,
+                           InitListener initListener) throws IOException {
         InitializeRequest init = new InitializeRequest();
         boolean[] version = new boolean[3];
         version[0] = true; // any version, should alwasy be true
@@ -68,9 +71,9 @@ public class InitOperation extends AbstractOperation<InitializeResponse, Initial
         init.implementationId = new InternationalString();
         init.implementationId.value = new ASN1GeneralString("1");
         init.implementationName = new InternationalString();
-        init.implementationName.value = new ASN1GeneralString("Java ZClient");
+        init.implementationName.value = new ASN1GeneralString(implementationName);
         init.implementationVersion = new InternationalString();
-        init.implementationVersion.value = new ASN1GeneralString("1.00");
+        init.implementationVersion.value = new ASN1GeneralString(implementationVersion);
         if (user != null) {
             init.idAuthentication = new IdAuthentication();
             init.idAuthentication.idPass = new IdAuthenticationIdPass();

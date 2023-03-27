@@ -49,9 +49,8 @@ public final class CQLRPNGenerator implements Visitor {
     /**
      * Context map.
      */
+    @SuppressWarnings("serial")
     private final Map<String, ResourceBundle> contexts = new HashMap<>() {
-        private static final long serialVersionUID = 8199395368653216950L;
-
         {
             put("default", ResourceBundle.getBundle("org.xbib.z3950.common.cql.default"));
             put("cql", ResourceBundle.getBundle("org.xbib.z3950.common.cql.cql"));
@@ -156,17 +155,12 @@ public final class CQLRPNGenerator implements Visitor {
             rpn.c_rpnRpnOp.s_op = new Operator();
             BooleanOperator op = node.getBooleanGroup().getOperator();
             switch (op) {
-                case AND:
-                    rpn.c_rpnRpnOp.s_op.andOp = new ASN1Null();
-                    break;
-                case OR:
-                    rpn.c_rpnRpnOp.s_op.orOp = new ASN1Null();
-                    break;
-                case NOT:
-                    rpn.c_rpnRpnOp.s_op.andNotOp = new ASN1Null();
-                    break;
-                default:
-                    break;
+                case AND -> rpn.c_rpnRpnOp.s_op.andOp = new ASN1Null();
+                case OR -> rpn.c_rpnRpnOp.s_op.orOp = new ASN1Null();
+                case NOT -> rpn.c_rpnRpnOp.s_op.andNotOp = new ASN1Null();
+                default -> {
+                    throw new UnsupportedOperationException("op: " + op);
+                }
             }
             rpn.c_rpnRpnOp.s_rpn1 = (RPNStructure) result.pop();
             rpn.c_rpnRpnOp.s_rpn2 = (RPNStructure) result.pop();
@@ -218,36 +212,28 @@ public final class CQLRPNGenerator implements Visitor {
             node.getModifierList().accept(this);
         }
         int attributeType = 2;
-        int attributeValue = 3;
+        int attributeValue = 3; // EQUALS, 2=3
         switch (node.getComparitor()) {
-            case LESS: // 2=1
-                attributeValue = 1;
-                break;
-            case LESS_EQUALS: // 2=2
-                attributeValue = 2;
-                break;
-            case EQUALS: // 2=3
-                attributeValue = 3;
-                break;
-            case GREATER_EQUALS: // 2=4
-                attributeValue = 4;
-                break;
-            case GREATER: // 2=5    
-                attributeValue = 5;
-                break;
-            case NOT_EQUALS: // 2=6
-                attributeValue = 6;
-                break;
-            case ALL: // 4=6
+            case LESS -> // 2=1
+                    attributeValue = 1;
+            case LESS_EQUALS -> // 2=2
+                    attributeValue = 2;
+            case GREATER_EQUALS -> // 2=4
+                    attributeValue = 4;
+            case GREATER -> // 2=5
+                    attributeValue = 5;
+            case NOT_EQUALS -> // 2=6
+                    attributeValue = 6;
+            case ALL -> { // 4=6
                 attributeType = 4;
                 attributeValue = 6;
-                break;
-            case ANY: // 4=105
+            }
+            case ANY -> { // 4=104
                 attributeType = 4;
                 attributeValue = 104;
-                break;
-            default:
-                break;
+            }
+            default -> {
+            }
         }
         if (attributeValue != 3) {
             AttributeElement ae = new AttributeElement();
@@ -298,13 +284,11 @@ public final class CQLRPNGenerator implements Visitor {
         if (context == null) {
             context = "default"; // default context
         }
+
         int attributeType = 1; // use attribute set: bib-1 = 1
         int attributeValue = getUseAttr(context, index.getName());
-        AttributeElement ae = new AttributeElement();
-        ae.attributeType = new ASN1Integer(attributeType);
-        ae.attributeValue = new AttributeElementAttributeValue();
-        ae.attributeValue.numeric = new ASN1Integer(attributeValue);
-        attributeElements.push(ae);
+
+        push(attributeElements, createAttributeElement(attributeType, attributeValue));
     }
 
     private int getUseAttr(String context, String attrName) {
@@ -316,18 +300,31 @@ public final class CQLRPNGenerator implements Visitor {
     }
 
     private ASN1OctetString transformTerm(Term term) {
+
+        int firstAttributeValue = 0;
+        if (!attributeElements.isEmpty()) {
+            AttributeElement attributeElement = attributeElements.peek();
+            if (attributeElement.attributeType.get() == 1) {
+                firstAttributeValue = attributeElement.attributeValue.numeric.get();
+            }
+        }
+
         String v = term.getValue();
         // let's derive attributes from the search term syntax
 
         // relation attribute = 2
         int attributeType = 2;
-        int attributeValue = 3; // equal = 3
+        int attributeValue = 3; // equal 2=3
         push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
         // position attribute = 3
-        //attributeType = 3;
-        // attributeValue = 3; // any position = 3
-        //push(attributeElements, createAttributeElement(attributeType, attributeValue));
+        attributeType = 3;
+        attributeValue = 3; // any position = 3
+        if (v.startsWith("^")) {
+            attributeValue = 1; // first posiiton
+            v = v.substring(1);
+        }
+        push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
         // structure attribute = 4
         attributeType = 4;
@@ -335,6 +332,12 @@ public final class CQLRPNGenerator implements Visitor {
         if (v.startsWith("\"") && v.endsWith("\"")) {
             attributeValue = 1; // phrase
             v = v.substring(1, v.length()-1);
+        }
+        if (firstAttributeValue == 31) {
+            attributeValue = 5; // date (normalized) = 5
+        }
+        if (firstAttributeValue == 1016) {
+            attributeValue = 6; // word list
         }
         push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
@@ -354,6 +357,16 @@ public final class CQLRPNGenerator implements Visitor {
             v = v.substring(1);
         }
         push(attributeElements, createAttributeElement(attributeType, attributeValue));
+
+        // completeness attribute = 6
+        attributeType = 6;
+        attributeValue = 1; // not complete = 1
+        if (v.startsWith("^") && v.endsWith("$")) {
+            attributeValue = 3; // complete = 3
+            v = v.substring(1, v.length() - 1);
+        }
+        push(attributeElements, createAttributeElement(attributeType, attributeValue));
+
         return new ASN1OctetString(v);
     }
 

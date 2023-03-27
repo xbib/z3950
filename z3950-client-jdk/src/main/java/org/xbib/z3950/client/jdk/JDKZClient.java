@@ -39,33 +39,7 @@ public class JDKZClient implements Client, Closeable {
 
     private static final Logger logger = Logger.getLogger(JDKZClient.class.getName());
 
-    private final String host;
-
-    private final int port;
-
-    private final String user;
-
-    private final String pass;
-
-    private final long timeout;
-
-    private final String preferredRecordSyntax;
-
-    private final String resultSetName;
-
-    private final String elementSetName;
-
-    private final String encoding;
-
-    private final String format;
-
-    private final String type;
-
-    private final List<String> databases;
-
-    private final Integer preferredMessageSize;
-
-    private final InitListener initListener;
+    private final Builder builder;
 
     private final Lock lock;
 
@@ -75,34 +49,8 @@ public class JDKZClient implements Client, Closeable {
 
     private OutputStreamBERWriter berWriter;
 
-    private JDKZClient(String host,
-                       int port,
-                       String user,
-                       String pass,
-                       long timeout,
-                       String preferredRecordSyntax,
-                       String resultSetName,
-                       String elementSetName,
-                       String encoding,
-                       String format,
-                       String type,
-                       List<String> databases,
-                       Integer preferredMessageSize,
-                       InitListener initListener) {
-        this.host = host;
-        this.port = port;
-        this.user = user;
-        this.pass = pass;
-        this.timeout = timeout;
-        this.preferredRecordSyntax = preferredRecordSyntax;
-        this.resultSetName = resultSetName;
-        this.elementSetName = elementSetName;
-        this.encoding = encoding;
-        this.format = format;
-        this.type = type;
-        this.databases = databases;
-        this.preferredMessageSize = preferredMessageSize;
-        this.initListener = initListener;
+    private JDKZClient(Builder builder) {
+        this.builder = builder;
         this.lock = new ReentrantLock();
     }
 
@@ -117,7 +65,8 @@ public class JDKZClient implements Client, Closeable {
         ensureConnected();
         try {
             lock.lock();
-            SearchOperation searchOperation = new SearchOperation(berReader, berWriter, resultSetName, databases, host);
+            SearchOperation searchOperation = new SearchOperation(berReader, berWriter,
+                    builder.resultSetName, builder.databases, builder.host);
             boolean success = searchOperation.executeCQL(query);
             if (!success) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
@@ -130,7 +79,7 @@ public class JDKZClient implements Client, Closeable {
                 }
                 if (searchOperation.getCount() > 0) {
                     PresentOperation present = new PresentOperation(berReader, berWriter,
-                            resultSetName, elementSetName, preferredRecordSyntax);
+                            builder.resultSetName, builder.elementSetName, builder.preferredRecordSyntax);
                     if (offset < 1) {
                         // Z39.50 present bails out when offset = 0
                         offset = 1;
@@ -164,7 +113,8 @@ public class JDKZClient implements Client, Closeable {
         ensureConnected();
         try {
             lock.lock();
-            SearchOperation search = new SearchOperation(berReader, berWriter, resultSetName, databases, host);
+            SearchOperation search = new SearchOperation(berReader, berWriter,
+                    builder.resultSetName, builder.databases, builder.host);
             search.executePQF(query, StandardCharsets.UTF_8);
             if (!search.isSuccess()) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
@@ -178,7 +128,7 @@ public class JDKZClient implements Client, Closeable {
                 if (search.getCount() > 0) {
                     logger.log(Level.FINE, "search returned " + search.getCount());
                     PresentOperation present = new PresentOperation(berReader, berWriter,
-                            resultSetName, elementSetName, preferredRecordSyntax);
+                            builder.resultSetName, builder.elementSetName, builder.preferredRecordSyntax);
                     if (offset < 1) {
                         // Z39.50 bails out when offset = 0
                         offset = 1;
@@ -211,7 +161,7 @@ public class JDKZClient implements Client, Closeable {
         ensureConnected();
         try {
             lock.lock();
-            ScanOperation scanOperation = new ScanOperation(berReader, berWriter, databases);
+            ScanOperation scanOperation = new ScanOperation(berReader, berWriter, builder.databases);
             scanOperation.executePQF(nTerms, step, position, query, scanListener);
         } catch (SocketTimeoutException e) {
             if (timeoutListener != null) {
@@ -224,77 +174,78 @@ public class JDKZClient implements Client, Closeable {
 
     @Override
     public String getHost() {
-        return host;
+        return builder.host;
     }
 
     @Override
     public int getPort() {
-        return port;
+        return builder.port;
     }
 
     @Override
     public String getUser() {
-        return user;
+        return builder.user;
     }
 
     @Override
     public String getPass() {
-        return pass;
+        return builder.pass;
     }
 
     @Override
     public long getTimeout() {
-        return timeout;
+        return builder.timeout;
     }
 
     @Override
     public String getPreferredRecordSyntax() {
-        return preferredRecordSyntax;
+        return builder.preferredRecordSyntax;
     }
 
     @Override
     public String getResultSetName() {
-        return resultSetName;
+        return builder.resultSetName;
     }
 
     @Override
     public String getElementSetName() {
-        return elementSetName;
+        return builder.elementSetName;
     }
 
     @Override
     public String getEncoding() {
-        return encoding;
+        return builder.encoding;
     }
 
     @Override
     public String getFormat() {
-        return format;
+        return builder.format;
     }
 
     @Override
     public String getType() {
-        return type;
+        return builder.type;
     }
 
     @Override
     public List<String> getDatabases() {
-        return databases;
+        return builder.databases;
     }
 
     public void connect() throws IOException {
         try {
             lock.lock();
             Socket socket = new Socket();
-            socket.connect(new InetSocketAddress(host, port), (int) timeout); // in milliseconds
-            socket.setSoTimeout((int) timeout); // timeout in milliseconds
+            socket.connect(new InetSocketAddress(builder.host, builder.port), (int) builder.timeout); // in milliseconds
+            socket.setSoTimeout((int) builder.timeout); // timeout in milliseconds
             this.socket = socket;
             InputStream src = new BufferedInputStream(socket.getInputStream());
             OutputStream dest = new BufferedOutputStream(socket.getOutputStream());
             this.berReader = new InputStreamBERReader(src);
             this.berWriter = new OutputStreamBERWriter(dest);
-            InitOperation initOperation = new InitOperation(berReader, berWriter, user, pass);
-            if (initOperation.execute(preferredMessageSize, initListener)) {
+            InitOperation initOperation = new InitOperation(berReader, berWriter, builder.user, builder.pass);
+            if (initOperation.execute(builder.preferredMessageSize,
+                    builder.implementationName, builder.implementationVersion, builder.initListener)) {
                 throw new IOException("could not initiate connection");
             }
             logger.log(Level.INFO, initOperation.getTargetInfo());
@@ -410,6 +361,10 @@ public class JDKZClient implements Client, Closeable {
 
         private Integer preferredMessageSize;
 
+        private String implementationName;
+
+        private String implementationVersion;
+
         private InitListener initListener;
 
         private Builder() {
@@ -421,6 +376,8 @@ public class JDKZClient implements Client, Closeable {
             this.type = "Bibliographic";
             this.databases = Collections.singletonList("");
             this.preferredMessageSize = 10 * 1024 * 1024;
+            this.implementationName = "Java Z Client";
+            this.implementationVersion = "1.00";
         }
 
         public Builder setHost(String host) {
@@ -491,22 +448,23 @@ public class JDKZClient implements Client, Closeable {
             return this;
         }
 
+        public Builder setImplementationName(String implementationName) {
+            this.implementationName = implementationName;
+            return this;
+        }
+
+        public Builder setImplementationVersion(String implementationVersion) {
+            this.implementationVersion = implementationVersion;
+            return this;
+        }
+
         public Builder setInitListener(InitListener initListener) {
             this.initListener = initListener;
             return this;
         }
 
         public JDKZClient build() {
-            return new JDKZClient(host, port, user, pass, timeout,
-                    preferredRecordSyntax,
-                    resultSetName,
-                    elementSetName,
-                    encoding,
-                    format,
-                    type,
-                    databases,
-                    preferredMessageSize,
-                    initListener);
+            return new JDKZClient(this);
         }
     }
 }
