@@ -28,7 +28,7 @@ class GBVZClientTest {
         int size = 10;
         try (JDKZClient client = newZClient("GBV")) {
             logger.log(Level.INFO, "executing PQF " + query);
-            int count = client.searchPQF(query, from, size,
+            int count = client.searchPQF(query, from, size, null,
                     (status, total, returned, elapsedMillis) ->
                             logger.log(Level.INFO, "total results = " + total + " millis = " + elapsedMillis),
                     record -> logger.log(Level.INFO, "record = " + record.toString(StandardCharsets.UTF_8)),
@@ -48,7 +48,7 @@ class GBVZClientTest {
         int size = 2;
         try (JDKZClient client = newZClient(serviceName)) {
             logger.log(Level.INFO, "executing CQL " + query);
-            int count = client.searchCQL(query, from, size,
+            int count = client.searchCQL(query, from, size, null,
                     (status, total, returned, elapsedMillis) ->
                             logger.log(Level.INFO, serviceName + " total results = " + total),
                     record -> logger.log(Level.INFO, "record = " + record),

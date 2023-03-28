@@ -23,6 +23,8 @@ public final class SortKeySortAttributes extends ASN1Any {
     public AttributeSetId s_id;
     public AttributeList s_list;
 
+    public SortKeySortAttributes() {
+    }
 
     /**
      * Constructor for a SortKey_sortAttributes from a BER encoding.
@@ -96,7 +98,7 @@ public final class SortKeySortAttributes extends ASN1Any {
     @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2; // number of mandatories
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
         fields[x++] = s_id.berEncode();
         fields[x] = s_list.berEncode();
@@ -114,13 +116,9 @@ public final class SortKeySortAttributes extends ASN1Any {
         str.append("id ");
         str.append(s_id);
         outputted++;
-        if (0 < outputted) {
-            str.append(", ");
-        }
         str.append("list ");
         str.append(s_list);
         str.append("}");
         return str.toString();
     }
-
 } 

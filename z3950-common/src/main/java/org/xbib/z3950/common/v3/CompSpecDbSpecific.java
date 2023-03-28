@@ -23,6 +23,9 @@ public final class CompSpecDbSpecific extends ASN1Any {
 
     public Specification sSpec;
 
+    public CompSpecDbSpecific() {
+    }
+
     /**
      * Constructor for a CompSpec_dbSpecific from a BER encoding.
      *
@@ -116,9 +119,9 @@ public final class CompSpecDbSpecific extends ASN1Any {
     @Override
     public BEREncoding berEncode(int tagType, int tag) throws ASN1Exception {
         int numFields = 2;
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
-        BEREncoding enc[];
+        BEREncoding[] enc;
         enc = new BEREncoding[1];
         enc[0] = sDb.berEncode();
         fields[x++] = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 1, enc);
@@ -132,17 +135,11 @@ public final class CompSpecDbSpecific extends ASN1Any {
      */
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("{");
-        int outputted = 0;
-        str.append("db ");
-        str.append(sDb);
-        outputted++;
-        if (0 < outputted) {
-            str.append(", ");
-        }
-        str.append("spec ");
-        str.append(sSpec);
-        str.append("}");
-        return str.toString();
+        return "{" + "db " +
+                sDb +
+                ", " +
+                "spec " +
+                sSpec +
+                "}";
     }
 }

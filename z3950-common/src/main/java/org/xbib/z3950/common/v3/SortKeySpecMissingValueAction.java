@@ -24,6 +24,9 @@ public final class SortKeySpecMissingValueAction extends ASN1Any {
     public ASN1Null c_null;
     public ASN1OctetString c_missingValueData;
 
+    public SortKeySpecMissingValueAction() {
+    }
+
     /**
      * Constructor for a SortKeySpec_missingValueAction from a BER encoding.
      *
@@ -157,7 +160,6 @@ public final class SortKeySpecMissingValueAction extends ASN1Any {
             str.append("abort ");
             str.append(c_abort);
         }
-
         if (c_null != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: null> ");
@@ -166,7 +168,6 @@ public final class SortKeySpecMissingValueAction extends ASN1Any {
             str.append("null ");
             str.append(c_null);
         }
-
         if (c_missingValueData != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: missingValueData> ");

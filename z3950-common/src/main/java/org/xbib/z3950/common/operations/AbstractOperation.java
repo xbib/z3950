@@ -16,6 +16,8 @@ import org.xbib.z3950.common.v3.ScanRequest;
 import org.xbib.z3950.common.v3.ScanResponse;
 import org.xbib.z3950.common.v3.SearchRequest;
 import org.xbib.z3950.common.v3.SearchResponse;
+import org.xbib.z3950.common.v3.SortRequest;
+import org.xbib.z3950.common.v3.SortResponse;
 
 import java.io.IOException;
 
@@ -113,6 +115,12 @@ public class AbstractOperation<IN extends ASN1Any, OUT extends ASN1Any> {
         if (data instanceof ScanResponse) {
             return data.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 36);
         }
+        if (data instanceof SortRequest) {
+            return data.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 43);
+        }
+        if (data instanceof SortResponse) {
+            return data.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 44);
+        }
         if (data instanceof Close) {
             return data.berEncode(BEREncoding.CONTEXT_SPECIFIC_TAG, 48);
         }
@@ -159,8 +167,12 @@ public class AbstractOperation<IN extends ASN1Any, OUT extends ASN1Any> {
                 case 36 -> {
                     return (IN) new ScanResponse(ber, false);
                 }
-                // 43 new SortRequest(ber, false);
-                // 44  new SortResponse(ber, false);
+                case 43 -> {
+                    return (IN) new SortRequest(ber, false);
+                }
+                case 44 -> {
+                    return (IN) new SortResponse(ber, false);
+                }
                 // 45  new Segment(ber, false);
                 // 46  new ExtendedServicesRequest(ber, false);
                 // 47  new ExtendedServicesResponse(ber, false);

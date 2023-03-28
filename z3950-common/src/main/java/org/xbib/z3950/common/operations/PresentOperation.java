@@ -44,7 +44,8 @@ public class PresentOperation extends AbstractOperation<PresentResponse, Present
 
     private final String preferredRecordSyntax;
 
-    public PresentOperation(BERReader reader, BERWriter writer,
+    public PresentOperation(BERReader reader,
+                            BERWriter writer,
                             String resultSetName,
                             String elementSetName,
                             String preferredRecordSyntax) {

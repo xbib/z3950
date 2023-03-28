@@ -28,7 +28,8 @@ public class ScanOperation extends AbstractOperation<ScanResponse, ScanRequest> 
 
     private final List<String> databases;
 
-    public ScanOperation(BERReader reader, BERWriter writer,
+    public ScanOperation(BERReader reader,
+                         BERWriter writer,
                          List<String> databases) {
         super(reader, writer);
         this.databases = databases;
@@ -42,8 +43,7 @@ public class ScanOperation extends AbstractOperation<ScanResponse, ScanRequest> 
         ScanRequest scanRequest = new ScanRequest();
         scanRequest.attributeSet = new AttributeSetId();
         // Z39.50 BIB-1: urn:oid:1.2.840.10003.3.1
-        scanRequest.attributeSet.value =
-                new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
+        scanRequest.attributeSet.value = new ASN1ObjectIdentifier(new int[]{1, 2, 840, 10003, 3, 1});
         DatabaseName[] databaseNames = new DatabaseName[databases.size()];
         for (int n = 0; n < databases.size(); n++) {
             databaseNames[n] = new DatabaseName();

@@ -24,17 +24,31 @@ import org.xbib.asn1.BEREncoding;
 public final class SortResponse extends ASN1Any {
 
     public static final int E_success = 0;
+
     public static final int E_partial_1 = 1;
+
     public static final int E_failure = 2;
+
     public static final int E_empty = 1;
+
     public static final int E_interim = 2;
+
     public static final int E_unchanged = 3;
+
     public static final int E_none = 4;
+
     public ReferenceId s_referenceId; // optional
+
     public ASN1Integer s_sortStatus;
+
     public ASN1Integer s_resultSetStatus; // optional
-    public DiagRec s_diagnostics[]; // optional
+
+    public DiagRec[] s_diagnostics; // optional
+
     public OtherInformation s_otherInfo; // optional
+
+    public SortResponse() {
+    }
 
     /**
      * Constructor for a SortResponse from a BER encoding.
@@ -194,9 +208,9 @@ public final class SortResponse extends ASN1Any {
         if (s_otherInfo != null) {
             numFields++;
         }
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
-        BEREncoding f2[];
+        BEREncoding[] f2;
         int p;
         if (s_referenceId != null) {
             fields[x++] = s_referenceId.berEncode();
@@ -239,17 +253,13 @@ public final class SortResponse extends ASN1Any {
         str.append(s_sortStatus);
         outputted++;
         if (s_resultSetStatus != null) {
-            if (0 < outputted) {
-                str.append(", ");
-            }
+            str.append(", ");
             str.append("resultSetStatus ");
             str.append(s_resultSetStatus);
             outputted++;
         }
         if (s_diagnostics != null) {
-            if (0 < outputted) {
-                str.append(", ");
-            }
+            str.append(", ");
             str.append("diagnostics ");
             str.append("{");
             for (p = 0; p < s_diagnostics.length; p++) {
@@ -261,7 +271,6 @@ public final class SortResponse extends ASN1Any {
             str.append("}");
             outputted++;
         }
-
         if (s_otherInfo != null) {
             if (0 < outputted) {
                 str.append(", ");
@@ -269,9 +278,7 @@ public final class SortResponse extends ASN1Any {
             str.append("otherInfo ");
             str.append(s_otherInfo);
         }
-
         str.append("}");
-
         return str.toString();
     }
 }

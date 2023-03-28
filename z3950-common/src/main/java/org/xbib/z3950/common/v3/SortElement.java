@@ -13,15 +13,19 @@ import org.xbib.asn1.BEREncoding;
  * SortElement ::=
  * CHOICE {
  *   generic [1] EXPLICIT SortKey
- *   datbaseSpecific [2] IMPLICIT SEQUENCE OF SortElement_datbaseSpecific
+ *   databaseSpecific [2] IMPLICIT SEQUENCE OF SortElement_databaseSpecific
  * }
  * </pre>
  */
 public final class SortElement extends ASN1Any {
 
     public SortKey c_generic;
-    public SortElementDatabaseSpecific c_datbaseSpecific[];
 
+    public SortElementDatabaseSpecific[] c_databaseSpecific;
+
+
+    public SortElement() {
+    }
 
     /**
      * Constructor for a SortElement from a BER encoding.
@@ -52,7 +56,7 @@ public final class SortElement extends ASN1Any {
         // Null out all choices
 
         c_generic = null;
-        c_datbaseSpecific = null;
+        c_databaseSpecific = null;
 
         // Try choice generic
         if (ber.getTag() == 1 &&
@@ -84,10 +88,10 @@ public final class SortElement extends ASN1Any {
             int numParts = berConstructed.numberComponents();
             int p;
 
-            c_datbaseSpecific = new SortElementDatabaseSpecific[numParts];
+            c_databaseSpecific = new SortElementDatabaseSpecific[numParts];
 
             for (p = 0; p < numParts; p++) {
-                c_datbaseSpecific[p] = new SortElementDatabaseSpecific(berConstructed.elementAt(p), true);
+                c_databaseSpecific[p] = new SortElementDatabaseSpecific(berConstructed.elementAt(p), true);
             }
             return;
         }
@@ -105,9 +109,9 @@ public final class SortElement extends ASN1Any {
     public BEREncoding berEncode() throws ASN1Exception {
         BEREncoding chosen = null;
 
-        BEREncoding f2[];
+        BEREncoding[] f2;
         int p;
-        BEREncoding enc[];
+        BEREncoding[] enc;
 
         // Encoding choice: c_generic
         if (c_generic != null) {
@@ -116,15 +120,15 @@ public final class SortElement extends ASN1Any {
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 1, enc);
         }
 
-        // Encoding choice: c_datbaseSpecific
-        if (c_datbaseSpecific != null) {
+        // Encoding choice: c_databaseSpecific
+        if (c_databaseSpecific != null) {
             if (chosen != null) {
                 throw new ASN1Exception("CHOICE multiply set");
             }
-            f2 = new BEREncoding[c_datbaseSpecific.length];
+            f2 = new BEREncoding[c_databaseSpecific.length];
 
-            for (p = 0; p < c_datbaseSpecific.length; p++) {
-                f2[p] = c_datbaseSpecific[p].berEncode();
+            for (p = 0; p < c_databaseSpecific.length; p++) {
+                f2[p] = c_databaseSpecific[p].berEncode();
             }
 
             chosen = new BERConstructed(BEREncoding.CONTEXT_SPECIFIC_TAG, 2, f2);
@@ -179,22 +183,18 @@ public final class SortElement extends ASN1Any {
             str.append("generic ");
             str.append(c_generic);
         }
-
-        if (c_datbaseSpecific != null) {
+        if (c_databaseSpecific != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: datbaseSpecific> ");
             }
-            found = true;
             str.append("datbaseSpecific ");
             str.append("{");
-            for (p = 0; p < c_datbaseSpecific.length; p++) {
-                str.append(c_datbaseSpecific[p]);
+            for (p = 0; p < c_databaseSpecific.length; p++) {
+                str.append(c_databaseSpecific[p]);
             }
             str.append("}");
         }
-
         str.append("}");
-
         return str.toString();
     }
 }

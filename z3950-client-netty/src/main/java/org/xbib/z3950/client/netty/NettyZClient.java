@@ -18,6 +18,8 @@ import org.xbib.z3950.api.ScanListener;
 import org.xbib.z3950.api.SearchListener;
 import org.xbib.z3950.api.TimeoutListener;
 import org.xbib.z3950.client.api.Client;
+import org.xbib.z3950.common.operations.SortOperation;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -63,6 +65,7 @@ public class NettyZClient implements Client, Closeable {
     public int searchCQL(String query,
                          int offset,
                          int length,
+                         List<SortOperation.SortParameter> sortParameters,
                          SearchListener searchListener,
                          RecordListener recordListener,
                          TimeoutListener timoutListener) throws IOException {
@@ -73,6 +76,7 @@ public class NettyZClient implements Client, Closeable {
     public int searchPQF(String query,
                          int offset,
                          int length,
+                         List<SortOperation.SortParameter> sortParameters,
                          SearchListener searchListener,
                          RecordListener recordListener,
                          TimeoutListener timeoutListener) throws IOException {
@@ -87,6 +91,12 @@ public class NettyZClient implements Client, Closeable {
                         ScanListener scanListener,
                         TimeoutListener timeoutListener) throws IOException {
 
+    }
+
+    @Override
+    public void sort(String referenceId,
+                     List<SortOperation.SortParameter> parameters,
+                     TimeoutListener timeoutListener) throws IOException {
     }
 
     @Override
@@ -149,7 +159,7 @@ public class NettyZClient implements Client, Closeable {
         return null;
     }
 
-    class Handler extends SimpleChannelInboundHandler<ByteBuf> {
+    static class Handler extends SimpleChannelInboundHandler<ByteBuf> {
 
         @Override
         public void channelActive(ChannelHandlerContext channelHandlerContext){

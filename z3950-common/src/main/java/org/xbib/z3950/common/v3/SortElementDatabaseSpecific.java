@@ -20,7 +20,11 @@ import org.xbib.asn1.BEREncoding;
 public final class SortElementDatabaseSpecific extends ASN1Any {
 
     public DatabaseName s_databaseName;
+
     public SortKey s_dbSort;
+
+    public SortElementDatabaseSpecific() {
+    }
 
     /**
      * Constructor for a SortElement_datbaseSpecific from a BER encoding.
@@ -117,7 +121,7 @@ public final class SortElementDatabaseSpecific extends ASN1Any {
 
         // Encode it
 
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
 
         // Encoding s_databaseName: DatabaseName
@@ -136,22 +140,11 @@ public final class SortElementDatabaseSpecific extends ASN1Any {
      */
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder("{");
-        int outputted = 0;
-
-        str.append("databaseName ");
-        str.append(s_databaseName);
-        outputted++;
-
-        if (0 < outputted) {
-            str.append(", ");
-        }
-        str.append("dbSort ");
-        str.append(s_dbSort);
-
-        str.append("}");
-
-        return str.toString();
+        return "{" + "databaseName " +
+                s_databaseName +
+                ", " +
+                "dbSort " +
+                s_dbSort +
+                "}";
     }
-
 }

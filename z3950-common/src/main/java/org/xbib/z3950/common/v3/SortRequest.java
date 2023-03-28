@@ -22,11 +22,19 @@ import org.xbib.asn1.BEREncoding;
  * </pre>
  */
 public final class SortRequest extends ASN1Any {
+
     public ReferenceId s_referenceId; // optional
-    public InternationalString s_inputResultSetNames[];
+
+    public InternationalString[] s_inputResultSetNames;
+
     public InternationalString s_sortedResultSetName;
-    public SortKeySpec s_sortSequence[];
+
+    public SortKeySpec[] s_sortSequence;
+
     public OtherInformation s_otherInfo; // optional
+
+    public SortRequest() {
+    }
 
     /**
      * Constructor for a SortRequest from a BER encoding.
@@ -205,9 +213,9 @@ public final class SortRequest extends ASN1Any {
         if (s_otherInfo != null) {
             numFields++;
         }
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
-        BEREncoding f2[];
+        BEREncoding[] f2;
         int p;
         if (s_referenceId != null) {
             fields[x++] = s_referenceId.berEncode();

@@ -23,6 +23,9 @@ public final class SortKey extends ASN1Any {
     public Specification c_elementSpec;
     public SortKeySortAttributes c_sortAttributes;
 
+    public SortKey() {
+    }
+
     /**
      * Constructor for a SortKey from a BER encoding.
      *
@@ -146,7 +149,6 @@ public final class SortKey extends ASN1Any {
             str.append("sortfield ");
             str.append(c_sortfield);
         }
-
         if (c_elementSpec != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: elementSpec> ");
@@ -155,18 +157,14 @@ public final class SortKey extends ASN1Any {
             str.append("elementSpec ");
             str.append(c_elementSpec);
         }
-
         if (c_sortAttributes != null) {
             if (found) {
                 str.append("<ERROR: multiple CHOICE: sortAttributes> ");
             }
-            found = true;
             str.append("sortAttributes ");
             str.append(c_sortAttributes);
         }
-
         str.append("}");
-
         return str.toString();
     }
 }

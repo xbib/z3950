@@ -23,15 +23,27 @@ import org.xbib.asn1.BEREncoding;
 public final class SortKeySpec extends ASN1Any {
 
     public static final int E_ascending = 0;
+
     public static final int E_descending = 1;
+
     public static final int E_ascendingByFrequency = 3;
+
     public static final int E_descendingByfrequency = 4;
+
     public static final int E_caseSensitive = 0;
+
     public static final int E_caseInsensitive = 1;
+
     public SortElement s_sortElement;
+
     public ASN1Integer s_sortRelation;
+
     public ASN1Integer s_caseSensitivity;
+
     public SortKeySpecMissingValueAction s_missingValueAction; // optional
+
+    public SortKeySpec() {
+    }
 
     /**
      * Constructor for a SortKeySpec from a BER encoding.
@@ -196,29 +208,16 @@ public final class SortKeySpec extends ASN1Any {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("{");
-        int outputted = 0;
         str.append("sortElement ");
         str.append(s_sortElement);
-        outputted++;
-
-        if (0 < outputted) {
-            str.append(", ");
-        }
+        str.append(", ");
         str.append("sortRelation ");
         str.append(s_sortRelation);
-        outputted++;
-
-        if (0 < outputted) {
-            str.append(", ");
-        }
+        str.append(", ");
         str.append("caseSensitivity ");
         str.append(s_caseSensitivity);
-        outputted++;
-
         if (s_missingValueAction != null) {
-            if (0 < outputted) {
-                str.append(", ");
-            }
+            str.append(", ");
             str.append("missingValueAction ");
             str.append(s_missingValueAction);
         }

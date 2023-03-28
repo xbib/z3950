@@ -30,7 +30,7 @@ class COPACTest {
                     .setDatabases(Collections.singletonList(database))
                     .setPreferredRecordSyntax(preferredRecordSyntax)
                     .build();
-            client.searchPQF(query, from, length,
+            client.searchPQF(query, from, length, null,
                     (status, total, returned, elapsedMillis) -> logger.log(Level.INFO, "total records = " + total),
                     record -> logger.log(Level.INFO, "found record " + record), // MODS
                     () -> logger.log(Level.WARNING, "timeout"));

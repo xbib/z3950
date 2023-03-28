@@ -11,11 +11,9 @@ public class Diagnostics extends IOException {
     private static final ResourceBundle bundle =
             ResourceBundle.getBundle("org.xbib.z3950.common.diagnostics");
 
-    private static final long serialVersionUID = -899201811019819079L;
+    private final int diagCode;
 
-    private int diagCode;
-
-    private String message;
+    private final String message;
 
     public Diagnostics(int diagCode, String message) {
         super("" + diagCode + " " + bundle.getString(Integer.toString(diagCode)) + " " + message);

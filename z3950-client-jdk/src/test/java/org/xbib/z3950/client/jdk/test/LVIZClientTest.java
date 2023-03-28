@@ -2,9 +2,11 @@ package org.xbib.z3950.client.jdk.test;
 
 import org.junit.jupiter.api.Test;
 import org.xbib.z3950.client.jdk.JDKZClient;
+import org.xbib.z3950.common.operations.SortOperation;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,12 +16,14 @@ class LVIZClientTest {
 
     @Test
     void testLVI() {
-        String query = "@attr 1=4 Köln";
-        int from = 1;
+        String query = "@attr 1=4 @attr 4=6 \"Köln strafrecht\"";
+        int offset = 1;
         int size = 10;
         try (JDKZClient client = newZClient()) {
+            List<SortOperation.SortParameter> sort = List.of(SortOperation.SortParameter.of("title")
+                    .setAscending(true));
             logger.log(Level.INFO, "executing PQF " + query);
-            int count = client.searchPQF(query, from, size,
+            int count = client.searchPQF(query, offset, size, sort,
                     (status, total, returned, elapsedMillis) ->
                             logger.log(Level.INFO, "total results = " + total + " millis = " + elapsedMillis),
                     record -> logger.log(Level.INFO, "record = " + record.toString(StandardCharsets.UTF_8)),
@@ -31,16 +35,17 @@ class LVIZClientTest {
     }
 
     private JDKZClient newZClient() {
-        JDKZClient.Builder builder = JDKZClient.builder();
-        builder.setHost("localhost");
-        builder.setPort(1210);
-        builder.setDatabases(Collections.singletonList("LVI"));
-        builder.setElementSetName(null);
-        builder.setPreferredRecordSyntax("xml");
-        builder.setResultSetName("default");
-        builder.setEncoding("utf-8");
-        builder.setFormat("Marc21");
-        builder.setType("Bibliographic");
+        JDKZClient.Builder builder = JDKZClient.builder()
+                .setHost("sru.hbz-nrw.de")
+                .setPort(210)
+                .setTimeout(30000L)
+                .setDatabases(Collections.singletonList("LVI"))
+                .setElementSetName(null)
+                .setPreferredRecordSyntax("xml")
+                .setResultSetName("default")
+                .setEncoding("UTF-8")
+                .setFormat("Marc21")
+                .setType("Bibliographic");
         return builder.build();
     }
 }

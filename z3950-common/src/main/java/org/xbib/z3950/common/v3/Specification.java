@@ -24,6 +24,9 @@ public final class Specification extends ASN1Any {
     public ASN1ObjectIdentifier s_schema; // optional
     public SpecificationElementSpec s_elementSpec; // optional
 
+    public Specification() {
+    }
+
     /**
      * Constructor for a Specification from a BER encoding.
      *
@@ -145,9 +148,9 @@ public final class Specification extends ASN1Any {
 
         // Encode it
 
-        BEREncoding fields[] = new BEREncoding[numFields];
+        BEREncoding[] fields = new BEREncoding[numFields];
         int x = 0;
-        BEREncoding enc[];
+        BEREncoding[] enc;
 
         // Encoding s_schema: OBJECT IDENTIFIER OPTIONAL
 
@@ -178,7 +181,6 @@ public final class Specification extends ASN1Any {
             str.append(s_schema);
             outputted++;
         }
-
         if (s_elementSpec != null) {
             if (0 < outputted) {
                 str.append(", ");
@@ -186,9 +188,7 @@ public final class Specification extends ASN1Any {
             str.append("elementSpec ");
             str.append(s_elementSpec);
         }
-
         str.append("}");
-
         return str.toString();
     }
 }

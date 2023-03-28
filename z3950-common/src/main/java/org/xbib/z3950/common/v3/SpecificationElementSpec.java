@@ -21,6 +21,9 @@ public final class SpecificationElementSpec extends ASN1Any {
     public InternationalString c_elementSetName;
     public ASN1External c_externalEspec;
 
+    public SpecificationElementSpec() {
+    }
+
     /**
      * Constructor for a Specification_elementSpec from a BER encoding.
      *

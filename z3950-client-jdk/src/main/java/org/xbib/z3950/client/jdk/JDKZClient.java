@@ -14,6 +14,8 @@ import org.xbib.z3950.api.InitListener;
 import org.xbib.z3950.api.RecordListener;
 import org.xbib.z3950.api.ScanListener;
 import org.xbib.z3950.api.SearchListener;
+import org.xbib.z3950.common.operations.SortOperation;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -55,7 +57,10 @@ public class JDKZClient implements Client, Closeable {
     }
 
     @Override
-    public int searchCQL(String query, int offset, int length,
+    public int searchCQL(String query,
+                         int offset,
+                         int length,
+                         List<SortOperation.SortParameter> sortParameters,
                          SearchListener searchListener,
                          RecordListener recordListener,
                          TimeoutListener timeoutListener) throws IOException {
@@ -78,8 +83,19 @@ public class JDKZClient implements Client, Closeable {
                     };
                 }
                 if (searchOperation.getCount() > 0) {
+                    logger.log(Level.FINE, "search returned " + searchOperation.getCount());
+                    String resultSetName = builder.resultSetName;
+                    if (sortParameters != null && !sortParameters.isEmpty()) {
+                        SortOperation sort = new SortOperation(berReader, berWriter);
+                        boolean sortSuccess = sort.execute("sort-ref", resultSetName, resultSetName + "-sort",
+                                sortParameters);
+                        logger.log(Level.FINE, "sort returned " + sortSuccess);
+                        if (sortSuccess) {
+                            resultSetName = resultSetName + "-sort";
+                        }
+                    }
                     PresentOperation present = new PresentOperation(berReader, berWriter,
-                            builder.resultSetName, builder.elementSetName, builder.preferredRecordSyntax);
+                            resultSetName, builder.elementSetName, builder.preferredRecordSyntax);
                     if (offset < 1) {
                         // Z39.50 present bails out when offset = 0
                         offset = 1;
@@ -103,7 +119,10 @@ public class JDKZClient implements Client, Closeable {
     }
 
     @Override
-    public int searchPQF(String query, int offset, int length,
+    public int searchPQF(String query,
+                         int offset,
+                         int length,
+                         List<SortOperation.SortParameter> sortParameters,
                          SearchListener searchListener,
                          RecordListener recordListener,
                          TimeoutListener timeoutListener) throws IOException {
@@ -113,10 +132,10 @@ public class JDKZClient implements Client, Closeable {
         ensureConnected();
         try {
             lock.lock();
-            SearchOperation search = new SearchOperation(berReader, berWriter,
+            SearchOperation searchOperation = new SearchOperation(berReader, berWriter,
                     builder.resultSetName, builder.databases, builder.host);
-            search.executePQF(query, StandardCharsets.UTF_8);
-            if (!search.isSuccess()) {
+            searchOperation.executePQF(query, StandardCharsets.UTF_8);
+            if (!searchOperation.isSuccess()) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
             } else {
                 if (searchListener == null) {
@@ -125,22 +144,32 @@ public class JDKZClient implements Client, Closeable {
                                 elapsedMillis, total, returned, query));
                     };
                 }
-                if (search.getCount() > 0) {
-                    logger.log(Level.FINE, "search returned " + search.getCount());
+                if (searchOperation.getCount() > 0) {
+                    logger.log(Level.FINE, "search returned " + searchOperation.getCount());
+                    String resultSetName = builder.resultSetName;
+                    if (sortParameters != null && !sortParameters.isEmpty()) {
+                        SortOperation sort = new SortOperation(berReader, berWriter);
+                        boolean sortSuccess = sort.execute("sort-ref", resultSetName, resultSetName + "-sort",
+                                sortParameters);
+                        logger.log(Level.FINE, "sort returned " + sortSuccess);
+                        if (sortSuccess) {
+                            resultSetName = resultSetName + "-sort";
+                        }
+                    }
                     PresentOperation present = new PresentOperation(berReader, berWriter,
-                            builder.resultSetName, builder.elementSetName, builder.preferredRecordSyntax);
+                            resultSetName, builder.elementSetName, builder.preferredRecordSyntax);
                     if (offset < 1) {
                         // Z39.50 bails out when offset = 0
                         offset = 1;
                     }
-                    if (length > search.getCount()) {
+                    if (length > searchOperation.getCount()) {
                         // avoid condition 13 "Present request out-of-range"
-                        length = search.getCount();
+                        length = searchOperation.getCount();
                     }
-                    present.execute(offset, length, search.getCount(), searchListener, recordListener);
+                    present.execute(offset, length, searchOperation.getCount(), searchListener, recordListener);
                 }
             }
-            return search.getCount();
+            return searchOperation.getCount();
         } catch (SocketTimeoutException e) {
             if (timeoutListener != null) {
                 timeoutListener.onTimeout();
@@ -163,6 +192,24 @@ public class JDKZClient implements Client, Closeable {
             lock.lock();
             ScanOperation scanOperation = new ScanOperation(berReader, berWriter, builder.databases);
             scanOperation.executePQF(nTerms, step, position, query, scanListener);
+        } catch (SocketTimeoutException e) {
+            if (timeoutListener != null) {
+                timeoutListener.onTimeout();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    @Override
+    public void sort(String referenceId,
+                     List<SortOperation.SortParameter> parameters,
+                     TimeoutListener timeoutListener) throws IOException {
+        ensureConnected();
+        try {
+            lock.lock();
+            SortOperation sortOperation = new SortOperation(berReader, berWriter);
+            sortOperation.execute(referenceId, getResultSetName(), getResultSetName() + "-sort", parameters);
         } catch (SocketTimeoutException e) {
             if (timeoutListener != null) {
                 timeoutListener.onTimeout();
