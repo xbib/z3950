@@ -62,7 +62,11 @@ public class PresentOperation extends AbstractOperation<PresentResponse, Present
         presentRequest.resultSetId.value = new InternationalString();
         presentRequest.resultSetId.value.value = new ASN1GeneralString(resultSetName);
         presentRequest.resultSetStartPoint = new ASN1Integer(offset);
-        presentRequest.numberOfRecordsRequested = new ASN1Integer(length);
+        int numberOfRecordsRequested = length;
+        if ((offset - 1) + length > total) {
+            numberOfRecordsRequested = total - offset + 1;
+        }
+        presentRequest.numberOfRecordsRequested = new ASN1Integer(numberOfRecordsRequested);
         if (elementSetName != null) {
             presentRequest.recordComposition = new PresentRequestRecordComposition();
             presentRequest.recordComposition.simple = new ElementSetNames();
@@ -76,7 +80,7 @@ public class PresentOperation extends AbstractOperation<PresentResponse, Present
         int nReturned = response.numberOfRecordsReturned != null ? response.numberOfRecordsReturned.get() : 0;
         int status = response.presentStatus.value != null ? response.presentStatus.value.get() : 0;
         if (searchListener != null) {
-            searchListener.onResponse(status, total, nReturned,  System.currentTimeMillis() - millis);
+            searchListener.onResponse(status, total, nReturned, System.currentTimeMillis() - millis);
         }
         if (status == PresentStatus.E_success) {
             for (int n = 0; n < nReturned; n++) {
@@ -126,20 +130,25 @@ public class PresentOperation extends AbstractOperation<PresentResponse, Present
     private ZException createZExceptionFrom(int status, int nReturned, PresentResponse response) {
         String message;
         switch (status) {
-            case 1:
+            case 1 -> {
                 message = "Some records were not returned (request was terminated by access control)";
                 return new NoRecordsReturnedException(message, status);
-            case 2:
+            }
+            case 2 -> {
                 message = "Some records were not returned (message size is too small)";
                 return new MessageSizeTooSmallException(message, status, nReturned);
-            case 3:
+            }
+            case 3 -> {
                 message = "Some records were not returned (request was terminated by control, at origin request)";
                 return new RequestTerminatedByAccessControlException(message, status, nReturned);
-            case 4:
+            }
+            case 4 -> {
                 message = "Some records were not returned (request was terminated by control, by the target)";
                 return new RequestTerminatedException(message, status, nReturned);
-            case 5:
+            }
+            case 5 -> {
                 return new NoRecordsReturnedException(response.toString(), status);
+            }
         }
         return new ZException(response.toString(), status, nReturned);
     }

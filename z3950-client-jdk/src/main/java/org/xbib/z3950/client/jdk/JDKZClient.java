@@ -100,10 +100,6 @@ public class JDKZClient implements Client, Closeable {
                         // Z39.50 present bails out when offset = 0
                         offset = 1;
                     }
-                    if (length > searchOperation.getCount()) {
-                        // avoid condition 13 "Present request out-of-range"
-                        length = searchOperation.getCount();
-                    }
                     present.execute(offset, length, searchOperation.getCount(), searchListener, recordListener);
                 }
             }
