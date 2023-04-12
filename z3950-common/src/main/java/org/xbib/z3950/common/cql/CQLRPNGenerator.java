@@ -208,7 +208,8 @@ public final class CQLRPNGenerator implements Visitor {
         }
         operand.attrTerm.attributes = new AttributeList();
         operand.attrTerm.attributes.value = attributeElements.stream()
-                .filter(ae -> ae.attributeValue != null).toArray(AttributeElement[]::new);
+                .filter(ae -> ae.attributeValue != null)
+                .toArray(AttributeElement[]::new);
         RPNStructure rpn = new RPNStructure();
         rpn.c_op = operand;
         result.push(rpn);
@@ -219,36 +220,29 @@ public final class CQLRPNGenerator implements Visitor {
         if (node.getModifierList() != null) {
             node.getModifierList().accept(this);
         }
-        int attributeType = 2;
-        int attributeValue = 3; // EQUALS, 2=3
         switch (node.getComparitor()) {
             case LESS -> // 2=1
-                    attributeValue = 1;
+                push(attributeElements, createAttributeElement(2, 1));
             case LESS_EQUALS -> // 2=2
-                    attributeValue = 2;
+                push(attributeElements, createAttributeElement(2, 2));
+            case EQUALS -> // 2=3
+                push(attributeElements, createAttributeElement(2, 3));
             case GREATER_EQUALS -> // 2=4
-                    attributeValue = 4;
+                push(attributeElements, createAttributeElement(2, 4));
             case GREATER -> // 2=5
-                    attributeValue = 5;
-            case NOT_EQUALS -> // 2=6
-                    attributeValue = 6;
-            case ALL -> { // 4=6
-                attributeType = 4;
-                attributeValue = 6;
+                push(attributeElements, createAttributeElement(2, 5));
+            case NOT_EQUALS ->
+                push(attributeElements, createAttributeElement(2, 6));
+            case ALL -> { // 4=6 word list
+                push(attributeElements, createAttributeElement(2, 3));
+                replace(attributeElements, createAttributeElement(4, 6));
             }
             case ANY -> { // 4=104
-                attributeType = 4;
-                attributeValue = 104;
+                push(attributeElements, createAttributeElement(2, 3));
+                replace(attributeElements, createAttributeElement(4, 104));
             }
             default -> {
             }
-        }
-        if (attributeValue != 3) {
-            AttributeElement ae = new AttributeElement();
-            ae.attributeType = new ASN1Integer(attributeType);
-            ae.attributeValue = new AttributeElementAttributeValue();
-            ae.attributeValue.numeric = new ASN1Integer(attributeValue);
-            result.push(ae);
         }
     }
 
@@ -294,39 +288,34 @@ public final class CQLRPNGenerator implements Visitor {
         }
 
         int attributeType = 1; // use attribute set: bib-1 = 1
-        int attributeValue = getUseAttr(context, index.getName());
+        Integer attributeValue = getUseAttr(context, index.getName());
+        if (attributeValue == null) {
+            throw new SyntaxException("undefined attribute value for " + index.getName());
+        }
 
+        // date --> use year attribute
+        if (attributeValue == 31) {
+            replace(attributeElements, createAttributeElement(4, 5));
+        }
         push(attributeElements, createAttributeElement(attributeType, attributeValue));
     }
 
-    private int getUseAttr(String context, String attrName) {
+    private Integer getUseAttr(String context, String attrName) {
         if (!contexts.containsKey(context)) {
             throw new SyntaxException("unknown use attribute '" + attrName + "' for context " + context);
         }
-        return Integer.parseInt(contexts.get(context).get(attrName));
+        String string = contexts.get(context).get(attrName);
+        return string != null ? Integer.parseInt(string) : null;
     }
 
     private ASN1OctetString transformTerm(Term term) {
 
-        int firstAttributeValue = 0;
-        if (!attributeElements.isEmpty()) {
-            AttributeElement attributeElement = attributeElements.peek();
-            if (attributeElement.attributeType.get() == 1) {
-                firstAttributeValue = attributeElement.attributeValue.numeric.get();
-            }
-        }
-
         String v = term.getValue();
-        // let's derive attributes from the search term syntax
-
-        // relation attribute = 2
-        int attributeType = 2;
-        int attributeValue = 3; // equal 2=3
-        push(attributeElements, createAttributeElement(attributeType, attributeValue));
+        // let's derive basic attributes from the search term syntax
 
         // position attribute = 3
-        attributeType = 3;
-        attributeValue = 3; // any position = 3
+        int attributeType = 3;
+        int attributeValue = 3; // any position = 3
         if (v.startsWith("^")) {
             attributeValue = 1; // first posiiton
             v = v.substring(1);
@@ -335,16 +324,10 @@ public final class CQLRPNGenerator implements Visitor {
 
         // structure attribute = 4
         attributeType = 4;
-        attributeValue = 2; // phrase = 1, word = 2
+        attributeValue = 2; // phrase = 1, word = 2, word list = 6
         if (v.startsWith("\"") && v.endsWith("\"")) {
             attributeValue = 1; // phrase
             v = v.substring(1, v.length()-1);
-        }
-        if (firstAttributeValue == 31) {
-            attributeValue = 5; // date (normalized) = 5
-        }
-        if (firstAttributeValue == 1016) {
-            attributeValue = 6; // word list
         }
         push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
@@ -377,14 +360,6 @@ public final class CQLRPNGenerator implements Visitor {
         return new ASN1OctetString(v);
     }
 
-    private static void push(Stack<AttributeElement> stack, AttributeElement attributeElement) {
-        if (attributeElement != null) {
-            if (!stack.contains(attributeElement)) {
-                stack.push(attributeElement);
-            }
-        }
-    }
-
     private static AttributeElement createAttributeElement(Integer attributeType, Integer attributeValue) {
         if (attributeType != null && attributeValue != null) {
             AttributeElement ae = new AttributeElement();
@@ -394,6 +369,23 @@ public final class CQLRPNGenerator implements Visitor {
             return ae;
         } else {
             return null;
+        }
+    }
+
+
+    private static void push(Stack<AttributeElement> stack, AttributeElement attributeElement) {
+        if (attributeElement != null) {
+            stack.push(attributeElement);
+        }
+    }
+
+    private static void replace(Stack<AttributeElement> stack, AttributeElement attributeElement) {
+        if (attributeElement != null) {
+            int pos = stack.indexOf(attributeElement);
+            if (pos >= 0) {
+                stack.remove(pos);
+            }
+            stack.push(attributeElement);
         }
     }
 }

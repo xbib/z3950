@@ -164,4 +164,14 @@ public final class AttributeElement extends ASN1Any implements Comparable<Attrib
     public int compareTo(AttributeElement o) {
         return attributeType.toString().compareTo(o.attributeType.toString());
     }
+
+    @Override
+    public int hashCode() {
+        return attributeType.toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof AttributeElement && attributeType.toString().equals(((AttributeElement) obj).attributeType.toString());
+    }
 }

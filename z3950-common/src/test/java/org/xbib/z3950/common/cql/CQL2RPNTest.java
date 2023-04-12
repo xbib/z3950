@@ -18,7 +18,7 @@ class CQL2RPNTest {
         CQLRPNGenerator generator = new CQLRPNGenerator();
         parser.getCQLQuery().accept(generator);
         String q = generator.getQueryResult().toString();
-        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 2, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 2}}{attributeType 5, attributeValue {numeric 100}}{attributeType 1, attributeValue {numeric 4}}}, term {general \"Test\"}}}}}", q);
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 2}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"Test\"}}}}}", q);
     }
 
     @Test
@@ -29,13 +29,13 @@ class CQL2RPNTest {
         CQLRPNGenerator generator = new CQLRPNGenerator();
         parser.getCQLQuery().accept(generator);
         String q = generator.getQueryResult().toString();
-        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 2, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 1}}{attributeType 5, attributeValue {numeric 100}}{attributeType 1, attributeValue {numeric 4}}}, term {general \"a phrase\"}}}}}", q);
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 1}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"a phrase\"}}}}}", q);
     }
 
     @Test
-    void testWithOverridingAnAttribute() {
+    void testWithCustomAttribute() {
         AttributeElement ae = new AttributeElement();
-        ae.attributeType = new ASN1Integer(2);
+        ae.attributeType = new ASN1Integer(7);
         ae.attributeValue = new AttributeElementAttributeValue();
         ae.attributeValue.numeric = new ASN1Integer(4);
         String cql = "dc.title = \"a phrase\"";
@@ -44,8 +44,7 @@ class CQL2RPNTest {
         CQLRPNGenerator generator = new CQLRPNGenerator(Collections.singleton(ae));
         parser.getCQLQuery().accept(generator);
         String q = generator.getQueryResult().toString();
-        // not really working, it adds, not override
-        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 2, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 1}}{attributeType 5, attributeValue {numeric 100}}{attributeType 1, attributeValue {numeric 4}}}, term {general \"a phrase\"}}}}}", q);
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 7, attributeValue {numeric 4}}{attributeType 3, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 1}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"a phrase\"}}}}}", q);
     }
 
     @Test
@@ -56,6 +55,28 @@ class CQL2RPNTest {
         CQLRPNGenerator generator = new CQLRPNGenerator();
         parser.getCQLQuery().accept(generator);
         String q = generator.getQueryResult().toString();
-        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 2, attributeValue {numeric 3}}{attributeType 3, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 2}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 12}}}, term {general \"123\"}}}}}", q);
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 2}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 12}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"123\"}}}}}", q);
+    }
+
+    @Test
+    void testAll() {
+        String cql = "bib.any all \"zeitschrift umweltrecht\"";
+        CQLParser parser = new CQLParser(cql);
+        parser.parse();
+        CQLRPNGenerator generator = new CQLRPNGenerator();
+        parser.getCQLQuery().accept(generator);
+        String q = generator.getQueryResult().toString();
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 1016}}{attributeType 2, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 6}}}, term {general \"zeitschrift umweltrecht\"}}}}}", q);
+    }
+
+    @Test
+    void testDate() {
+        String cql = "bib.datePublication = 2023";
+        CQLParser parser = new CQLParser(cql);
+        parser.parse();
+        CQLRPNGenerator generator = new CQLRPNGenerator();
+        parser.getCQLQuery().accept(generator);
+        String q = generator.getQueryResult().toString();
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 4, attributeValue {numeric 5}}{attributeType 1, attributeValue {numeric 31}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"2023\"}}}}}", q);
     }
 }
