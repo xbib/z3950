@@ -35,9 +35,9 @@ import org.xbib.z3950.common.v3.RPNStructureRpnRpnOp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * This is a RPN (Type-1 query) generator for CQL queries.
@@ -49,16 +49,7 @@ public final class CQLRPNGenerator implements Visitor {
     /**
      * Context map.
      */
-    @SuppressWarnings("serial")
-    private final Map<String, ResourceBundle> contexts = new HashMap<>() {
-        {
-            put("default", ResourceBundle.getBundle("org.xbib.z3950.common.cql.default"));
-            put("cql", ResourceBundle.getBundle("org.xbib.z3950.common.cql.cql"));
-            put("bib", ResourceBundle.getBundle("org.xbib.z3950.common.cql.bib-1"));
-            put("dc", ResourceBundle.getBundle("org.xbib.z3950.common.cql.dc"));
-            put("gbv", ResourceBundle.getBundle("org.xbib.z3950.common.cql.gbv"));
-        }
-    };
+    private final Map<String, Map<String, String>> contexts;
 
     private final Stack<AttributeElement> attributeElements;
 
@@ -76,6 +67,23 @@ public final class CQLRPNGenerator implements Visitor {
             this.attributeElements.addAll(attributeElements);
         }
         this.result = new Stack<>();
+        this.contexts = new HashMap<>();
+        addContext("default", ResourceBundle.getBundle("org.xbib.z3950.common.cql.default"));
+        addContext("cql", ResourceBundle.getBundle("org.xbib.z3950.common.cql.cql"));
+        addContext("rec", ResourceBundle.getBundle("org.xbib.z3950.common.cql.rec"));
+        addContext("bib", ResourceBundle.getBundle("org.xbib.z3950.common.cql.bib-1"));
+        addContext("dc", ResourceBundle.getBundle("org.xbib.z3950.common.cql.dc"));
+        addContext("gbv", ResourceBundle.getBundle("org.xbib.z3950.common.cql.gbv"));
+    }
+
+    public void addContext(String context, ResourceBundle bundle) {
+        addContext(context, bundle.keySet().stream()
+                .map(k -> Map.entry(k, bundle.getString(k)))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+    }
+
+    public void addContext(String context, Map<String, String> map) {
+        contexts.put(context, map);
     }
 
     public RPNQuery getQueryResult() {
@@ -292,11 +300,10 @@ public final class CQLRPNGenerator implements Visitor {
     }
 
     private int getUseAttr(String context, String attrName) {
-        try {
-            return Integer.parseInt(contexts.get(context).getString(attrName));
-        } catch (MissingResourceException e) {
-            throw new SyntaxException("unknown use attribute '" + attrName + "' for context " + context, e);
+        if (!contexts.containsKey(context)) {
+            throw new SyntaxException("unknown use attribute '" + attrName + "' for context " + context);
         }
+        return Integer.parseInt(contexts.get(context).get(attrName));
     }
 
     private ASN1OctetString transformTerm(Term term) {

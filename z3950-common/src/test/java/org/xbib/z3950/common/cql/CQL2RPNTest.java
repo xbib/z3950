@@ -47,4 +47,15 @@ class CQL2RPNTest {
         // not really working, it adds, not override
         assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 2, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 1}}{attributeType 5, attributeValue {numeric 100}}{attributeType 1, attributeValue {numeric 4}}}, term {general \"a phrase\"}}}}}", q);
     }
+
+    @Test
+    void testRecContext() {
+        String cql = "rec.id = 123";
+        CQLParser parser = new CQLParser(cql);
+        parser.parse();
+        CQLRPNGenerator generator = new CQLRPNGenerator();
+        parser.getCQLQuery().accept(generator);
+        String q = generator.getQueryResult().toString();
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 2, attributeValue {numeric 3}}{attributeType 3, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 2}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 12}}}, term {general \"123\"}}}}}", q);
+    }
 }
