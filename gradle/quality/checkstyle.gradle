@@ -1,0 +1,19 @@
+
+apply plugin: 'checkstyle'
+
+tasks.withType(Checkstyle) {
+    ignoreFailures = true
+    reports {
+        xml.getRequired().set(true)
+        html.getRequired().set(true)
+    }
+}
+
+checkstyle {
+    configFile = rootProject.file('gradle/quality/checkstyle.xml')
+    ignoreFailures = true
+    showViolations = true
+    checkstyleMain {
+        source = sourceSets.main.allSource
+    }
+}

@@ -1,13 +1,12 @@
 
-apply plugin: "de.marcphilipp.nexus-publish"
-
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        "${project.name}"(MavenPublication) {
             from components.java
             artifact sourcesJar
             artifact javadocJar
             pom {
+                artifactId = project.name
                 name = project.name
                 description = rootProject.ext.description
                 url = rootProject.ext.url
@@ -49,18 +48,6 @@ publishing {
 if (project.hasProperty("signing.keyId")) {
     apply plugin: 'signing'
     signing {
-        sign publishing.publications.mavenJava
-    }
-}
-
-if (project.hasProperty("ossrhUsername")) {
-    nexusPublishing {
-        repositories {
-            sonatype {
-                username = project.property('ossrhUsername')
-                password = project.property('ossrhPassword')
-                packageGroup = "org.xbib"
-            }
-        }
+        sign publishing.publications."${project.name}"
     }
 }

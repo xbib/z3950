@@ -1,0 +1,15 @@
+
+apply plugin: 'com.github.spotbugs'
+
+spotbugs {
+    effort = "max"
+    reportLevel = "low"
+    ignoreFailures = true
+}
+
+spotbugsMain {
+    reports {
+        xml.getRequired().set(false)
+        html.getRequired().set(true)
+    }
+}

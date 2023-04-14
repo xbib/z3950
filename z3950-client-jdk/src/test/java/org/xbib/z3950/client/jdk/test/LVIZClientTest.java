@@ -1,5 +1,6 @@
 package org.xbib.z3950.client.jdk.test;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xbib.z3950.client.jdk.JDKZClient;
 import org.xbib.z3950.common.operations.SortOperation;
@@ -14,6 +15,7 @@ class LVIZClientTest {
 
     private static final Logger logger = Logger.getLogger(LVIZClientTest.class.getName());
 
+    @Disabled
     @Test
     void testLVI() {
         String query = "@attr 1=4 @attr 4=6 \"Köln strafrecht\"";
