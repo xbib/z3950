@@ -57,11 +57,13 @@ public final class CQLRPNGenerator implements Visitor {
 
     private RPNQuery rpnQuery;
 
+    private final boolean wordListSupported;
+
     public CQLRPNGenerator() {
-        this(null);
+        this(null, true);
     }
 
-    public CQLRPNGenerator(Collection<AttributeElement> attributeElements) {
+    public CQLRPNGenerator(Collection<AttributeElement> attributeElements, boolean wordListSupported) {
         this.attributeElements = new Stack<>();
         if (attributeElements != null) {
             this.attributeElements.addAll(attributeElements);
@@ -74,6 +76,7 @@ public final class CQLRPNGenerator implements Visitor {
         addContext("bib", ResourceBundle.getBundle("org.xbib.z3950.common.cql.bib-1"));
         addContext("dc", ResourceBundle.getBundle("org.xbib.z3950.common.cql.dc"));
         addContext("gbv", ResourceBundle.getBundle("org.xbib.z3950.common.cql.gbv"));
+        this.wordListSupported = wordListSupported;
     }
 
     public void addContext(String context, ResourceBundle bundle) {
@@ -233,13 +236,11 @@ public final class CQLRPNGenerator implements Visitor {
                 push(attributeElements, createAttributeElement(2, 5));
             case NOT_EQUALS ->
                 push(attributeElements, createAttributeElement(2, 6));
-            case ALL -> { // 4=6 word list
+            case ALL, ANY -> { // 4=6 word list
                 push(attributeElements, createAttributeElement(2, 3));
-                replace(attributeElements, createAttributeElement(4, 6));
-            }
-            case ANY -> { // 4=104
-                push(attributeElements, createAttributeElement(2, 3));
-                replace(attributeElements, createAttributeElement(4, 104));
+                if (wordListSupported) {
+                    replace(attributeElements, createAttributeElement(4, 6));
+                }
             }
             default -> {
             }

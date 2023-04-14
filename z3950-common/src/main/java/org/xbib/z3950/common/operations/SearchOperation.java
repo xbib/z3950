@@ -58,8 +58,8 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
         return execute(createRPNQueryFromPQF(pqf, charset));
     }
 
-    public boolean executeCQL(String cql) throws IOException {
-        return execute(createRPNQueryFromCQL(cql));
+    public boolean executeCQL(String cql, boolean wordListSupported) throws IOException {
+        return execute(createRPNQueryFromCQL(cql, wordListSupported));
     }
 
     public boolean execute(RPNQuery rpn) throws IOException {
@@ -118,8 +118,8 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
         return status;
     }
 
-    private RPNQuery createRPNQueryFromCQL(String query) {
-        CQLRPNGenerator generator = new CQLRPNGenerator();
+    private RPNQuery createRPNQueryFromCQL(String query, boolean wordListSupported) {
+        CQLRPNGenerator generator = new CQLRPNGenerator(null, wordListSupported);
         CQLParser parser = new CQLParser(query);
         parser.parse();
         parser.getCQLQuery().accept(generator);

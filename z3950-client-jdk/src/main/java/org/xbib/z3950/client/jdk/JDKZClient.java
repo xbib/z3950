@@ -72,7 +72,7 @@ public class JDKZClient implements Client, Closeable {
             lock.lock();
             SearchOperation searchOperation = new SearchOperation(berReader, berWriter,
                     builder.resultSetName, builder.databases, builder.host);
-            boolean success = searchOperation.executeCQL(query);
+            boolean success = searchOperation.executeCQL(query, builder.wordListSupported);
             if (!success) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
             } else {
@@ -410,6 +410,8 @@ public class JDKZClient implements Client, Closeable {
 
         private InitListener initListener;
 
+        private boolean wordListSupported;
+
         private Builder() {
             this.timeout = 5000;
             this.preferredRecordSyntax = "1.2.840.10003.5.10"; // marc21
@@ -421,6 +423,7 @@ public class JDKZClient implements Client, Closeable {
             this.preferredMessageSize = 10 * 1024 * 1024;
             this.implementationName = "Java Z Client";
             this.implementationVersion = "1.00";
+            this.wordListSupported = true;
         }
 
         public Builder setHost(String host) {
@@ -503,6 +506,11 @@ public class JDKZClient implements Client, Closeable {
 
         public Builder setInitListener(InitListener initListener) {
             this.initListener = initListener;
+            return this;
+        }
+
+        public Builder wordListSupported(boolean wordListSupported) {
+            this.wordListSupported = wordListSupported;
             return this;
         }
 
