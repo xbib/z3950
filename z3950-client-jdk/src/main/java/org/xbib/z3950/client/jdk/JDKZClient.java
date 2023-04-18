@@ -72,7 +72,7 @@ public class JDKZClient implements Client, Closeable {
             lock.lock();
             SearchOperation searchOperation = new SearchOperation(berReader, berWriter,
                     builder.resultSetName, builder.databases, builder.host);
-            boolean success = searchOperation.executeCQL(query, builder.wordListSupported);
+            boolean success = searchOperation.executeCQL(StandardCharsets.UTF_8, query, builder.wordListSupported);
             if (!success) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
             } else {
@@ -130,7 +130,7 @@ public class JDKZClient implements Client, Closeable {
             lock.lock();
             SearchOperation searchOperation = new SearchOperation(berReader, berWriter,
                     builder.resultSetName, builder.databases, builder.host);
-            searchOperation.executePQF(query, StandardCharsets.UTF_8);
+            searchOperation.executePQF(StandardCharsets.UTF_8, query);
             if (!searchOperation.isSuccess()) {
                 logger.log(Level.WARNING, MessageFormat.format("search was not a success [{0}]", query));
             } else {

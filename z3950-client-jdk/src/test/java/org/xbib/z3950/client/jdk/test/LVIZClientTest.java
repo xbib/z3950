@@ -17,7 +17,7 @@ class LVIZClientTest {
 
     @Disabled
     @Test
-    void testLVI() {
+    void testPQF() {
         String query = "@attr 1=4 @attr 4=6 \"Köln strafrecht\"";
         int offset = 1;
         int size = 10;

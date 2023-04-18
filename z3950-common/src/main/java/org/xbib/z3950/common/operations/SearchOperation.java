@@ -54,12 +54,12 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
         this.status = false;
     }
 
-    public boolean executePQF(String pqf, Charset charset) throws IOException {
-        return execute(createRPNQueryFromPQF(pqf, charset));
+    public boolean executePQF(Charset charset, String pqf) throws IOException {
+        return execute(createRPNQueryFromPQF(charset, pqf));
     }
 
-    public boolean executeCQL(String cql, boolean wordListSupported) throws IOException {
-        return execute(createRPNQueryFromCQL(cql, wordListSupported));
+    public boolean executeCQL(Charset charset, String cql, boolean wordListSupported) throws IOException {
+        return execute(createRPNQueryFromCQL(charset, cql, wordListSupported));
     }
 
     public boolean execute(RPNQuery rpn) throws IOException {
@@ -118,15 +118,15 @@ public class SearchOperation extends AbstractOperation<SearchResponse, SearchReq
         return status;
     }
 
-    private RPNQuery createRPNQueryFromCQL(String query, boolean wordListSupported) {
-        CQLRPNGenerator generator = new CQLRPNGenerator(null, wordListSupported);
+    private RPNQuery createRPNQueryFromCQL(Charset charset, String query, boolean wordListSupported) {
+        CQLRPNGenerator generator = new CQLRPNGenerator(charset, null, wordListSupported);
         CQLParser parser = new CQLParser(query);
         parser.parse();
         parser.getCQLQuery().accept(generator);
         return generator.getQueryResult();
     }
 
-    private RPNQuery createRPNQueryFromPQF(String query, Charset charset) {
+    private RPNQuery createRPNQueryFromPQF(Charset charset, String query) {
         PQFRPNGenerator generator = new PQFRPNGenerator(charset);
         PQFParser parser = new PQFParser(new StringReader(query));
         parser.parse();
