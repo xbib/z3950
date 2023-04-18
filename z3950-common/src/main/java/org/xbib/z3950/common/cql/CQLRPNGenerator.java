@@ -32,6 +32,9 @@ import org.xbib.z3950.common.v3.Operator;
 import org.xbib.z3950.common.v3.RPNQuery;
 import org.xbib.z3950.common.v3.RPNStructure;
 import org.xbib.z3950.common.v3.RPNStructureRpnRpnOp;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,9 +49,8 @@ import java.util.stream.Collectors;
  */
 public final class CQLRPNGenerator implements Visitor {
 
-    /**
-     * Context map.
-     */
+    private final Charset charset;
+
     private final Map<String, Map<String, String>> contexts;
 
     private final Stack<AttributeElement> attributeElements;
@@ -60,10 +62,15 @@ public final class CQLRPNGenerator implements Visitor {
     private final boolean wordListSupported;
 
     public CQLRPNGenerator() {
-        this(null, true);
+        this(StandardCharsets.ISO_8859_1, null, true);
     }
 
-    public CQLRPNGenerator(Collection<AttributeElement> attributeElements, boolean wordListSupported) {
+    public CQLRPNGenerator(Charset charset) {
+        this(charset, null, true);
+    }
+
+    public CQLRPNGenerator(Charset charset, Collection<AttributeElement> attributeElements, boolean wordListSupported) {
+        this.charset = charset;
         this.attributeElements = new Stack<>();
         if (attributeElements != null) {
             this.attributeElements.addAll(attributeElements);
@@ -266,7 +273,6 @@ public final class CQLRPNGenerator implements Visitor {
 
     @Override
     public void visit(Term term) {
-        // the value
         ASN1OctetString s = transformTerm(term);
         result.push(s);
     }
@@ -358,7 +364,7 @@ public final class CQLRPNGenerator implements Visitor {
         }
         push(attributeElements, createAttributeElement(attributeType, attributeValue));
 
-        return new ASN1OctetString(v);
+        return new ASN1OctetString(v, charset);
     }
 
     private static AttributeElement createAttributeElement(Integer attributeType, Integer attributeValue) {
