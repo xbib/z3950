@@ -92,4 +92,26 @@ class CQL2RPNTest {
         String q = generator.getQueryResult().toString();
         assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 4, attributeValue {numeric 2}}{attributeType 5, attributeValue {numeric 100}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"K\\703\\666ln\"}}}}}", q);
     }
+
+    @Test
+    void testTitlePhrase() {
+        String cql = "bib.titlePhrase = \"Die Berufsfreiheit\"";
+        CQLParser parser = new CQLParser(cql);
+        parser.parse();
+        CQLRPNGenerator generator = new CQLRPNGenerator(StandardCharsets.UTF_8);
+        parser.getCQLQuery().accept(generator);
+        String q = generator.getQueryResult().toString();
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 5, attributeValue {numeric 100}}{attributeType 4, attributeValue {numeric 1}}{attributeType 6, attributeValue {numeric 1}}{attributeType 1, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"Die Berufsfreiheit\"}}}}}", q);
+    }
+
+    @Test
+    void testTitleComplete() {
+        String cql = "bib.titleComplete all \"Die Berufsfreiheit\"";
+        CQLParser parser = new CQLParser(cql);
+        parser.parse();
+        CQLRPNGenerator generator = new CQLRPNGenerator(StandardCharsets.UTF_8);
+        parser.getCQLQuery().accept(generator);
+        String q = generator.getQueryResult().toString();
+        assertEquals("{attributeSetId 1.2.840.10003.3.1, rpn {op {attrTerm {attributes {{attributeType 3, attributeValue {numeric 3}}{attributeType 5, attributeValue {numeric 100}}{attributeType 4, attributeValue {numeric 1}}{attributeType 6, attributeValue {numeric 3}}{attributeType 1, attributeValue {numeric 4}}{attributeType 2, attributeValue {numeric 3}}}, term {general \"Die Berufsfreiheit\"}}}}}", q);
+    }
 }

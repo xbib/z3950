@@ -59,7 +59,7 @@ public final class CQLRPNGenerator implements Visitor {
 
     private RPNQuery rpnQuery;
 
-    private final boolean wordListSupported;
+    private boolean wordListSupported;
 
     public CQLRPNGenerator() {
         this(StandardCharsets.ISO_8859_1, null, true);
@@ -243,8 +243,9 @@ public final class CQLRPNGenerator implements Visitor {
                 push(attributeElements, createAttributeElement(2, 5));
             case NOT_EQUALS ->
                 push(attributeElements, createAttributeElement(2, 6));
-            case ALL, ANY -> { // 4=6 word list
+            case ALL, ANY -> {
                 push(attributeElements, createAttributeElement(2, 3));
+                // 4=6 word list
                 if (wordListSupported) {
                     replace(attributeElements, createAttributeElement(4, 6));
                 }
@@ -304,6 +305,19 @@ public final class CQLRPNGenerator implements Visitor {
         if (attributeValue == 31) {
             replace(attributeElements, createAttributeElement(4, 5));
         }
+        // titlePhrase --> use phrase attribute
+        if ("titlePhrase".equals(index.getName())) {
+            replace(attributeElements, createAttributeElement(4, 1));
+            replace(attributeElements, createAttributeElement(6, 1));
+            wordListSupported = false;
+        }
+        // titleComplete --> use phrase attribute and use structure completeness
+        if ("titleComplete".equals(index.getName())) {
+            replace(attributeElements, createAttributeElement(4, 1));
+            replace(attributeElements, createAttributeElement(6, 3));
+            wordListSupported = false;
+        }
+
         push(attributeElements, createAttributeElement(attributeType, attributeValue));
     }
 
