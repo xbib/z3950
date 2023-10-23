@@ -1,8 +1,10 @@
 dependencies {
-    testImplementation libs.junit.jupiter.api
-    testImplementation libs.junit.jupiter.params
-    testImplementation libs.hamcrest
-    testRuntimeOnly libs.junit.jupiter.engine
+    testImplementation testLibs.junit.jupiter.api
+    testImplementation testLibs.junit.jupiter.params
+    testImplementation testLibs.hamcrest
+    testRuntimeOnly testLibs.junit.jupiter.engine
+    testRuntimeOnly testLibs.junit.jupiter.vintage
+    testRuntimeOnly testLibs.junit.jupiter.platform.launcher
 }
 
 test {

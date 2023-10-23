@@ -3,7 +3,6 @@ apply from: rootProject.file('gradle/compile/groovy.gradle')
 dependencies {
     api project(':z3950-client-jdk')
     api libs.groovy.xml
-    testRuntimeOnly libs.junit.jupiter.vintage
     testImplementation libs.groovy
     testImplementation libs.groovy.json
     testImplementation libs.groovy.nio

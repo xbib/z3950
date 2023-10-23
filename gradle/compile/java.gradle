@@ -2,17 +2,12 @@
 apply plugin: 'java-library'
 
 java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
     modularity.inferModulePath.set(true)
-}
-
-compileJava {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
-compileTestJava {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+    withJavadocJar()
 }
 
 jar {
@@ -21,21 +16,9 @@ jar {
     }
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier 'sources'
-    from sourceSets.main.allSource
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier 'javadoc'
-}
-
-artifacts {
-    archives sourcesJar, javadocJar
-}
-
 tasks.withType(JavaCompile) {
+    options.fork = true
+    options.forkOptions.jvmArgs += ['-Duser.language=en','-Duser.country=US']
     options.compilerArgs.add('-Xlint:all,-exports')
     options.encoding = 'UTF-8'
 }
