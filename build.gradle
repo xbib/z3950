@@ -1,6 +1,5 @@
 
 plugins {
-    id "checkstyle"
     id "pmd"
     id 'maven-publish'
     id 'signing'
@@ -31,14 +30,11 @@ ext {
 }
 
 subprojects {
-    //apply from: rootProject.file('gradle/ide/idea.gradle')
     apply from: rootProject.file('gradle/repositories/maven.gradle')
     apply from: rootProject.file('gradle/compile/java.gradle')
     apply from: rootProject.file('gradle/test/junit5.gradle')
     apply from: rootProject.file('gradle/documentation/asciidoc.gradle')
-    apply from: rootProject.file('gradle/quality/checkstyle.gradle')
     apply from: rootProject.file('gradle/quality/pmd.gradle')
-    //apply from: rootProject.file('gradle/quality/spotbugs.gradle')
     apply from: rootProject.file('gradle/publish/maven.gradle')
 }
 apply from: rootProject.file('gradle/publish/sonatype.gradle')

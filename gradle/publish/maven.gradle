@@ -3,8 +3,6 @@ publishing {
     publications {
         "${project.name}"(MavenPublication) {
             from components.java
-            artifact sourcesJar
-            artifact javadocJar
             pom {
                 artifactId = project.name
                 name = project.name

@@ -15,3 +15,7 @@ sourceSets {
         }
     }
 }
+
+tasks.named('sourcesJar').configure {
+    dependsOn('generateJflex', 'generateJacc')
+}

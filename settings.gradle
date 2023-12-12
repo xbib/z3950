@@ -16,15 +16,16 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
-            version('gradle', '8.4')
-            version('groovy', '4.0.15')
-            version('netty', '4.1.100.Final')
-            library('cql-common', 'org.xbib', 'cql-common').version('5.0.0')
+            version('gradle', '8.5')
+            version('groovy', '4.0.16')
+            version('netty', '4.1.101.Final')
+            library('cql-common', 'org.xbib', 'cql-common').version('5.1.1')
+            library('marc', 'org.xbib', 'marc').version('2.14.1')
+            library('charactersets', 'org.xbib', 'bibliographic-character-sets').version('2.0.0')
             library('netty-transport', 'io.netty', 'netty-transport').versionRef('netty')
             library('netty-handler', 'io.netty', 'netty-handler').versionRef('netty')
             library('netty-common', 'io.netty', 'netty-common').versionRef('netty')
             library('netty-buffer', 'io.netty', 'netty-buffer').versionRef('netty')
-            library('charactersets', 'org.xbib', 'bibliographic-character-sets').version('2.0.0')
             library('groovy', 'org.apache.groovy', 'groovy').versionRef('groovy')
             library('groovy-xml', 'org.apache.groovy', 'groovy-xml').versionRef('groovy')
             library('groovy-json', 'org.apache.groovy', 'groovy-json').versionRef('groovy')
@@ -33,7 +34,6 @@ dependencyResolutionManagement {
             library('groovy-macro', 'org.apache.groovy', 'groovy-macro').versionRef('groovy')
             library('groovy-templates', 'org.apache.groovy', 'groovy-templates').versionRef('groovy')
             library('groovy-test', 'org.apache.groovy', 'groovy-test').versionRef('groovy')
-            library('marc', 'org.xbib', 'marc').version('2.9.21')
         }
         testLibs {
             version('junit', '5.10.0')
